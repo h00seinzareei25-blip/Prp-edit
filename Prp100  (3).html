@@ -6812,7 +6812,7 @@ function saveNewPatient(e) {
         }
 
         // --- شروع سیکل جدید برای بیمار تکراری ---
-        function startNewCycle(id) {
+        function startNewCycle(id, preferredSite) {
             var p = patients.find(x => x.id == id);
             if(!p) return;
             openModal('addModal');
@@ -6820,9 +6820,18 @@ function saveNewPatient(e) {
             document.getElementById('addNationalId').value = p.nationalId;
             document.getElementById('addPhone').value = p.phone;
             document.getElementById('addStage').value = "1";
-            document.getElementById('addDesc').value = `سیکل جدید (قبلاً ${p.site} بوده)`;
+            var nextSite = (preferredSite && String(preferredSite).trim()) || '';
+            try{
+                var siteEl = document.getElementById('addSite');
+                if(siteEl && nextSite) siteEl.value = nextSite;
+            }catch(e){}
+            document.getElementById('addDesc').value = nextSite
+                ? (`سیکل جدید برای «${nextSite}» (قبلاً ${p.site || '—'} بوده)`)
+                : (`سیکل جدید (قبلاً ${p.site} بوده)`);
             calculateNextDatePreview();
+            try{ if(typeof checkAddDuplicate === 'function') checkAddDuplicate(); }catch(e){}
         }
+        window.startNewCycle = startNewCycle;
 
                 function renderEditVisitDateButtons() {
             var container = document.getElementById('editVisitDateButtons');
@@ -12508,12 +12517,14 @@ ${pagesHtml}
 function showMsg(t, m) {
             document.getElementById('msgTitle').innerText = t; document.getElementById('msgText').innerText = m;
             document.getElementById('msgInput').classList.add('hidden'); document.getElementById('absentControls').classList.add('hidden'); document.getElementById('confirmDateBox').classList.add('hidden');
+            try{ var __xb = document.getElementById('msgExtraBtn'); if(__xb){ __xb.classList.add('hidden'); __xb.onclick = null; } }catch(e){}
             document.getElementById('msgBtn').classList.add('hidden'); document.getElementById('msgCancelBtn').innerText = 'بستن';
             openModal('msgModal'); setTimeout(() => closeModal('msgModal'), 2500);
         }
         function showConfirm(t, m, cb, okText, cancelText) {
             document.getElementById('msgTitle').innerText = t; document.getElementById('msgText').innerText = m;
             document.getElementById('msgInput').classList.add('hidden'); document.getElementById('absentControls').classList.add('hidden'); document.getElementById('confirmDateBox').classList.add('hidden');
+            try{ var __xb = document.getElementById('msgExtraBtn'); if(__xb){ __xb.classList.add('hidden'); __xb.onclick = null; } }catch(e){}
             var btn = document.getElementById('msgBtn'); btn.classList.remove('hidden'); btn.innerText = (okText || 'تایید');
             document.getElementById('msgCancelBtn').innerText = (cancelText || 'لغو');
             var newBtn = btn.cloneNode(true); btn.parentNode.replaceChild(newBtn, btn);
@@ -30052,12 +30063,19 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
             }
           }
           if(msg){
-            var ok = false;
-            try{ ok = window.confirm(msg + '\n\nادامه با ناحیه جدید؟\nOK = تغییر / Cancel = حفظ ناحیه قبلی'); }
-            catch(err){ ok = true; }
-            if(!ok){
-              try{ document.getElementById('editSite').value = prevSite; }catch(err){}
-              nextSite = prevSite;
+            // v170 پیغام داخل برنامه را نشان می‌دهد؛ confirm مرورگر نشان داده نشود
+            if(window.__PRP_V170_INAPP_SITE_ACTIONS__ && window.__prpEditSiteChoiceDone){
+              // انتخاب از مودال داخلی انجام شده
+            } else if(window.__PRP_V170_INAPP_SITE_ACTIONS__){
+              // اگر به هر دلیل به اینجا رسیدیم بدون مودال v170، ناحیه را نگه دار و ادامه بده
+            } else {
+              var ok = false;
+              try{ ok = window.confirm(msg + '\n\nادامه با ناحیه جدید؟\nOK = تغییر / Cancel = حفظ ناحیه قبلی'); }
+              catch(err){ ok = true; }
+              if(!ok){
+                try{ document.getElementById('editSite').value = prevSite; }catch(err){}
+                nextSite = prevSite;
+              }
             }
           }
         }
@@ -30392,6 +30410,13 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
     var base = window.completeTreatment;
     if(typeof base !== 'function' || base.__prpV169SiteGate) return;
     var wrapped = function(id){
+      // اگر v170 پیغام داخل‌برنامه‌ای با دکمه سیکل جدید را گرفته، اینجا دوباره نپرس
+      if(window.__PRP_V170_INAPP_SITE_ACTIONS__){
+        return base.apply(this, arguments);
+      }
+      if(window.__prpSiteGatePassedFor && String(window.__prpSiteGatePassedFor) === String(id)){
+        return base.apply(this, arguments);
+      }
       var p = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
       if(!p) return base.apply(this, arguments);
 
@@ -30676,6 +30701,418 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
   setTimeout(install, 0);
   setTimeout(install, 600);
   setTimeout(install, 1600);
+})();
+</script>
+
+<!-- PRP v170: پیغام داخل برنامه + دکمه سیکل جدید کنار تغییر ناحیه -->
+<script id="prp-v170-inapp-site-actions">
+(function(){
+  'use strict';
+  if(window.__PRP_V170_INAPP_SITE_ACTIONS__) return;
+  window.__PRP_V170_INAPP_SITE_ACTIONS__ = true;
+
+  function fa(v){
+    try{ return (typeof toPersianDigits === 'function') ? toPersianDigits(String(v)) : String(v); }
+    catch(e){ return String(v); }
+  }
+  function normSite(s){ return String(s||'').trim().replace(/\s+/g,' '); }
+  function oppositeSide(site){
+    var s = normSite(site);
+    if(/راست/.test(s)) return s.replace(/راست/g,'چپ');
+    if(/چپ/.test(s)) return s.replace(/چپ/g,'راست');
+    return '';
+  }
+
+  function ensureExtraBtn(){
+    var cancel = document.getElementById('msgCancelBtn');
+    var btn = document.getElementById('msgExtraBtn');
+    if(btn) return btn;
+    if(!cancel || !cancel.parentNode) return null;
+    btn = document.createElement('button');
+    btn.id = 'msgExtraBtn';
+    btn.type = 'button';
+    btn.className = 'hidden px-4 py-2.5 rounded-xl text-sm font-black border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition';
+    btn.textContent = '🔄 سیکل جدید';
+    // قبل از دکمه تایید/اصلی بگذار تا در RTL کنار پیام منطقی باشد
+    var primary = document.getElementById('msgBtn');
+    if(primary && primary.parentNode === cancel.parentNode){
+      cancel.parentNode.insertBefore(btn, primary);
+    } else {
+      cancel.parentNode.insertBefore(btn, cancel);
+    }
+    // دکمه‌ها را کمی منعطف‌تر کن تا ۳ تا جا شوند
+    try{
+      cancel.parentNode.classList.add('flex-wrap');
+      cancel.parentNode.style.gap = '8px';
+    }catch(e){}
+    return btn;
+  }
+
+  function resetModalChrome(){
+    try{
+      document.getElementById('msgInput').classList.add('hidden');
+      document.getElementById('absentControls').classList.add('hidden');
+      document.getElementById('confirmDateBox').classList.add('hidden');
+    }catch(e){}
+  }
+
+  /**
+   * پیغام داخل برنامه با حداکثر ۳ دکمه (بدون window.confirm مرورگر)
+   * options: {title, message, okText, onOk, cancelText, onCancel, extraText, onExtra, extraClass}
+   */
+  function showInAppActions(options){
+    options = options || {};
+    resetModalChrome();
+    var titleEl = document.getElementById('msgTitle');
+    var textEl = document.getElementById('msgText');
+    if(titleEl) titleEl.innerText = options.title || 'پیام';
+    if(textEl) textEl.innerText = options.message || '';
+
+    var okBtn = document.getElementById('msgBtn');
+    var cancelBtn = document.getElementById('msgCancelBtn');
+    var extraBtn = ensureExtraBtn();
+
+    // OK
+    if(okBtn){
+      var freshOk = okBtn.cloneNode(true);
+      okBtn.parentNode.replaceChild(freshOk, okBtn);
+      okBtn = freshOk;
+      okBtn.classList.remove('hidden');
+      okBtn.innerText = options.okText || 'تایید';
+      okBtn.onclick = function(){
+        try{ closeModal('msgModal'); }catch(e){}
+        if(typeof options.onOk === 'function') options.onOk();
+      };
+    }
+    // Cancel
+    if(cancelBtn){
+      cancelBtn.innerText = options.cancelText || 'انصراف';
+      cancelBtn.onclick = function(){
+        try{ closeModal('msgModal'); }catch(e){}
+        if(typeof options.onCancel === 'function') options.onCancel();
+      };
+    }
+    // Extra (سیکل جدید و ...)
+    if(extraBtn){
+      if(options.extraText && typeof options.onExtra === 'function'){
+        extraBtn.classList.remove('hidden');
+        extraBtn.innerText = options.extraText;
+        if(options.extraClass){
+          extraBtn.className = options.extraClass;
+        } else {
+          extraBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-black border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition';
+        }
+        extraBtn.onclick = function(){
+          try{ closeModal('msgModal'); }catch(e){}
+          options.onExtra();
+        };
+      } else {
+        extraBtn.classList.add('hidden');
+        extraBtn.onclick = null;
+      }
+    }
+
+    try{ openModal('msgModal'); }catch(e){}
+  }
+  window.prpShowInAppActions = showInAppActions;
+  window.prpEnsureMsgExtraBtn = ensureExtraBtn;
+
+  function openNewCycleForPatient(p, preferredSite, reasonNote){
+    if(!p) return;
+    try{
+      if(typeof closeModal === 'function'){
+        try{ closeModal('editModal'); }catch(e){}
+        try{ closeModal('msgModal'); }catch(e){}
+      }
+    }catch(e){}
+    try{
+      if(typeof startNewCycle === 'function') startNewCycle(p.id, preferredSite || '');
+      else if(typeof window.startNewCycle === 'function') window.startNewCycle(p.id, preferredSite || '');
+    }catch(e){ console.error('startNewCycle failed', e); }
+    setTimeout(function(){
+      try{
+        var siteEl = document.getElementById('addSite');
+        if(siteEl && preferredSite) siteEl.value = preferredSite;
+        var descEl = document.getElementById('addDesc');
+        if(descEl){
+          var base = preferredSite
+            ? ('سیکل جدید برای «' + preferredSite + '»')
+            : 'سیکل جدید';
+          if(reasonNote) base += ' — ' + reasonNote;
+          else if(p.site) base += ' (قبلاً ' + p.site + ' بوده)';
+          descEl.value = base;
+        }
+        if(typeof checkAddDuplicate === 'function') checkAddDuplicate();
+      }catch(e){}
+    }, 80);
+    try{
+      if(typeof showToast === 'function') showToast('فرم سیکل جدید باز شد' + (preferredSite ? (' — ' + preferredSite) : ''));
+    }catch(e){}
+  }
+  window.prpOpenNewCycleForPatient = openNewCycleForPatient;
+
+  function consensus(p){
+    try{
+      if(typeof window.prpGetHistoricalSiteConsensus === 'function') return window.prpGetHistoricalSiteConsensus(p) || {};
+    }catch(e){}
+    return { site: normSite(p && p.site), count: 0, rows: [] };
+  }
+
+  function logSiteDecision(p, decision, fromSite, toSite, note){
+    if(!p) return;
+    var now = new Date().toISOString();
+    var today = '';
+    try{ today = (typeof getTodayJalali === 'function') ? getTodayJalali() : ''; }catch(e){}
+    (p.history = p.history || []).push({
+      date: now, recordedAt: now, dateJ: today, eventDateJ: today,
+      type: 'تصمیم ناحیه تزریق', stage: Number(p.currentStage || 0),
+      site: toSite || fromSite || '', decision: decision || '',
+      note: note || ''
+    });
+    try{
+      if(typeof logAction === 'function') logAction('SITE_DECISION', { id:p.id, name:p.fullName||'', note: note || decision || '', dateJ: today });
+    }catch(e){}
+  }
+
+  // ویرایش پرونده: به‌جای window.confirm مرورگر، مودال داخلی + دکمه سیکل جدید
+  function wrapSaveEditPatientInApp(){
+    var base = window.saveEditPatient;
+    if(typeof base !== 'function' || base.__prpV170InAppSite) return;
+    var wrapped = function(e){
+      try{
+        if(window.__prpEditSiteChoiceDone){
+          window.__prpEditSiteChoiceDone = false;
+          return base.apply(this, arguments);
+        }
+        var id = (document.getElementById('editId') || {}).value || '';
+        var p = (window.patients || []).find(function(x){ return String(x && x.id) === String(id); });
+        var nextSite = normSite((document.getElementById('editSite') || {}).value || '');
+        var prevSite = normSite(p && p.site);
+        if(!(p && nextSite && prevSite && nextSite !== prevSite)){
+          return base.apply(this, arguments);
+        }
+
+        var msg = '';
+        try{
+          if(typeof window.prpSiteMismatchMessage === 'function'){
+            msg = window.prpSiteMismatchMessage(Object.assign({}, p, {site: prevSite}), nextSite) || '';
+          }
+        }catch(err){}
+        var injCount = 0;
+        try{
+          if(typeof window.prpGetInjectionSiteHistory === 'function'){
+            injCount = (window.prpGetInjectionSiteHistory(p) || []).length;
+          }
+        }catch(err){}
+        if(!msg && injCount >= 1){
+          msg = 'ناحیه پرونده از «' + prevSite + '» به «' + nextSite + '» تغییر می‌کند در حالی که ' + fa(injCount) + ' تزریق قبلی روی این پرونده ثبت شده است.';
+          if(oppositeSide(prevSite) === nextSite){
+            msg += '\n\nاین تغییر جابه‌جایی چپ/راست است. اگر عضو دیگر واقعاً مدنظر است، سیکل جدید باز کنید.';
+          }
+        }
+        if(!msg){
+          // تغییر ساده بدون سابقه تزریق — اجازه بده ادامه دهد
+          return base.apply(this, arguments);
+        }
+
+        if(e && typeof e.preventDefault === 'function') e.preventDefault();
+        var args = arguments;
+        var self = this;
+        showInAppActions({
+          title: 'تغییر ناحیه تزریق',
+          message: msg + '\n\nاگر عضو/سمت دیگر است، «سیکل جدید» را بزنید تا پرونده جدا ساخته شود.',
+          okText: 'تغییر به «' + nextSite + '»',
+          onOk: function(){
+            window.__prpEditSiteChoiceDone = true;
+            try{ document.getElementById('editSite').value = nextSite; }catch(err){}
+            return base.apply(self, args);
+          },
+          cancelText: 'حفظ «' + prevSite + '»',
+          onCancel: function(){
+            try{ document.getElementById('editSite').value = prevSite; }catch(err){}
+            // ذخیره بقیه فیلدها با ناحیه قبلی
+            window.__prpEditSiteChoiceDone = true;
+            return base.apply(self, args);
+          },
+          extraText: '🔄 سیکل جدید «' + nextSite + '»',
+          onExtra: function(){
+            try{ document.getElementById('editSite').value = prevSite; }catch(err){}
+            logSiteDecision(p, 'edit_open_new_cycle', prevSite, nextSite,
+              'به‌جای تغییر ناحیه، سیکل جدید برای «' + nextSite + '» باز شد');
+            try{ if(typeof saveData === 'function') saveData(); }catch(err){}
+            openNewCycleForPatient(p, nextSite, 'به‌خاطر تغییر عضو از ویرایش پرونده');
+          }
+        });
+        return false;
+      }catch(err){
+        return base.apply(this, arguments);
+      }
+    };
+    wrapped.__prpV170InAppSite = true;
+    try{ Object.keys(base).forEach(function(k){ try{ wrapped[k] = base[k]; }catch(e){} }); }catch(e){}
+    window.saveEditPatient = wrapped;
+    try{ saveEditPatient = wrapped; }catch(e){}
+  }
+
+  // روز تزریق: پیغام داخل برنامه + دکمه سیکل جدید کنار گزینه‌ها
+  function wrapCompleteTreatmentInApp(){
+    var base = window.completeTreatment;
+    if(typeof base !== 'function' || base.__prpV170InAppSite) return;
+    var wrapped = function(id){
+      var p = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+      if(!p) return base.apply(this, arguments);
+
+      // اگر از همین مودال تایید شده، برو سراغ ثبت تزریق (پایه)
+      if(window.__prpSiteGatePassedFor === String(id)){
+        window.__prpSiteGatePassedFor = '';
+        try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+        return base.apply(this, arguments);
+      }
+
+      var cons = consensus(p);
+      var current = normSite(p.site);
+      var hist = cons.site || current || '';
+      var opp = oppositeSide(hist) || oppositeSide(current) || '';
+      var injRows = [];
+      try{
+        if(typeof window.prpGetInjectionSiteHistory === 'function') injRows = window.prpGetInjectionSiteHistory(p) || [];
+      }catch(e){}
+      var histLines = injRows.filter(function(r){ return r && r.site; }).slice(-4).map(function(r){
+        return 'مرحله ' + fa(r.stage || '?') + (r.dateJ ? ' (' + fa(r.dateJ) + ')' : '') + ': ' + r.site;
+      });
+
+      var alreadyMismatch = !!(hist && current && hist !== current);
+      var body = 'ناحیه پرونده: «' + (current || '—') + '»';
+      if(hist) body += '\nسابقه غالب: «' + hist + '»' + (cons.count >= 2 ? (' (' + fa(cons.count) + ' بار)') : '');
+      if(histLines.length) body += '\n\nسوابق:\n- ' + histLines.join('\n- ');
+
+      if(alreadyMismatch){
+        body += '\n\nناحیه پرونده با سابقه فرق دارد.';
+        if(opp) body += '\nاگر عضو دیگر مدنظر است، سیکل جدید باز کنید.';
+        showInAppActions({
+          title: 'اختلاف ناحیه تزریق',
+          message: body,
+          okText: 'ادامه با «' + current + '»',
+          onOk: function(){
+            logSiteDecision(p, 'inject_with_current_despite_mismatch', hist, current, 'ادامه تزریق با ناحیه فعلی پرونده');
+            try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+            window.__prpSiteGatePassedFor = String(id);
+            try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+            return base.call(window, id);
+          },
+          cancelText: 'انصراف',
+          onCancel: function(){},
+          extraText: opp ? ('🔄 سیکل جدید «' + opp + '»') : '🔄 سیکل جدید',
+          onExtra: function(){
+            var target = opp || current || '';
+            logSiteDecision(p, 'inject_day_open_new_cycle', hist, target, 'از روز تزریق سیکل جدید باز شد');
+            try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+            openNewCycleForPatient(p, target, 'اعلام عضو دیگر در روز تزریق');
+          }
+        });
+        return;
+      }
+
+      body += '\n\nآیا بیمار امروز همین ناحیه را تأیید کرد؟';
+      showInAppActions({
+        title: 'تأیید ناحیه تزریق',
+        message: body,
+        okText: 'بله، همین ناحیه',
+        onOk: function(){
+          logSiteDecision(p, 'confirmed_same_site', hist, current, 'بیمار ناحیه پرونده را تأیید کرد');
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+          window.__prpSiteGatePassedFor = String(id);
+          try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+          return base.call(window, id);
+        },
+        cancelText: opp ? ('بیمار «' + opp + '» می‌گوید') : 'بیمار سمت دیگر می‌گوید',
+        onCancel: function(){
+          // مودال دوم داخل برنامه با دکمه سیکل جدید
+          showOtherSideActions(p, hist, opp, id, base);
+        },
+        extraText: opp ? ('🔄 سیکل جدید «' + opp + '»') : '🔄 سیکل جدید',
+        onExtra: function(){
+          var target = opp || '';
+          logSiteDecision(p, 'inject_day_open_new_cycle_direct', hist, target, 'مستقیم سیکل جدید از تأیید ناحیه');
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+          openNewCycleForPatient(p, target, 'اعلام عضو دیگر در روز تزریق');
+        }
+      });
+    };
+    wrapped.__prpV170InAppSite = true;
+    try{ Object.keys(base).forEach(function(k){ try{ wrapped[k] = base[k]; }catch(e){} }); }catch(e){}
+    window.completeTreatment = wrapped;
+    try{ completeTreatment = wrapped; }catch(e){}
+  }
+
+  function showOtherSideActions(p, histSite, claimedSite, id, baseFn){
+    var claim = normSite(claimedSite) || oppositeSide(histSite) || '';
+    var guide =
+      'بیمار امروز ناحیه دیگری می‌گوید.\n\n'
+      + 'سابقه این پرونده: «' + (histSite || '—') + '»\n'
+      + 'ادعای امروز: «' + (claim || 'سمت دیگر') + '»\n\n'
+      + 'اگر همان مفصل است → حفظ سابقه و تزریق\n'
+      + 'اگر عضو/سمت دیگر است → سیکل جدید (پرونده جدا)';
+    showInAppActions({
+      title: 'بیمار سمت دیگر را می‌گوید',
+      message: guide,
+      okText: 'حفظ «' + (histSite || 'سابقه') + '» و تزریق',
+      onOk: function(){
+        if(histSite && normSite(p.site) !== histSite) p.site = histSite;
+        logSiteDecision(p, 'keep_historical_despite_claim', histSite, histSite,
+          'بیمار «' + (claim||'سمت دیگر') + '» گفت ولی با حفظ سابقه تزریق شد');
+        try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+        window.__prpSiteGatePassedFor = String(id);
+        try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+        try{ return baseFn.call(window, id); }catch(e){ try{ return baseFn(id); }catch(err){} }
+      },
+      cancelText: 'انصراف',
+      onCancel: function(){},
+      extraText: claim ? ('🔄 سیکل جدید «' + claim + '»') : '🔄 سیکل جدید',
+      onExtra: function(){
+        logSiteDecision(p, 'other_side_open_new_cycle', histSite, claim,
+          'بیمار سمت دیگر گفت؛ سیکل جدید باز شد');
+        try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+        openNewCycleForPatient(p, claim, 'اعلام سمت دیگر در روز تزریق');
+      }
+    });
+  }
+
+  // اگر v168 هنوز window.confirm دارد، آن را بی‌اثر کن (v170 بالاتر wrap کرده)
+  function neutralizeV168BrowserConfirm(){
+    var base = window.saveEditPatient;
+    // already handled by wrapSaveEditPatientInApp which sits on top when installed after
+  }
+
+  window.prpRunV170ScenarioTests = function(){
+    var results = [];
+    function ok(name, pass){ results.push({name:name, ok:!!pass}); }
+    ensureExtraBtn();
+    ok('دکمه سیکل جدید در مودال ساخته می‌شود', !!document.getElementById('msgExtraBtn'));
+    ok('تابع پیغام داخل برنامه موجود است', typeof window.prpShowInAppActions === 'function');
+    ok('تابع باز کردن سیکل جدید موجود است', typeof window.prpOpenNewCycleForPatient === 'function');
+    ok('سمت مقابل درست است', oppositeSide('زانو راست') === 'زانو چپ');
+    window.__PRP_V170_SCENARIO_TESTS = {
+      passed: results.filter(function(r){ return r.ok; }).length,
+      total: results.length,
+      results: results,
+      at: new Date().toISOString()
+    };
+    return window.__PRP_V170_SCENARIO_TESTS;
+  };
+
+  function install(){
+    ensureExtraBtn();
+    wrapSaveEditPatientInApp();
+    wrapCompleteTreatmentInApp();
+    neutralizeV168BrowserConfirm();
+    try{ window.prpRunV170ScenarioTests(); }catch(e){ console.error('v170 tests failed', e); }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 0);
+  setTimeout(install, 700);
+  setTimeout(install, 1800);
 })();
 </script>
 </body></html>
