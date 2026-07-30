@@ -1904,6 +1904,16 @@ body[data-current-tab="allList"] #bulkConfirmBtn{
   @media(max-width:760px){body[data-current-tab="crisisList"] #mainSearchRow > .flex.items-center.gap-3.w-full{flex-wrap:wrap !important;}body[data-current-tab="crisisList"] #mainSearchRow > .flex.items-center.gap-3.w-full > .relative.flex-1{min-width:0 !important;flex-basis:100% !important;}}
 </style>
 
+<!-- PRP v133: صف نجات نوبت‌های دوم و سوم تاریخ‌گذشته -->
+<style id="prp-v133-overdue-rescue">
+  #stageCounts .rescue{grid-column:1/-1;background:#be123c;color:#fff;border-color:#9f1239;}
+  #stageCounts .rescue.is-active{box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(190,18,60,.35);}
+  .row-overdue-rescue{background:#fff1f2 !important;border-right:5px solid #e11d48 !important;}
+  .overdue-rescue-chip{display:inline-flex;align-items:center;gap:4px;border:1px solid #fda4af;background:#fff1f2;color:#be123c;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:900;margin:2px 0 2px 4px;white-space:nowrap;}
+  #callRescueGuide{margin:8px 0 10px;padding:10px 12px;border:1px solid #fda4af;border-radius:14px;background:#fff1f2;color:#9f1239;font-size:11px;font-weight:800;line-height:1.8;}
+  #callRescueGuide strong{display:block;font-size:13px;color:#be123c;}
+</style>
+
 
 <!-- PRP v132: fixed header popovers above sticky toolbars -->
 <style id="prp-v132-header-popover-layer-fix">
@@ -1934,7 +1944,7 @@ body[data-current-tab="allList"] #bulkConfirmBtn{
 </div>
 <!-- ناحیه drag & drop برای import --> <div id="dropZoneOverlay" class="hidden fixed inset-0 z-[999] bg-blue-600/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4 pointer-events-none"> <div class="bg-white rounded-3xl shadow-2xl px-16 py-12 flex flex-col items-center gap-3"> <div class="text-6xl">📂</div> <div class="text-2xl font-extrabold text-blue-700">فایل را رها کنید</div> <div class="text-sm text-gray-500 font-bold">فایل JSON بک‌اپ برای بازیابی</div> </div> </div> <main class="flex-1 w-full max-w-screen-2xl mx-auto p-4 gap-4 grid grid-cols-1 lg:grid-cols-5 overflow-hidden"> <aside class="lg:col-span-1 space-y-4 flex flex-col overflow-y-auto pr-1"> <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4"> <div class="flex justify-between items-center mb-3"> <h4 class="text-xs font-extrabold text-gray-500 uppercase tracking-wider">روزهای تزریق فعال</h4> <button onclick="openModal(&#39;settingsModal&#39;)" class="text-blue-600 hover:bg-blue-50 p-1 rounded text-xs font-bold transition flex items-center gap-1">⚙️ تنظیم</button> </div> <div class="flex flex-col gap-3" id="activeDatesDisplay"></div></div> </div> </aside> <section class="lg:col-span-3 bg-white rounded-3xl shadow-xl shadow-gray-100 border border-gray-200 flex flex-col overflow-hidden"> <div class="flex border-b border-gray-100 bg-gray-50/50"> <button onclick="switchTab('callList')" id="tab-callList" class="flex-1 py-5 text-center text-gray-500 font-bold hover:bg-gray-100/50 transition tab-buttons text-sm md:text-base tab-active">📞 لیست تماس</button> <button onclick="switchTab('confirmedList')" id="tab-confirmedList" class="flex-1 py-5 text-center text-gray-500 font-bold hover:bg-gray-100/50 transition tab-buttons text-sm md:text-base">✅ لیست تایید شده</button> <button onclick="switchTab('allList')" id="tab-allList" class="flex-1 py-5 text-center text-gray-500 font-bold hover:bg-gray-100/50 transition tab-buttons text-sm md:text-base">📋 کل بیماران</button> </div> <div id="mainSearchRow" class="p-4 border-b border-gray-100 bg-white flex flex-col gap-3 no-print sticky top-0 z-20"> <div class="flex items-center gap-3 w-full"><div class="relative flex-1 w-full group"> <input type="text" id="searchInput" spellcheck="false" autocomplete="off" inputmode="search" placeholder="جستجو (نام، کدملی، موبایل)..." class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-4 pr-11 py-3 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition font-medium"> <div id="searchNotice" class="mt-2 text-xs font-black text-amber-700 hidden"></div>
 <span class="absolute left-4 top-3.5 text-gray-400 group-focus-within:text-blue-500 transition">🔍</span>
-</div> <input type="hidden" id="timeFilter" value="all" class="hidden"> <div class="flex gap-2"> <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2" id="sortControls"> <span class="text-xs font-bold text-gray-500 whitespace-nowrap">🔃 سورت:</span> <select id="sortSelect" onchange="setSortMode(this.value)" class="bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs font-bold text-gray-700 outline-none min-w-[190px]"> <option value="smart">🧠 هوشمند</option> <option value="stage1">🔢 نوبت اول</option> <option value="stage2">🔢 نوبت دوم</option> <option value="stage3">🔢 نوبت سوم</option> <option value="stage4">🔢 یادآور</option> <option value="actionTime">📅 موعد اقدام</option> <option value="overdueDays">⏰ عقب‌افتادگی</option> <option value="noAnswerCount">📵 تعداد بی‌جواب</option> <option value="lastCallDate">📞 آخرین تماس</option> <option value="callLaterAt">🕐 تماس بعدی</option> <option value="specialFollow">⚠️ پیگیری خاص</option> <option value="onlyWaitlist">🔖 لیست انتظار</option> <option value="fullName">👤 نام</option> <option value="regDate">📝 تاریخ ثبت</option> </select> <button id="sortDirBtn" onclick="toggleSortDir()" class="bg-white border border-gray-200 hover:bg-gray-100 rounded-lg px-2 py-1 text-xs font-black" title="تغییر جهت">⬆️</button> </div> <div id="stageCounts" class="flex items-center gap-1.5 flex-wrap text-[10px] font-black whitespace-nowrap"></div> <button id="excelBtn" onclick="exportToCSV()" class="bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 px-4 py-3 rounded-xl text-sm font-bold items-center gap-2 transition whitespace-nowrap hidden">📊 اکسل</button> <button id="printBtn" onclick="exportTwoColumnPrint()" class="bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-1 transition hidden">🖨️ ✔</button> <button id="blankFormBtn" onclick="openBlankForm()" class="bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-1 transition hidden" title="فرم خالی">📋</button> <button id="smsDateBtn" onclick="openBulkSmsSendPanel(currentFilterDate)" class="bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 px-4 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hidden" title="ارسال پیامک یادآوری به نفرات این تاریخ">📩</button> <button id="bulkConfirmBtn" onclick="bulkConfirmForDate()" class="bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 px-4 py-3 rounded-xl text-sm font-bold transition flex items-center hidden" title="تایید همه نفرات این تاریخ">✅</button> </div></div>
+</div> <input type="hidden" id="timeFilter" value="all" class="hidden"> <div class="flex gap-2"> <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2" id="sortControls"> <span class="text-xs font-bold text-gray-500 whitespace-nowrap">🔃 سورت:</span> <select id="sortSelect" onchange="setSortMode(this.value)" class="bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs font-bold text-gray-700 outline-none min-w-[190px]"> <option value="smart">🧠 هوشمند</option> <option value="overdueRescue">🛟 نجات نوبت ۲ و ۳</option> <option value="stage1">🔢 نوبت اول</option> <option value="stage2">🔢 نوبت دوم</option> <option value="stage3">🔢 نوبت سوم</option> <option value="stage4">🔢 یادآور</option> <option value="actionTime">📅 موعد اقدام</option> <option value="overdueDays">⏰ عقب‌افتادگی</option> <option value="noAnswerCount">📵 تعداد بی‌جواب</option> <option value="lastCallDate">📞 آخرین تماس</option> <option value="callLaterAt">🕐 تماس بعدی</option> <option value="specialFollow">⚠️ پیگیری خاص</option> <option value="onlyWaitlist">🔖 لیست انتظار</option> <option value="fullName">👤 نام</option> <option value="regDate">📝 تاریخ ثبت</option> </select> <button id="sortDirBtn" onclick="toggleSortDir()" class="bg-white border border-gray-200 hover:bg-gray-100 rounded-lg px-2 py-1 text-xs font-black" title="تغییر جهت">⬆️</button> </div> <div id="stageCounts" class="flex items-center gap-1.5 flex-wrap text-[10px] font-black whitespace-nowrap"></div> <button id="excelBtn" onclick="exportToCSV()" class="bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 px-4 py-3 rounded-xl text-sm font-bold items-center gap-2 transition whitespace-nowrap hidden">📊 اکسل</button> <button id="printBtn" onclick="exportTwoColumnPrint()" class="bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-1 transition hidden">🖨️ ✔</button> <button id="blankFormBtn" onclick="openBlankForm()" class="bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-1 transition hidden" title="فرم خالی">📋</button> <button id="smsDateBtn" onclick="openBulkSmsSendPanel(currentFilterDate)" class="bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 px-4 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hidden" title="ارسال پیامک یادآوری به نفرات این تاریخ">📩</button> <button id="bulkConfirmBtn" onclick="bulkConfirmForDate()" class="bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 px-4 py-3 rounded-xl text-sm font-bold transition flex items-center hidden" title="تایید همه نفرات این تاریخ">✅</button> </div></div>
 <div id="confirmedDateFilter" class="w-full hidden"> <div class="flex items-center gap-3 w-full bg-gray-50 rounded-2xl border border-gray-200 px-3 py-2"><span class="text-xs font-bold text-gray-500 whitespace-nowrap">📅 نمایش:</span> <div id="dateButtonsContainer" class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width:thin;scrollbar-color:#d1d5db transparent;"></div> <button onclick="clearDateFilter()" class="bg-white border border-gray-200 text-gray-500 hover:bg-gray-100 px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap mr-1">همه</button></div></div> </div>
 <!-- ═══════════════════════════════════════════ --> <!-- ═══ مودال ثبت نوبت ═══ -->
 <div id="appointmentBookingSection" style="display:none;position:fixed;inset:0;z-index:110;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);">
@@ -6050,6 +6060,7 @@ function copyCurrentSmsMessage(){
         var SORT_OPTIONS = {
             callList: [
                 { v:'smart',         l:'🧠 هوشمند',         tip:'اولویت: عقب‌افتاده → آتی → بی‌جواب → غیبت' },
+                { v:'overdueRescue', l:'🛟 نجات نوبت ۲ و ۳', tip:'فقط نوبت دوم و سوم تاریخ‌گذشته؛ بیشترین تأخیر و تلاش تماس بالاتر' },
                 { v:'stage1',        l:'🔢 نوبت اول',       tip:'فیلتر واقعی: بیماران نوبت اول؛ اول تاریخ‌گذشته‌ها' },
                 { v:'stage2',        l:'🔢 نوبت دوم',       tip:'فیلتر واقعی: بیماران نوبت دوم؛ اول تاریخ‌گذشته‌ها' },
                 { v:'stage3',        l:'🔢 نوبت سوم',       tip:'فیلتر واقعی: بیماران نوبت سوم؛ اول تاریخ‌گذشته‌ها' },
@@ -9486,6 +9497,27 @@ if(showNum){
             }
         }
 
+        function getOverdueRescueInfo(p){
+            var result = { eligible:false, overdueDays:0, stage:0, due:null };
+            if(!p || p.status === 'CONFIRMED' || p.status === 'ARCHIVED' || p.status === 'CONTACT_ISSUE') return result;
+            result.stage = parseInt(p.currentStage || p.stage || 0, 10) || 0;
+            if(result.stage !== 2 && result.stage !== 3) return result;
+            var rawDue = p.followupDueDate || p.idealNextDate || p.nextAppointment;
+            if(!rawDue) return result;
+            var due = dateFromMaybeJalali(rawDue);
+            if(!due || isNaN(due.getTime())) return result;
+            due.setHours(0,0,0,0);
+            var today = new Date(); today.setHours(0,0,0,0);
+            result.overdueDays = Math.floor((today.getTime() - due.getTime()) / 86400000);
+            result.due = due;
+            result.eligible = result.overdueDays > 0;
+            return result;
+        }
+
+        function isOverdueRescuePatient(p){
+            return getOverdueRescueInfo(p).eligible;
+        }
+
         function setupCallInfoToggle(){
             const btn = document.getElementById('callInfoToggleBtn');
             const panel = document.getElementById('callInfoPanel');
@@ -9993,6 +10025,8 @@ else txt = toPersianDigits(String(window.pendingCallLaterDays)) + ' روز بع�
             if(p.lastCallOutcome === 'OUT_OF_REACH') add(9, 'خاموش/در دسترس نیست');
             if(p.lastCallOutcome === 'BUSY') add(6, 'مشغول بوده');
             if(p.lastAbsentDate) add(12, 'غیبت قبلی');
+            var rescueInfo = getOverdueRescueInfo(p);
+            if(rescueInfo.eligible) add(25, 'نجات نوبت ' + rescueInfo.stage);
             if(p.lastCallDate){
                 var lc = new Date(p.lastCallDate);
                 if(!isNaN(lc.getTime()) && lc.setHours(0,0,0,0) === today.getTime()) add(-18, 'امروز تماس گرفته شده');
@@ -10027,9 +10061,11 @@ else txt = toPersianDigits(String(window.pendingCallLaterDays)) + ' روز بع�
             }
             el.classList.remove('hidden');
             var counts = {1:0,2:0,3:0,4:0};
+            var rescueCount = 0;
             (list || []).forEach(function(p){
                 var st = parseInt(p.currentStage || p.stage || 0, 10) || 0;
                 if(counts.hasOwnProperty(st)) counts[st]++;
+                if(isOverdueRescuePatient(p)) rescueCount++;
             });
             var active = (sortState && sortState.col) ? sortState.col : '';
             function chip(stage, cls, label, title){
@@ -10040,7 +10076,8 @@ else txt = toPersianDigits(String(window.pendingCallLaterDays)) + ' روز بع�
                 chip(1, 's1', 'اول', 'نمایش و سورت نوبت اول') +
                 chip(2, 's2', 'دوم', 'نمایش و سورت نوبت دوم') +
                 chip(3, 's3', 'سوم', 'نمایش و سورت نوبت سوم') +
-                chip(4, 's4', 'یادآور', 'نمایش و سورت یادآور');
+                chip(4, 's4', 'یادآور', 'نمایش و سورت یادآور') +
+                '<button type="button" class="stage-count-chip rescue'+(active === 'overdueRescue' ? ' is-active' : '')+'" title="فقط نوبت دوم و سوم تاریخ‌گذشته" onclick="setSortMode(\'overdueRescue\')">🛟 صف نجات (' + toPersianDigits(rescueCount) + ')</button>';
         }
 
         function setStageSort(stage){
@@ -10121,6 +10158,21 @@ var cache = getCallListBaseCached(tfVal);
     // فقط لیست انتظار (نوبت خالی / اسلات خالی)
     list = cache.smart.slice().filter(function(p){
       return !!p.isWaitlist;
+    });
+    return;
+  }
+  if(col === 'overdueRescue'){
+    var rescueToday = new Date(); rescueToday.setHours(0,0,0,0);
+    list = cache.base.slice().filter(isOverdueRescuePatient);
+    list.sort(function(a,b){
+      var aCalled = a.lastCallDate && new Date(a.lastCallDate).setHours(0,0,0,0) === rescueToday.getTime();
+      var bCalled = b.lastCallDate && new Date(b.lastCallDate).setHours(0,0,0,0) === rescueToday.getTime();
+      if(aCalled && !bCalled) return 1;
+      if(!aCalled && bCalled) return -1;
+      var ai = getOverdueRescueInfo(a), bi = getOverdueRescueInfo(b);
+      if(ai.overdueDays !== bi.overdueDays) return bi.overdueDays - ai.overdueDays;
+      if(ai.stage !== bi.stage) return bi.stage - ai.stage;
+      return Number(b.callAttempts||0) - Number(a.callAttempts||0);
     });
     return;
   }
@@ -10435,6 +10487,12 @@ if (currentTab === 'callList') {
     if(aDecision && !bDecision) return -1;
     if(!aDecision && bDecision) return 1;
 
+    // نوبت‌های دوم و سوم تاریخ‌گذشته قبل از گروه‌های کم‌اولویت دیده شوند.
+    var aRescue = isOverdueRescuePatient(a);
+    var bRescue = isOverdueRescuePatient(b);
+    if(aRescue && !bRescue) return -1;
+    if(!aRescue && bRescue) return 1;
+
     // Absent: always last (older absent first)
     var aAbsent = !!a.lastAbsentDate;
     var bAbsent = !!b.lastAbsentDate;
@@ -10562,6 +10620,7 @@ if(currentTab === 'confirmedList' || currentTab === 'callList' || currentTab ===
                 if(p.isEmergency) tr.classList.add('bg-red-50');
                 if(p.isVip) tr.classList.add('bg-amber-50');
                 if(currentTab === 'crisisList') tr.classList.add('row-crisis');
+                if((currentTab === 'callList' || currentTab === 'crisisList') && isOverdueRescuePatient(p)) tr.classList.add('row-overdue-rescue');
                 if((currentTab === 'callList' || currentTab === 'crisisList') && ((p.lastCallDate && new Date(p.lastCallDate).setHours(0,0,0,0) === now.getTime()) || p.lastAbsentDate)) {
                     tr.classList.add('opacity-60', 'bg-gray-50', 'grayscale');
                 }
@@ -10604,6 +10663,8 @@ try{ badges += prpSiblingCaseBadgeHtml(p, 'row'); }catch(e){}
 if(p.absentCount > 0) badges += `<span class="bg-rose-100 text-rose-700 text-[10px] px-2 py-0.5 rounded-full ml-2 font-bold border border-rose-200">${p.absentCount} غیبت</span>`;
 var _smsLblMap = {NO_ANSWER:'پاسخ نداد', BUSY:'مشغول', OUT_OF_REACH:'خاموش'};
 if(p.lastUnreachableSmsAt){ var _smsLbl = _smsLblMap[p.lastUnreachableSmsType]||'عدم دسترسی'; badges += `<span class="bg-violet-100 text-violet-700 text-[10px] px-2 py-0.5 rounded-full ml-2 font-bold border border-violet-200" title="پیامک ارسال شد — علت: ${_smsLbl}">📩 ${_smsLbl}</span>`; }
+            var _rowRescueInfo = getOverdueRescueInfo(p);
+            if(_rowRescueInfo.eligible) badges += `<span class="overdue-rescue-chip" title="این بیمار در صف نجات تماس است">🛟 نوبت ${toPersianDigits(_rowRescueInfo.stage)} · ${toPersianDigits(_rowRescueInfo.overdueDays)} روز تأخیر</span>`;
 
             var callInfo = '';
             if(currentTab === 'callList' || currentTab === 'crisisList') {
@@ -10654,7 +10715,7 @@ if(p.lastUnreachableSmsAt){ var _smsLbl = _smsLblMap[p.lastUnreachableSmsType]||
                 metaHtml += `<span class="px-2 py-0.5 rounded-lg bg-gray-200 text-gray-700 text-[10px] font-black ml-1" title="${_archReason}${_archDate}">🗂️ بایگانی${_archReason ? ' — '+_archReason : ''}${_archDate}</span>`;
             }
             if(p.status==='NEEDS_DECISION' || p.needsDecision){
-                metaHtml += `<span class="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-black ml-1">بایگانی خودکار</span>`;
+                metaHtml += `<span class="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-black ml-1">${p.rescueEscalatedAt ? 'نیاز به تصمیم — صف نجات' : 'بایگانی خودکار'}</span>`;
             }
             if(currentTab === 'crisisList'){
                 var ci = p.__crisisInfo || prpCrisisInfo(p);
@@ -13944,6 +14005,7 @@ function copyPatientToNew(id){
         </div>
       </div>
     </div>
+    <div id="callRescueGuide" class="hidden"></div>
 
     <div class="prp-call-v2-actions">
       <div class="prp-call-v2-section-label" style="grid-column:1/-1;">✅ جواب داد</div>
@@ -19849,7 +19911,7 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
     var n = parseInt(raw,10);
     return (isNaN(n) || n < 0) ? null : n;
   }
-  function makeLaterDate(type){
+  function makeLaterDate(type, p, attempt){
     var days = readDays();
     var now = new Date();
     var d = new Date(now);
@@ -19857,6 +19919,13 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       d.setDate(d.getDate() + days);
       if(days <= 0) d.setHours(18,0,0,0);
       else d.setHours(9,0,0,0);
+      return d;
+    }
+    var rescue = false;
+    try { rescue = typeof isOverdueRescuePatient === 'function' && isOverdueRescuePatient(p); } catch(e){}
+    if(rescue && (type === 'NO_ANSWER' || type === 'OUT_OF_REACH' || type === 'BUSY')){
+      d.setDate(d.getDate() + (attempt <= 1 ? 1 : 2));
+      d.setHours(attempt <= 1 ? 17 : 10,0,0,0);
       return d;
     }
     if(type === 'BUSY'){
@@ -19919,6 +19988,29 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
     var lim = fa(String(_autoArchiveLimit));
     var h1 = document.getElementById('noAnswerHint'); if(h1) h1.textContent = 'تلاش تا '+lim+' بار، سپس بایگانی';
     var h2 = document.getElementById('outOfReachHint'); if(h2) h2.textContent = 'تلاش تا '+lim+' بار، سپس بایگانی';
+  }
+
+  function _renderRescueGuide(p){
+    var box = document.getElementById('callRescueGuide');
+    if(!box) return;
+    var info = null;
+    try { info = getOverdueRescueInfo(p); } catch(e){}
+    if(!info || !info.eligible){
+      box.classList.add('hidden');
+      _updateArchiveHints();
+      return;
+    }
+    var attempts = Number(p.callAttempts||0) + 1;
+    var suggestion = attempts <= 1
+      ? 'تماس اول: علت عقب‌افتادن را بپرسید و همان لحظه نزدیک‌ترین نوبت را پیشنهاد دهید.'
+      : (attempts === 2
+        ? 'تماس دوم: در ساعت متفاوت تماس بگیرید و پیامک کوتاه یادآوری هم ارسال کنید.'
+        : 'تماس سوم یا بیشتر: بیمار حذف نمی‌شود؛ نتیجه را ثبت و برای تصمیم نهایی در صف نجات نگه دارید.');
+    box.innerHTML = '<strong>🛟 بیمار صف نجات — نوبت '+fa(info.stage)+'، '+fa(info.overdueDays)+' روز تأخیر</strong>'
+      +'تلاش پیشنهادی '+fa(attempts)+': '+suggestion;
+    box.classList.remove('hidden');
+    var h1 = document.getElementById('noAnswerHint'); if(h1) h1.textContent = 'زمان‌بندی تماس بعدی؛ بدون بایگانی خودکار';
+    var h2 = document.getElementById('outOfReachHint'); if(h2) h2.textContent = 'در صف نجات می‌ماند و حذف نمی‌شود';
   }
   document.addEventListener('DOMContentLoaded', function(){ try{ _updateArchiveHints(); }catch(e){} });
 
@@ -19998,6 +20090,7 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
     var d = document.getElementById('callLaterDaysInputInline'); if(d) d.value = '';
     var pv = document.getElementById('callLaterDaysPreviewInline'); if(pv) pv.innerText = '';
     try { _renderTagUI(p.tags||[]); } catch(e){}
+    try { _renderRescueGuide(p); } catch(e){}
     try { openModal('callResultModal'); } catch(e){ document.getElementById('callResultModal').classList.remove('hidden'); }
     try { syncAutoNextToggle(); } catch(e){}
   };
@@ -20023,6 +20116,7 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
 
     var attemptForType = 0;
     var reachedLimit = false;
+    var rescueEscalatedNow = false;
 
     if(retryableCallTypes[type]){
       p.callOutcomeCounts[type] = (p.callOutcomeCounts[type] || 0) + 1;
@@ -20031,7 +20125,16 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       if(type === 'NO_ANSWER') p.noAnswerCount = (p.noAnswerCount || 0) + 1;
       p.unreachableCount = (p.unreachableCount || 0) + 1;
 
-      if(attemptForType >= _autoArchiveLimit){
+      if(attemptForType >= _autoArchiveLimit && isOverdueRescuePatient(p)){
+        reachedLimit = true;
+        rescueEscalatedNow = true;
+        p.status = 'NEEDS_DECISION';
+        p.needsDecision = true;
+        p.doNotCall = false;
+        p.callLaterAt = null;
+        p.rescueEscalatedAt = now.toISOString();
+        p.rescueEscalationReason = label;
+      } else if(attemptForType >= _autoArchiveLimit){
         reachedLimit = true;
         p.status = 'ARCHIVED';
         p.nextAppointment = null;
@@ -20048,7 +20151,7 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       } else {
         if(p.status !== 'CONFIRMED' && p.status !== 'ARCHIVED') p.status = 'PENDING_CALL';
         p.needsDecision = false;
-        var ld = makeLaterDate(type);
+        var ld = makeLaterDate(type, p, attemptForType);
         p.callLaterAt = ld ? ld.toISOString() : null;
       }
     } else {
@@ -20101,7 +20204,7 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
 
     var historyNote = callTimeLabel(now) + ' — ' + label;
     if(retryableCallTypes[type]) historyNote += ' — تلاش ' + fa(String(attemptForType)) + '/' + fa(String(_autoArchiveLimit));
-    if(reachedLimit) historyNote += ' — بعد از ۳ تلاش، خودکار بایگانی شد';
+    if(reachedLimit) historyNote += rescueEscalatedNow ? ' — به صف نجات و تصمیم نهایی ارجاع شد' : ' — بعد از '+fa(String(_autoArchiveLimit))+' تلاش، خودکار بایگانی شد';
     if(p.callLaterAt) historyNote += ' — تماس بعدی: ' + laterLabel(p.callLaterAt);
     if(note) historyNote += ' — ' + note;
 
@@ -20118,7 +20221,14 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       try { logAction('ARCHIVE', { id:p.id, name:p.fullName||'', note:'انصراف / لغو از تماس', dateJ:(typeof getTodayJalali==='function'?getTodayJalali():'') }); } catch(e){}
     }
     if(reachedLimit){
-      try { logAction('ARCHIVE', { id:p.id, name:p.fullName||'', note:'بایگانی خودکار بعد از ۳ تلاش تماس: ' + label, dateJ:(typeof getTodayJalali==='function'?getTodayJalali():'') }); } catch(e){}
+      try {
+        logAction(rescueEscalatedNow ? 'CALL_RESCUE_ESCALATION' : 'ARCHIVE', {
+          id:p.id,
+          name:p.fullName||'',
+          note:rescueEscalatedNow ? ('ارجاع به صف نجات بعد از '+fa(String(attemptForType))+' تلاش: '+label) : ('بایگانی خودکار بعد از '+fa(String(attemptForType))+' تلاش تماس: '+label),
+          dateJ:(typeof getTodayJalali==='function'?getTodayJalali():'')
+        });
+      } catch(e){}
     }
 
     var nextId = null;
@@ -20161,7 +20271,11 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       return;
     }
 
-    try { showMsg(reachedLimit ? 'بایگانی شد' : 'ثبت شد', reachedLimit ? 'این بیمار ۳ بار در این وضعیت ثبت شد و خودکار بایگانی شد.' : 'نتیجه تماس ذخیره شد.'); } catch(e){}
+    try {
+      showMsg(rescueEscalatedNow ? 'در صف نجات ماند' : (reachedLimit ? 'بایگانی شد' : 'ثبت شد'),
+        rescueEscalatedNow ? 'این بیمار نوبت دوم/سوم حذف نشد و برای پیگیری نهایی در صف نجات باقی ماند.'
+          : (reachedLimit ? 'این بیمار '+fa(String(_autoArchiveLimit))+' بار در این وضعیت ثبت شد و خودکار بایگانی شد.' : 'نتیجه تماس ذخیره شد.'));
+    } catch(e){}
     if(nextId && window.autoNextEnabled){
       setTimeout(function(){ try { openCallResultModal(nextId); } catch(e){} }, 150);
     }
