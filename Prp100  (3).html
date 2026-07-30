@@ -2241,8 +2241,10 @@ body[data-current-tab="allList"] #bulkConfirmBtn{
         // Normalize Jalali date key to YYYY/MM/DD (English digits) for reliable comparisons.
         function normalizeJalaliDateKey(v){
             var s = toEnglishDigits(String(v || '')).trim();
-            if(!s) return '';
+            // '-' / '—' فقط برای نمایش خالی‌اند و نباید به‌عنوان تاریخ معتبر بمانند
+            if(!s || s === '-' || s === '—' || s === '–' || s === '/' || s === '.' || s === '—') return '';
             s = s.replace(/\-/g, '/');
+            if(!s || s === '/') return '';
             var m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
             if(!m) return s;
             var jy = parseInt(m[1], 10);
@@ -2405,7 +2407,16 @@ function gregorianToJalali(gy,gm,gd){
             }catch(e){return '';}
         }
 
-        function getDayName(dateString) { const d = jalaliToGregorian(dateString); return d.toLocaleDateString('fa-IR', { weekday: 'long' }); }
+        function getDayName(dateString) {
+            try {
+                if(!dateString || dateString === '-' || dateString === '—' || dateString === '–') return '';
+                var key = (typeof normalizeJalaliDateKey === 'function') ? normalizeJalaliDateKey(dateString) : String(dateString || '').trim();
+                if(!key) return '';
+                const d = jalaliToGregorian(key);
+                if(!d || isNaN(d.getTime())) return '';
+                return d.toLocaleDateString('fa-IR', { weekday: 'long' });
+            } catch(e){ return ''; }
+        }
 
         function normalizeText(s){
             if(!s) return '';
@@ -15329,7 +15340,17 @@ function apptDefaultBookingTarget(p) {
 
 function apptGetBookingTargetInfo(p) {
     var apptJ = '';
-    try { apptJ = jalaliStringFromMaybe(p && p.nextAppointment) || ''; } catch(e) {}
+    try {
+        apptJ = jalaliStringFromMaybe(p && p.nextAppointment) || '';
+        if (apptJ === '-' || apptJ === '—' || apptJ === '–') apptJ = '';
+        if (typeof normalizeJalaliDateKey === 'function') apptJ = normalizeJalaliDateKey(apptJ) || '';
+    } catch(e) { apptJ = ''; }
+    var idealRaw = '';
+    try {
+        idealRaw = (p && p.idealNextDate) ? (jalaliStringFromMaybe(p.idealNextDate) || String(p.idealNextDate || '')) : '';
+        if (idealRaw === '-' || idealRaw === '—' || idealRaw === '–') idealRaw = '';
+        if (typeof normalizeJalaliDateKey === 'function') idealRaw = normalizeJalaliDateKey(idealRaw) || '';
+    } catch(e) { idealRaw = ''; }
     var st = Number((p && p.currentStage) || 1) || 1;
     var mode = _apptBookingTarget || 'current';
     if (mode === 'nextStage' && p && st >= 1 && st <= 3 && apptJ) {
@@ -15338,6 +15359,11 @@ function apptGetBookingTargetInfo(p) {
         var rawIdealJ = addJalaliMonths(apptJ, gap);
         var plannedJ = '';
         try { plannedJ = prpGetStageDateFromPlan(p.stageAppointments || {}, nextStage); } catch(e) {}
+        if (plannedJ === '-' || plannedJ === '—' || plannedJ === '–') plannedJ = '';
+        if (typeof normalizeJalaliDateKey === 'function') {
+            plannedJ = normalizeJalaliDateKey(plannedJ) || '';
+            rawIdealJ = normalizeJalaliDateKey(rawIdealJ) || rawIdealJ;
+        }
         var label = (nextStage <= 3) ? ('مرحله ' + nextStage) : 'یادآور ۶ ماهه';
         return {
             mode: 'nextStage',
@@ -15345,8 +15371,8 @@ function apptGetBookingTargetInfo(p) {
             nextStage: nextStage,
             stageLabel: label,
             baseInjectionJ: apptJ,
-            baseDateJ: plannedJ || rawIdealJ,
-            idealDateJ: plannedJ || rawIdealJ,
+            baseDateJ: plannedJ || rawIdealJ || getTodayJalali(),
+            idealDateJ: plannedJ || rawIdealJ || '',
             rawIdealDateJ: rawIdealJ,
             plannedDateJ: plannedJ || '',
             gapMonths: gap,
@@ -15359,8 +15385,8 @@ function apptGetBookingTargetInfo(p) {
         nextStage: st,
         stageLabel: (st > 4 ? 'پایان' : ('مرحله ' + st)),
         baseInjectionJ: apptJ,
-        baseDateJ: apptJ || ((p && p.idealNextDate) ? p.idealNextDate : getTodayJalali()),
-        idealDateJ: (p && p.idealNextDate) ? p.idealNextDate : '',
+        baseDateJ: apptJ || idealRaw || getTodayJalali(),
+        idealDateJ: idealRaw || '',
         preserveCurrent: false
     };
 }
@@ -15657,15 +15683,23 @@ function apptSelectPatient(id, keepTarget) {
         (p.phone ? p.phone + ' · ' : '') + stageLabel + ' · ' + (statusMap[p.status] || p.status || '') + ' · ' + prpBookingBadgeHtml(p) + prpStagePlanMiniHtml(p) + prpSiblingCaseBadgeHtml(p, 'meta');
 
     // ── نمایش نوبت فعلی بیمار ──
-    var apptJ = jalaliStringFromMaybe(p.nextAppointment);
-    var apptG = p.nextAppointment ? dateFromMaybeJalali(p.nextAppointment) : null;
+    // jalaliStringFromMaybe برای خالی بودن '-' برمی‌گرداند؛ برای منطق نوبت باید خالی شود
+    var apptJ = '';
+    try {
+        apptJ = jalaliStringFromMaybe(p.nextAppointment) || '';
+        if (apptJ === '-' || apptJ === '—' || apptJ === '–') apptJ = '';
+        if (typeof normalizeJalaliDateKey === 'function') apptJ = normalizeJalaliDateKey(apptJ) || '';
+    } catch(e) { apptJ = ''; }
+    var apptG = (p.nextAppointment && apptJ) ? dateFromMaybeJalali(p.nextAppointment) : null;
     var todayRef = new Date(); // مرجع امروز برای همه محاسبات این تابع
 
     // apptDiffDays(a,b) → روزهای b منهای a → مثبت = b در آینده
     var diff = apptG ? apptDiffDays(todayRef, apptG) : null;
 
     document.getElementById('apptCurrentDate').textContent = apptJ || '—';
-    document.getElementById('apptCurrentDayName').textContent = apptJ ? '(' + getDayName(apptJ) + ')' : '';
+    var dayNm = '';
+    try { dayNm = apptJ ? getDayName(apptJ) : ''; } catch(e) { dayNm = ''; }
+    document.getElementById('apptCurrentDayName').textContent = dayNm ? ('(' + dayNm + ')') : '';
 
     var diffEl = document.getElementById('apptCurrentDiff');
     if (diff !== null) {
@@ -15680,8 +15714,19 @@ function apptSelectPatient(id, keepTarget) {
     // ── محاسبه پیشنهادها ──
     var targetInfo = apptGetBookingTargetInfo(p);
     var baseDate = (targetInfo && targetInfo.baseDateJ) || apptJ || getTodayJalali();
+    try {
+        if (baseDate === '-' || baseDate === '—' || baseDate === '–') baseDate = '';
+        if (typeof normalizeJalaliDateKey === 'function') baseDate = normalizeJalaliDateKey(baseDate) || '';
+        if (!baseDate) baseDate = getTodayJalali();
+    } catch(e) { baseDate = getTodayJalali(); }
     var bookingType = (targetInfo && targetInfo.mode === 'nextStage') ? 'active' : prpGetPatientBookingType(p);
     var suggestions = apptFindNearestSatWed(baseDate, bookingType, p.id);
+    if (!suggestions || (!suggestions.all && !suggestions.sat && !suggestions.wed)) {
+        suggestions = { sat:null, wed:null, all:[] };
+    }
+    if ((!suggestions.all || !suggestions.all.length) && !suggestions.sat && !suggestions.wed) {
+        try { suggestions = apptFindNearestSatWed(getTodayJalali(), bookingType, p.id) || suggestions; } catch(e) {}
+    }
 
     var suggestBox = document.getElementById('apptSuggestBox');
     var suggestCards = document.getElementById('apptSuggestCards');
@@ -17621,7 +17666,17 @@ window.openModal = function(id) {
     window.apptDefaultBookingTarget = function(){ return 'current'; };
     window.apptGetBookingTargetInfo = function(p){
         var apptJ = '';
-        try { apptJ = jalaliStringFromMaybe(p && p.nextAppointment) || ''; } catch(e) {}
+        try {
+            apptJ = jalaliStringFromMaybe(p && p.nextAppointment) || '';
+            if (apptJ === '-' || apptJ === '—' || apptJ === '–') apptJ = '';
+            if (typeof normalizeJalaliDateKey === 'function') apptJ = normalizeJalaliDateKey(apptJ) || '';
+        } catch(e) { apptJ = ''; }
+        var idealRaw = '';
+        try {
+            idealRaw = (p && p.idealNextDate) ? (jalaliStringFromMaybe(p.idealNextDate) || String(p.idealNextDate || '')) : '';
+            if (idealRaw === '-' || idealRaw === '—' || idealRaw === '–') idealRaw = '';
+            if (typeof normalizeJalaliDateKey === 'function') idealRaw = normalizeJalaliDateKey(idealRaw) || '';
+        } catch(e) { idealRaw = ''; }
         var st = Number((p && p.currentStage) || 1) || 1;
         return {
             mode:'current',
@@ -17629,8 +17684,8 @@ window.openModal = function(id) {
             nextStage:st,
             stageLabel:(st > 4 ? 'پایان' : ('مرحله ' + st)),
             baseInjectionJ:apptJ,
-            baseDateJ:apptJ || ((p && p.idealNextDate) ? p.idealNextDate : getTodayJalali()),
-            idealDateJ:(p && p.idealNextDate) ? p.idealNextDate : '',
+            baseDateJ:apptJ || idealRaw || getTodayJalali(),
+            idealDateJ:idealRaw || '',
             preserveCurrent:false
         };
     };
@@ -32488,5 +32543,155 @@ main{
   setTimeout(install, 2000);
 })();
 </script>
-</body></html>
 
+<!-- PRP v173: پیشنهاد نوبت برای بیمار بایگانی بدون نوبت (جلوگیری از کرش '-') -->
+<script id="prp-v173-archive-appt-suggestions">
+(function(){
+  'use strict';
+  if (window.__PRP_V173_ARCHIVE_APPT__) return;
+  window.__PRP_V173_ARCHIVE_APPT__ = true;
+
+  function validJ(v){
+    try {
+      if (v == null || v === '' || v === '-' || v === '—' || v === '–') return '';
+      if (typeof normalizeJalaliDateKey === 'function') return normalizeJalaliDateKey(v) || '';
+      var s = String(v).trim();
+      return /^\d{4}\/\d{1,2}\/\d{1,2}$/.test(s) ? s : '';
+    } catch(e){ return ''; }
+  }
+
+  // کمربند ایمنی روی getDayName
+  try {
+    var prevGdn = window.getDayName || (typeof getDayName === 'function' ? getDayName : null);
+    if (typeof prevGdn === 'function' && !prevGdn.__prpV173Safe) {
+      var safeGdn = function(dateString){
+        try {
+          if (!validJ(dateString)) return '';
+          var out = prevGdn(validJ(dateString));
+          return out || '';
+        } catch(e){ return ''; }
+      };
+      safeGdn.__prpV173Safe = true;
+      window.getDayName = safeGdn;
+      try { getDayName = safeGdn; } catch(e) {}
+    }
+  } catch(e) {}
+
+  function wrapSelect(){
+    var base = window.apptSelectPatient || (typeof apptSelectPatient === 'function' ? apptSelectPatient : null);
+    if (typeof base !== 'function' || base.__prpV173Wrapped) return;
+    var wrapped = function(id, keepTarget){
+      try {
+        return base.apply(this, arguments);
+      } catch (err) {
+        console.error('apptSelectPatient v173 fallback', err);
+        try {
+          var p = (patients || []).find(function(x){ return String(x.id) === String(id); });
+          if (!p) throw err;
+          window._apptSelectedPatientId = id;
+          var card = document.getElementById('apptPatientCard');
+          if (card) card.style.display = '';
+          var nameEl = document.getElementById('apptPatientName');
+          if (nameEl) nameEl.textContent = p.fullName || '—';
+          var cur = document.getElementById('apptCurrentDate');
+          if (cur) cur.textContent = '—';
+          var dayEl = document.getElementById('apptCurrentDayName');
+          if (dayEl) dayEl.textContent = '';
+          var suggestBox = document.getElementById('apptSuggestBox');
+          var suggestCards = document.getElementById('apptSuggestCards');
+          if (suggestBox) suggestBox.style.display = 'flex';
+          var todayJ = (typeof getTodayJalali === 'function') ? getTodayJalali() : '';
+          var bookingType = 'new';
+          try { bookingType = (typeof prpGetPatientBookingType === 'function') ? prpGetPatientBookingType(p) : 'new'; } catch(e) {}
+          var sug = { all: [] };
+          try { sug = (typeof apptFindNearestSatWed === 'function') ? (apptFindNearestSatWed(todayJ, bookingType, p.id) || sug) : sug; } catch(e) {}
+          var all = (sug.all && sug.all.length) ? sug.all : [sug.sat, sug.wed].filter(Boolean);
+          if (suggestCards) {
+            if (!all.length) {
+              suggestCards.innerHTML = '<div style="padding:14px;color:#b45309;font-weight:900;font-size:12px;">روز پیشنهادی فعالی پیدا نشد. روزهای فعال را در تنظیمات/تقویم بررسی کنید.</div>';
+            } else {
+              suggestCards.innerHTML = all.slice(0, 8).map(function(s){
+                var j = s.jalali || '';
+                var t = s.type || '';
+                return '<button type="button" class="appt-suggest-card" data-jalali="'+j+'" onclick="apptSelectDate(\''+j+'\')" style="text-align:right;padding:12px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;font-weight:900;">'
+                  + '<div style="font-size:13px;">' + (typeof toPersianDigits==='function'?toPersianDigits(j):j) + '</div>'
+                  + '<div style="font-size:11px;color:#1d4ed8;margin-top:4px;">' + t + '</div></button>';
+              }).join('');
+            }
+          }
+        } catch(e2) {
+          console.error('v173 fallback failed', e2);
+          throw err;
+        }
+      }
+    };
+    wrapped.__prpV173Wrapped = true;
+    try { Object.keys(base).forEach(function(k){ try{ wrapped[k]=base[k]; }catch(e){} }); } catch(e) {}
+    window.apptSelectPatient = wrapped;
+    try { apptSelectPatient = wrapped; } catch(e) {}
+  }
+
+  window.prpRunV173ArchiveApptTest = function(){
+    var results = [];
+    function ok(name, pass, detail){ results.push({name:name, ok:!!pass, detail:detail||''}); }
+    try {
+      ok('getDayName روی "-" کرش نمی‌کند', (function(){ try { var x = getDayName('-'); return x === '' || typeof x === 'string'; } catch(e){ return false; } })());
+      ok('normalizeJalaliDateKey("-") خالی است', (typeof normalizeJalaliDateKey==='function') && normalizeJalaliDateKey('-') === '');
+      var fake = {
+        id: '__v173_archive_test__',
+        fullName: 'تست بایگانی v173',
+        phone: '09120000000',
+        currentStage: 2,
+        status: 'ARCHIVED',
+        archiveReason: '۰۰',
+        nextAppointment: null,
+        idealNextDate: null,
+        history: []
+      };
+      var prev = window.patients;
+      window.patients = [fake];
+      try { patients = window.patients; } catch(e) {}
+      // ensure DOM pieces exist
+      ['apptPatientCard','apptPatientName','apptPatientMeta','apptCurrentDate','apptCurrentDayName','apptCurrentDiff','apptSuggestBox','apptSuggestCards','apptHolidayNote','apptTargetBox','apptConfirmBox','apptSuccessBox'].forEach(function(id){
+        if (!document.getElementById(id)) {
+          var el = document.createElement(id === 'apptSuggestCards' || id === 'apptHolidayNote' || id === 'apptPatientMeta' || id === 'apptCurrentDiff' ? 'div' : 'div');
+          el.id = id;
+          el.style.display = 'none';
+          document.body.appendChild(el);
+        }
+      });
+      var threw = false;
+      try { apptSelectPatient(fake.id); } catch(e){ threw = true; console.error(e); }
+      ok('apptSelectPatient برای ARCHIVED بدون نوبت کرش نمی‌کند', !threw);
+      var box = document.getElementById('apptSuggestBox');
+      ok('باکس پیشنهاد نمایش داده می‌شود', !!(box && box.style.display !== 'none'));
+      var cards = document.getElementById('apptSuggestCards');
+      var hasCards = !!(cards && ((cards.children && cards.children.length) || (cards.innerHTML || '').trim()));
+      ok('کارت پیشنهاد ساخته می‌شود', hasCards);
+      window.patients = prev;
+      try { patients = prev; } catch(e) {}
+    } catch(e){
+      ok('تست بدون خطای غیرمنتظره', false, String(e && e.message || e));
+    }
+    window.__PRP_V173_ARCHIVE_APPT_TESTS = {
+      passed: results.filter(function(r){ return r.ok; }).length,
+      total: results.length,
+      results: results,
+      at: new Date().toISOString()
+    };
+    return window.__PRP_V173_ARCHIVE_APPT_TESTS;
+  };
+
+  function install(){
+    wrapSelect();
+    try { window.prpRunV173ArchiveApptTest(); } catch(e){ console.error('v173 tests failed', e); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 0);
+  setTimeout(install, 900);
+  setTimeout(install, 2200);
+})();
+</script>
+
+</body></html>
