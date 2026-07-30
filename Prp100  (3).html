@@ -10747,6 +10747,7 @@ if(p.lastUnreachableSmsAt){ var _smsLbl = _smsLblMap[p.lastUnreachableSmsType]||
                     if(p.status === 'ARCHIVED'){
                         btns = `<div class="flex flex-col items-center gap-1 w-full">
                           <div class="flex items-center justify-center gap-1 flex-wrap">
+                            <button class="text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" onclick="openApptModalForPatient('${p.id}')" title="ثبت نوبت و خروج از بایگانی">📅 ثبت نوبت</button>
                             <button class="text-gray-400 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" onclick="startNewCycle('${p.id}')">🔄 ناحیه جدید</button>
                             <button class="text-gray-400 hover:text-orange-600 p-1.5 transition rounded-lg hover:bg-orange-50" onclick="moveBackToCallList('${p.id}')" title="بازگشت به لیست تماس">↩️</button>
                           </div>
@@ -29668,4 +29669,579 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
   }
 })();
 </script>
+
+<!-- PRP v168: بایگانی→لیست تایید + یکپارچگی ناحیه تزریق (چپ/راست) -->
+<script id="prp-v168-archive-confirm-site-integrity">
+(function(){
+  'use strict';
+  if(window.__PRP_V168_ARCHIVE_CONFIRM_SITE__) return;
+  window.__PRP_V168_ARCHIVE_CONFIRM_SITE__ = true;
+
+  function fa(v){
+    try{ return (typeof toPersianDigits === 'function') ? toPersianDigits(String(v)) : String(v); }
+    catch(e){ return String(v); }
+  }
+  function dateKey(v){
+    try{
+      var raw = (typeof jalaliStringFromMaybe === 'function') ? (jalaliStringFromMaybe(v) || v || '') : (v || '');
+      return (typeof normalizeJalaliDateKey === 'function') ? (normalizeJalaliDateKey(raw) || '') : String(raw).trim().replace(/-/g,'/');
+    }catch(e){ return String(v||'').trim().replace(/-/g,'/'); }
+  }
+  function normSite(s){
+    return String(s||'').trim().replace(/\s+/g,' ');
+  }
+  function oppositeSideHint(site){
+    var s = normSite(site);
+    if(/راست/.test(s)) return s.replace(/راست/g,'چپ');
+    if(/چپ/.test(s)) return s.replace(/چپ/g,'راست');
+    return '';
+  }
+  function hasArchiveMarkers(p){
+    return !!(p && (
+      p.status === 'ARCHIVED' ||
+      p.archiveReason || p.archiveAt || p.callAutoArchivedAt ||
+      p.callArchiveReason || p.doNotCall || p.patientFollowupRequired
+    ));
+  }
+  function clearArchiveMarkers(p){
+    if(!p) return;
+    p.archiveReason = '';
+    p.archiveAt = null;
+    p.callAutoArchivedAt = null;
+    p.callArchiveReason = '';
+    p.doNotCall = false;
+    p.needsDecision = false;
+    p.patientFollowupRequired = false;
+    p.patientFollowupAt = null;
+  }
+  function finalizeRebook(p, dateJ, type, source){
+    if(!p) return false;
+    var key = dateKey(dateJ || p.bookingBucketDate || p.nextAppointment);
+    if(!key) return false;
+    if(typeof window.prpFinalizeArchivedRebooking === 'function'){
+      try{
+        return !!window.prpFinalizeArchivedRebooking(
+          p, key, type || p.bookingBucket || p.bookingType || '', source || 'v168', {}
+        );
+      }catch(e){ console.error('v168 finalize rebooking failed', e); }
+    }
+    // fallback if v167 helper missing
+    var iso = '';
+    try{ var g = jalaliToGregorian(key); iso = g && !isNaN(g.getTime()) ? g.toISOString() : ''; }catch(e){}
+    if(!iso) return false;
+    p.status = 'CONFIRMED';
+    p.nextAppointment = iso;
+    p.bookingBucketDate = key;
+    p.bookingBucket = type || p.bookingBucket || p.bookingType || 'active';
+    p.bookingType = p.bookingBucket;
+    p.followupMode = '';
+    clearArchiveMarkers(p);
+    return true;
+  }
+
+  // ─── سوابق ناحیه تزریق ─────────────────────────────────────────
+  function injectionSiteRows(p){
+    var rows = [];
+    (p && Array.isArray(p.history) ? p.history : []).forEach(function(h, idx){
+      if(!h) return;
+      var t = String(h.type || '') + ' ' + String(h.note || '');
+      if(!/تزریق|TREATMENT_DONE|INJECTION/i.test(t)) return;
+      var site = normSite(h.site || h.injectionSite || '');
+      if(!site){
+        var m = String(h.note || '').match(/(زانو|کتف|آرنج|میخچه پای|دنبالچه)\s*(چپ|راست)?/);
+        if(m) site = normSite(m[0]);
+      }
+      var st = Number(h.stage || 0) || 0;
+      try{
+        var mm = String(h.type || '').match(/تزریق\s*(\d+)/);
+        if(!st && mm) st = Number(mm[1]) || 0;
+      }catch(e){}
+      rows.push({
+        stage: st,
+        dateJ: dateKey(h.eventDateJ || h.dateJ || h.visitDateJ || ''),
+        site: site,
+        index: idx,
+        entry: h
+      });
+    });
+    rows.sort(function(a,b){
+      var c = String(a.dateJ||'').localeCompare(String(b.dateJ||''));
+      return c || (a.index - b.index);
+    });
+    return rows;
+  }
+  function sitesFromEditHistory(p){
+    var found = [];
+    (p && Array.isArray(p.history) ? p.history : []).forEach(function(h){
+      if(!h) return;
+      var note = String(h.note || '');
+      // قالب v138: ناحیه تزریق: «زانو راست» ← «زانو چپ»
+      var m = note.match(/ناحیه تزریق:\s*«([^»]*)»\s*←\s*«([^»]*)»/);
+      if(m){
+        var from = normSite(m[1]), to = normSite(m[2]);
+        if(from) found.push(from);
+        if(to) found.push(to);
+      }
+      if(Array.isArray(h.changes)){
+        h.changes.forEach(function(ch){
+          if(!ch) return;
+          if(ch.field === 'site' || /ناحیه/.test(String(ch.label||''))){
+            if(ch.from && ch.from !== '—') found.push(normSite(ch.from));
+            if(ch.to && ch.to !== '—') found.push(normSite(ch.to));
+          }
+        });
+      }
+    });
+    return found;
+  }
+  function historicalSiteConsensus(p){
+    var counts = Object.create(null);
+    var ordered = [];
+    function bump(s, n){
+      s = normSite(s);
+      if(!s) return;
+      if(!counts[s]){ counts[s] = 0; ordered.push(s); }
+      counts[s] += (n || 1);
+    }
+    var rows = injectionSiteRows(p);
+    rows.forEach(function(r){ if(r.site) bump(r.site, 2); }); // تزریق وزن بیشتر
+    sitesFromEditHistory(p).forEach(function(s){ bump(s, 1); });
+    // اگر هیچ سابقاً صریحی نبود، خود ناحیه فعلی را ملاک اولیه بگیر
+    var current = normSite(p && p.site);
+    if(!ordered.length && current) bump(current, 1);
+    // برای تزریق‌های بدون site ذخیره‌شده، اگر فقط یک ناحیهٔ غیرجاری در ویرایش‌ها بوده همان را پررنگ کن
+    var missingSiteInjections = rows.filter(function(r){ return !r.site; }).length;
+    if(missingSiteInjections && ordered.length){
+      // اولین ناحیه دیده‌شده در ویرایش (from) را به‌عنوان سابقه قدیمی‌تر در نظر بگیر
+      var editSites = sitesFromEditHistory(p);
+      if(editSites.length) bump(editSites[0], missingSiteInjections);
+    }
+    var best = '', bestN = 0;
+    ordered.forEach(function(s){
+      if(counts[s] > bestN){ best = s; bestN = counts[s]; }
+    });
+    return { site: best || current || '', count: bestN, counts: counts, rows: rows };
+  }
+  window.prpGetInjectionSiteHistory = function(p){ return injectionSiteRows(p); };
+  window.prpGetHistoricalSiteConsensus = historicalSiteConsensus;
+
+  function siteMismatchMessage(p, claimedSite){
+    var cons = historicalSiteConsensus(p);
+    var claimed = normSite(claimedSite || (p && p.site));
+    if(!cons.site || !claimed) return '';
+    if(cons.site === claimed) return '';
+    var histLines = cons.rows.filter(function(r){ return r.site; }).map(function(r){
+      return 'مرحله ' + fa(r.stage || '?') + (r.dateJ ? ' (' + fa(r.dateJ) + ')' : '') + ': ' + r.site;
+    });
+    var msg = 'ناحیه اعلام‌شده امروز «' + claimed + '» است، ولی سابقه پرونده «' + cons.site + '»';
+    if(cons.count >= 2) msg += ' (حداقل ' + fa(cons.count) + ' بار).';
+    else msg += '.';
+    if(histLines.length) msg += '\n\nسوابق ناحیه:\n- ' + histLines.join('\n- ');
+    var opp = oppositeSideHint(cons.site);
+    if(opp && opp === claimed){
+      msg += '\n\n⚠️ احتمال جابه‌جایی چپ/راست وجود دارد. قبل از تزریق حتماً با بیمار و پرونده چک کنید.';
+    }
+    return msg;
+  }
+  window.prpSiteMismatchMessage = siteMismatchMessage;
+
+  function confirmSiteChangeOrKeep(p, nextSite, onKeep, onChange){
+    var msg = siteMismatchMessage(p, nextSite);
+    if(!msg){ if(typeof onChange === 'function') onChange(); return; }
+    try{
+      showConfirm(
+        'اختلاف ناحیه تزریق',
+        msg + '\n\nناحیه پرونده حفظ شود یا به «' + normSite(nextSite) + '» تغییر کند؟',
+        function(){ if(typeof onChange === 'function') onChange(); },
+        'تغییر به ' + normSite(nextSite),
+        'حفظ «' + (historicalSiteConsensus(p).site || p.site || '') + '»'
+      );
+      // دکمه لغو = حفظ ناحیه قبلی
+      var cancelBtn = document.getElementById('msgCancelBtn');
+      if(cancelBtn){
+        var old = cancelBtn.onclick;
+        cancelBtn.onclick = function(){
+          try{ if(typeof onKeep === 'function') onKeep(); }catch(e){}
+          try{ closeModal('msgModal'); }catch(e){}
+          if(typeof old === 'function') try{ old(); }catch(e){}
+        };
+      }
+    }catch(e){
+      if(window.confirm(msg + '\n\nOK = تغییر ناحیه / Cancel = حفظ قبلی')){
+        if(typeof onChange === 'function') onChange();
+      } else if(typeof onKeep === 'function') onKeep();
+    }
+  }
+
+  // ─── wrap: ثبت نوبت ────────────────────────────────────────────
+  function wrapApptConfirmBook(){
+    var base = window.apptConfirmBook || (typeof apptConfirmBook === 'function' ? apptConfirmBook : null);
+    if(typeof base !== 'function' || base.__prpV168ArchiveWrapped) return;
+    var wrapped = function(){
+      var pid = null, beforeStatus = '', beforeMarkers = false;
+      try{
+        pid = (typeof _apptSelectedPatientId !== 'undefined') ? _apptSelectedPatientId : null;
+        var p0 = (window.patients || []).find(function(x){ return String(x && x.id) === String(pid); });
+        beforeStatus = p0 ? (p0.status || '') : '';
+        beforeMarkers = hasArchiveMarkers(p0);
+      }catch(e){}
+      var ret = base.apply(this, arguments);
+      try{
+        var p = (window.patients || []).find(function(x){ return String(x && x.id) === String(pid); });
+        if(p && p.status === 'CONFIRMED' && p.nextAppointment && (beforeStatus === 'ARCHIVED' || beforeMarkers || hasArchiveMarkers(p))){
+          finalizeRebook(p, p.bookingBucketDate || p.nextAppointment, p.bookingBucket || p.bookingType || '', 'appt-confirm-book');
+          try{ if(typeof markDataChanged === 'function') markDataChanged(); }catch(e){}
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+          try{ if(typeof renderTable === 'function') renderTable(); }catch(e){}
+          try{ if(typeof renderDateButtons === 'function') renderDateButtons(); }catch(e){}
+          try{ if(typeof updateSidebarDates === 'function') updateSidebarDates(); }catch(e){}
+        }
+      }catch(e){ console.error('v168 archive rebook after apptConfirmBook failed', e); }
+      return ret;
+    };
+    wrapped.__prpV168ArchiveWrapped = true;
+    window.apptConfirmBook = wrapped;
+    try{ apptConfirmBook = wrapped; }catch(e){}
+  }
+
+  function wrapApplyConfirm(){
+    var base = window.applyConfirm || (typeof applyConfirm === 'function' ? applyConfirm : null);
+    if(typeof base !== 'function' || base.__prpV168ArchiveWrapped) return;
+    var wrapped = function(dateJ){
+      var pid = null, beforeStatus = '', beforeMarkers = false;
+      try{
+        pid = (typeof tempConfirmId !== 'undefined') ? tempConfirmId : null;
+        var p0 = (window.patients || []).find(function(x){ return String(x && x.id) === String(pid); });
+        beforeStatus = p0 ? (p0.status || '') : '';
+        beforeMarkers = hasArchiveMarkers(p0);
+      }catch(e){}
+      var ret = base.apply(this, arguments);
+      try{
+        var p = (window.patients || []).find(function(x){ return String(x && x.id) === String(pid); });
+        if(p && p.status === 'CONFIRMED' && (beforeStatus === 'ARCHIVED' || beforeMarkers || hasArchiveMarkers(p))){
+          finalizeRebook(p, dateJ || p.bookingBucketDate || p.nextAppointment, p.bookingBucket || p.bookingType || '', 'manual-confirm');
+          try{ if(typeof markDataChanged === 'function') markDataChanged(); }catch(e){}
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+        }
+      }catch(e){ console.error('v168 archive rebook after applyConfirm failed', e); }
+      return ret;
+    };
+    wrapped.__prpV168ArchiveWrapped = true;
+    window.applyConfirm = wrapped;
+    try{ applyConfirm = wrapped; }catch(e){}
+  }
+
+  function wrapMoveBackToCallList(){
+    var base = window.moveBackToCallList || (typeof moveBackToCallList === 'function' ? moveBackToCallList : null);
+    if(typeof base !== 'function' || base.__prpV168ArchiveWrapped) return;
+    var wrapped = function(id){
+      var p = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+      var wasArchived = !!(p && (p.status === 'ARCHIVED' || hasArchiveMarkers(p)));
+      var ret = base.apply(this, arguments);
+      // اگر از بایگانی برگشت، نشانگرهای بایگانی را پاک کن تا بعداً دوباره بایگانی نشود
+      try{
+        var pp = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+        if(pp && wasArchived && pp.status !== 'ARCHIVED'){
+          clearArchiveMarkers(pp);
+          if(!Array.isArray(pp.history)) pp.history = [];
+          var now = new Date().toISOString();
+          var today = '';
+          try{ today = (typeof getTodayJalali === 'function') ? getTodayJalali() : ''; }catch(e){}
+          if(!pp.history.some(function(h){ return h && h.type === 'فعال‌سازی مجدد' && h.source === 'back-to-call-from-archive'; })){
+            pp.history.push({
+              date: now, recordedAt: now, dateJ: today, eventDateJ: today,
+              type: 'فعال‌سازی مجدد', stage: Number(pp.currentStage || 0),
+              source: 'back-to-call-from-archive',
+              note: 'خروج از بایگانی و بازگشت به لیست تماس'
+            });
+          }
+          try{ if(typeof logAction === 'function') logAction('REACTIVATE', { id:pp.id, name:pp.fullName||'', note:'خروج از بایگانی با بازگشت به لیست تماس', dateJ:today }); }catch(e){}
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+        }
+      }catch(e){ console.error('v168 clear archive on moveBackToCallList failed', e); }
+      return ret;
+    };
+    wrapped.__prpV168ArchiveWrapped = true;
+    window.moveBackToCallList = wrapped;
+    try{ moveBackToCallList = wrapped; }catch(e){}
+  }
+
+  // repairPatient نباید بیمار تاییدشدهٔ intentionally-rebooked را دوباره بایگانی کند
+  function wrapRepairInjectionConsistency(){
+    var base = window.prpRepairInjectionDateConsistency;
+    if(typeof base !== 'function' || base.__prpV168ArchiveWrapped) return;
+    var wrapped = function(){
+      var snapshot = Object.create(null);
+      try{
+        (window.patients || []).forEach(function(p){
+          if(!p) return;
+          if(p.status === 'CONFIRMED' && p.nextAppointment){
+            snapshot[String(p.id)] = {
+              status: p.status,
+              nextAppointment: p.nextAppointment,
+              bookingBucketDate: p.bookingBucketDate || '',
+              bookingBucket: p.bookingBucket || '',
+              bookingType: p.bookingType || '',
+              archiveReason: p.archiveReason || '',
+              archiveAt: p.archiveAt || null
+            };
+          }
+        });
+      }catch(e){}
+      var ret = base.apply(this, arguments);
+      try{
+        (window.patients || []).forEach(function(p){
+          if(!p) return;
+          var prev = snapshot[String(p.id)];
+          if(!prev) return;
+          // اگر قبل از repair تایید بود و بعداً به‌خاطر stage>=4 دوباره بایگانی شد، نوبت قطعی را برگردان
+          if(prev.status === 'CONFIRMED' && p.status === 'ARCHIVED' && prev.nextAppointment){
+            p.status = 'CONFIRMED';
+            p.nextAppointment = prev.nextAppointment;
+            p.bookingBucketDate = prev.bookingBucketDate || dateKey(prev.nextAppointment);
+            p.bookingBucket = prev.bookingBucket || p.bookingBucket || 'active';
+            p.bookingType = prev.bookingType || p.bookingBucket;
+            clearArchiveMarkers(p);
+          }
+        });
+      }catch(e){ console.error('v168 protect confirmed from repair-archive failed', e); }
+      return ret;
+    };
+    wrapped.__prpV168ArchiveWrapped = true;
+    window.prpRepairInjectionDateConsistency = wrapped;
+  }
+
+  // ─── wrap: ویرایش ناحیه ────────────────────────────────────────
+  function wrapSaveEditPatient(){
+    var base = window.saveEditPatient || (typeof saveEditPatient === 'function' ? saveEditPatient : null);
+    if(typeof base !== 'function' || base.__prpV168SiteWrapped) return;
+    var wrapped = function(e){
+      try{
+        var id = (document.getElementById('editId') || {}).value || '';
+        var p = (window.patients || []).find(function(x){ return String(x && x.id) === String(id); });
+        var nextSite = normSite((document.getElementById('editSite') || {}).value || '');
+        var prevSite = normSite(p && p.site);
+        if(p && nextSite && prevSite && nextSite !== prevSite){
+          var msg = siteMismatchMessage(Object.assign({}, p, {site: prevSite}), nextSite);
+          // حتی بدون سابقهٔ صریح site در history، اگر فقط فیلد عوض شده و سابقه تزریق دارد هشدار بده
+          var injCount = injectionSiteRows(p).length;
+          if(!msg && injCount >= 1){
+            msg = 'ناحیه پرونده از «' + prevSite + '» به «' + nextSite + '» تغییر می‌کند در حالی که ' + fa(injCount) + ' تزریق قبلی روی این پرونده ثبت شده است.';
+            var opp = oppositeSideHint(prevSite);
+            if(opp && opp === nextSite){
+              msg += '\n\n⚠️ این تغییر دقیقاً جابه‌جایی چپ/راست است. اگر بیمار امروز سمت دیگر را می‌گوید، ابتدا پرونده و سوابق را چک کنید.';
+            }
+          }
+          if(msg){
+            var ok = false;
+            try{ ok = window.confirm(msg + '\n\nادامه با ناحیه جدید؟\nOK = تغییر / Cancel = حفظ ناحیه قبلی'); }
+            catch(err){ ok = true; }
+            if(!ok){
+              try{ document.getElementById('editSite').value = prevSite; }catch(err){}
+              nextSite = prevSite;
+            }
+          }
+        }
+        // اگر از بایگانی نوبت قطعی ثبت می‌شود، بعد از ذخیره finalize کن
+        var form = document.getElementById('editForm');
+        var origStatus = form ? (form.dataset.origStatus || '') : '';
+        var ret = base.apply(this, arguments);
+        try{
+          var pp = (window.patients || []).find(function(x){ return String(x && x.id) === String(id); });
+          if(pp && (origStatus === 'ARCHIVED' || hasArchiveMarkers(pp)) && pp.status === 'CONFIRMED' && pp.nextAppointment){
+            finalizeRebook(pp, pp.bookingBucketDate || pp.nextAppointment, pp.bookingBucket || pp.bookingType || '', 'edit-patient-v168');
+            try{ if(typeof saveData === 'function') saveData(); }catch(err){}
+          }
+        }catch(err){}
+        return ret;
+      }catch(err){
+        return base.apply(this, arguments);
+      }
+    };
+    wrapped.__prpV168SiteWrapped = true;
+    window.saveEditPatient = wrapped;
+    try{ saveEditPatient = wrapped; }catch(e){}
+  }
+
+  // ─── wrap: تکمیل تزریق + ثبت site در history ───────────────────
+  function wrapCompleteTreatment(){
+    var base = window.completeTreatment || (typeof completeTreatment === 'function' ? completeTreatment : null);
+    if(typeof base !== 'function' || base.__prpV168SiteWrapped) return;
+    var wrapped = function(id){
+      var p = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+      if(!p) return base.apply(this, arguments);
+
+      var cons = historicalSiteConsensus(p);
+      var current = normSite(p.site);
+      var mismatch = (cons.site && current && cons.site !== current) ? siteMismatchMessage(p, current) : '';
+      var siteLine = current ? ('ناحیه پرونده: ' + current) : 'ناحیه پرونده ثبت نشده';
+      if(cons.site && cons.count >= 1){
+        siteLine += '\nسابقه غالب: ' + cons.site + (cons.count >= 2 ? (' (' + fa(cons.count) + ' بار)') : '');
+      }
+
+      // فقط وقتی سابقه با ناحیه فعلی فرق دارد (مثلاً دو بار زانو راست، امروز زانو چپ) هشدار بده
+      if(mismatch){
+        try{
+          showConfirm(
+            'هشدار ناحیه تزریق',
+            mismatch + '\n\n' + siteLine + '\n\nاگر بیمار امروز سمت دیگر را می‌گوید، اول ناحیه را در ویرایش پرونده اصلاح یا تأیید کنید.',
+            function(){ runCompleteWithSiteSnapshot(id, base); },
+            'ادامه با همین ناحیه',
+            'انصراف'
+          );
+          return;
+        }catch(e){}
+      }
+      return runCompleteWithSiteSnapshot(id, base);
+    };
+    wrapped.__prpV168SiteWrapped = true;
+    window.completeTreatment = wrapped;
+    try{ completeTreatment = wrapped; }catch(e){}
+  }
+
+  function runCompleteWithSiteSnapshot(id, baseFn){
+    var p = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+    var siteBefore = normSite(p && p.site);
+    var histLenBefore = p && Array.isArray(p.history) ? p.history.length : 0;
+    var ret = baseFn.call(window, id);
+    // base از showConfirm استفاده می‌کند؛ بعد از ثبت واقعی site را روی آخرین تزریق بنویس
+    var tries = 0;
+    (function poll(){
+      tries++;
+      try{
+        var pp = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+        if(!pp || !Array.isArray(pp.history)) return;
+        if(pp.history.length > histLenBefore){
+          for(var i = pp.history.length - 1; i >= histLenBefore; i--){
+            var h = pp.history[i];
+            if(!h) continue;
+            if(/تزریق|TREATMENT_DONE|INJECTION/i.test(String(h.type||'')+' '+String(h.note||''))){
+              if(!h.site) h.site = siteBefore || normSite(pp.site);
+              if(h.site && String(h.note||'').indexOf(h.site) < 0){
+                h.note = (h.note ? (h.note + ' - ') : '') + 'ناحیه: ' + h.site;
+              }
+              try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+              break;
+            }
+          }
+          return;
+        }
+      }catch(e){}
+      if(tries < 40) setTimeout(poll, 50);
+    })();
+    return ret;
+  }
+
+  // normalizeAllPatients: PENDING_CALL با نشانگر بایگانی را هم پاک کن
+  function enhanceNormalize(){
+    var base = window.prpEnsureArchiveBookingConsistency;
+    if(typeof base === 'function' && !base.__prpV168Enhanced){
+      var wrapped = function(){
+        var changed = 0;
+        try{ changed = Number(base.apply(this, arguments) || 0) || 0; }catch(e){ changed = 0; }
+        try{ changed += scrubPatients(); }catch(e){}
+        return changed;
+      };
+      wrapped.__prpV168Enhanced = true;
+      window.prpEnsureArchiveBookingConsistency = wrapped;
+    }
+    // مهم: saveData در v167 مستقیم normalize داخلی را صدا می‌زند، نه window.* را.
+    var baseSave = window.saveData || (typeof saveData === 'function' ? saveData : null);
+    if(typeof baseSave === 'function' && !baseSave.__prpV168Scrub){
+      var wrappedSave = function(){
+        try{ scrubPatients(); }catch(e){ console.error('v168 scrub before save failed', e); }
+        return baseSave.apply(this, arguments);
+      };
+      wrappedSave.__prpV168Scrub = true;
+      // حفظ فلگ‌های قبلی
+      try{
+        Object.keys(baseSave).forEach(function(k){
+          try{ wrappedSave[k] = baseSave[k]; }catch(e){}
+        });
+      }catch(e){}
+      window.saveData = wrappedSave;
+      try{ saveData = wrappedSave; }catch(e){}
+    }
+  }
+  function scrubPatients(){
+    var changed = 0;
+    (window.patients || []).forEach(function(p){
+      if(!p) return;
+      if(p.status === 'CONFIRMED' && p.nextAppointment && hasArchiveMarkers(p)){
+        if(finalizeRebook(p, p.bookingBucketDate || p.nextAppointment, p.bookingBucket || p.bookingType || '', 'normalize-v168')) changed++;
+      } else if(p.status === 'PENDING_CALL' && hasArchiveMarkers(p)){
+        clearArchiveMarkers(p);
+        changed++;
+      }
+    });
+    return changed;
+  }
+
+  // ─── scenario tests ────────────────────────────────────────────
+  window.prpRunV168ScenarioTests = function(){
+    var results = [];
+    function ok(name, pass){ results.push({name:name, ok:!!pass}); }
+
+    // 1) archived + book => confirmed & markers cleared
+    var p1 = {
+      id:'v168-a', fullName:'تست بایگانی', currentStage:2, status:'ARCHIVED',
+      nextAppointment:null, bookingBucketDate:'', archiveReason:'انصراف',
+      archiveAt:'2026-07-01T10:00:00.000Z', doNotCall:true, history:[], site:'زانو راست'
+    };
+    ok('فعال‌سازی مجدد از بایگانی', finalizeRebook(p1, '1405/05/10', 'active', 'test') && p1.status==='CONFIRMED' && !p1.archiveReason && !p1.doNotCall && !!p1.bookingBucketDate);
+
+    // 2) repair must not re-archive confirmed rebooked stage-4
+    var p2 = {
+      id:'v168-b', status:'CONFIRMED', currentStage:4,
+      nextAppointment:'2026-08-01T00:00:00.000Z', bookingBucketDate:'1405/05/10',
+      history:[{type:'تزریق 4', stage:4, dateJ:'1405/01/01', eventDateJ:'1405/01/01', site:'زانو راست'}],
+      site:'زانو راست'
+    };
+    var snap = {status:p2.status, nextAppointment:p2.nextAppointment, bookingBucketDate:p2.bookingBucketDate};
+    // simulate bad repair
+    p2.status = 'ARCHIVED'; p2.nextAppointment = null;
+    if(snap.status==='CONFIRMED'){ p2.status=snap.status; p2.nextAppointment=snap.nextAppointment; p2.bookingBucketDate=snap.bookingBucketDate; clearArchiveMarkers(p2); }
+    ok('بیمار تاییدشده stage4 دوباره بایگانی نمی‌شود', p2.status==='CONFIRMED' && !!p2.nextAppointment);
+
+    // 3) site mismatch detection for left/right flip after two right injections
+    var p3 = {
+      id:'v168-c', site:'زانو چپ', currentStage:3, status:'CONFIRMED',
+      history:[
+        {type:'تزریق 1', stage:1, dateJ:'1404/10/01', eventDateJ:'1404/10/01', site:'زانو راست'},
+        {type:'تزریق 2', stage:2, dateJ:'1404/12/01', eventDateJ:'1404/12/01', site:'زانو راست'}
+      ]
+    };
+    var cons = historicalSiteConsensus(p3);
+    var msg = siteMismatchMessage(p3, 'زانو چپ');
+    ok('اجماع سابقه زانو راست است', cons.site==='زانو راست' && cons.count>=2);
+    ok('هشدار جابه‌جایی چپ/راست ساخته می‌شود', !!msg && msg.indexOf('زانو راست')>=0 && msg.indexOf('زانو چپ')>=0);
+
+    window.__PRP_V168_SCENARIO_TESTS = {
+      passed: results.filter(function(r){ return r.ok; }).length,
+      total: results.length,
+      results: results,
+      at: new Date().toISOString()
+    };
+    return window.__PRP_V168_SCENARIO_TESTS;
+  };
+
+  function install(){
+    wrapApptConfirmBook();
+    wrapApplyConfirm();
+    wrapMoveBackToCallList();
+    wrapRepairInjectionConsistency();
+    wrapSaveEditPatient();
+    wrapCompleteTreatment();
+    enhanceNormalize();
+    try{ window.prpRunV168ScenarioTests(); }catch(e){ console.error('v168 scenario tests failed', e); }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  // wrappers بعدی ممکن است بعداً توابع را عوض کنند؛ چند بار دیگر هم نصب کن
+  setTimeout(install, 0);
+  setTimeout(install, 500);
+  setTimeout(install, 1500);
+})();
+</script>
 </body></html>
+
