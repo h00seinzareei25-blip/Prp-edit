@@ -1947,7 +1947,7 @@ body[data-current-tab="allList"] #bulkConfirmBtn{
         </div>
         <details class="appt-system-note">
           <summary>قوانین نوبت‌دهی</summary>
-          <div id="apptAllowedDaysNote">نوبت‌ها فقط روزهای <span style="color:#047857;font-weight:900">شنبه</span> و <span style="color:#1d4ed8;font-weight:900">چهارشنبه</span> ثبت می‌شوند</div>
+          <div id="apptAllowedDaysNote">پیشنهادها از <b>روزهای فعال تقویم</b> و <b>روزهای هفتهٔ فعال</b> ساخته می‌شوند.</div>
         </details>
         <button class="appt-close-btn" onclick="closeApptModal()" aria-label="بستن">✕</button>
       </div>
@@ -15686,7 +15686,7 @@ function apptSelectPatient(id, keepTarget) {
     var suggestBox = document.getElementById('apptSuggestBox');
     var suggestCards = document.getElementById('apptSuggestCards');
     var holidayNote = document.getElementById('apptHolidayNote');
-    suggestBox.style.display='';
+    suggestBox.style.display='flex';
     holidayNote.style.display='none';
     holidayNote.textContent = '';
 
@@ -15795,7 +15795,7 @@ function apptSelectPatient(id, keepTarget) {
         } catch(e) {}
 
         var sourceBadge = s.fromActive
-            ? '<span style="font-size:10px;font-weight:900;background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe;border-radius:999px;padding:1px 7px">📋 برنامه</span>'
+            ? '<span class="prp-active-day-badge">✓ روز فعال تقویم</span>'
             : '';
 
         var devBadge = dev
@@ -15806,7 +15806,7 @@ function apptSelectPatient(id, keepTarget) {
             ? '<span style="font-size:10px;font-weight:900;background:#4f46e5;color:#fff;border-radius:999px;padding:2px 8px">✨ نزدیک‌تر</span>'
             : '';
 
-        html += '<div style="' + cardStyle + '" onclick="apptSelectDate(\'' + s.jalali + '\',\'' + s.type + '\')"' +
+        html += '<div data-jalali="' + s.jalali + '" data-from-active="' + (s.fromActive ? '1' : '0') + '" style="' + cardStyle + '" onclick="apptSelectDate(\'' + s.jalali + '\',\'' + s.type + '\')"' +
             ' onmouseover="this.style.background=\'' + c.hbg + '\'" onmouseout="this.style.background=\'' + c.bg + '\'">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-bottom:4px">' +
             '<span style="font-size:12px;font-weight:900;padding:4px 10px;border-radius:8px;background:' + c.badge + ';color:' + c.badgeTxt + '">' + s.type + '</span>' +
@@ -31669,6 +31669,780 @@ main{
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
   else install();
   setTimeout(install, 800);
+})();
+</script>
+
+<!-- PRP v172: نرمال UI ثبت‌نوبت/ثبت‌نام/ویرایش + پیشنهاد روزهای فعال تقویم -->
+<style id="prp-v172-appt-register-normalize">
+:root{
+  --prp-appt-gap:12px;
+  --prp-appt-pad:12px;
+  --prp-appt-radius:12px;
+  --prp-appt-ctrl:40px;
+  --prp-appt-ctrl-lg:44px;
+  --prp-appt-fs:13px;
+  --prp-appt-fs-sm:12px;
+  --prp-appt-fs-xs:11px;
+}
+
+/* ═══════════ مودال ثبت نوبت ═══════════ */
+#appointmentBookingSection{
+  direction:rtl !important;
+}
+#appointmentBookingSection > div{
+  padding:12px !important;
+}
+#appointmentBookingSection .appt-modal-box{
+  width:min(1280px, calc(100vw - 24px)) !important;
+  max-width:min(1280px, calc(100vw - 24px)) !important;
+  height:calc(100vh - 24px) !important;
+  max-height:calc(100vh - 24px) !important;
+  border-radius:16px !important;
+  background:#f5f7fb !important;
+  overflow:hidden !important;
+}
+#appointmentBookingSection .appt-modal-header{
+  min-height:56px !important;
+  max-height:56px !important;
+  padding:8px 14px !important;
+  gap:10px !important;
+  grid-template-columns:minmax(200px,1fr) auto 36px !important;
+}
+#appointmentBookingSection .appt-title-main{
+  font-size:15px !important;
+  font-weight:900 !important;
+}
+#appointmentBookingSection .appt-title-sub{
+  font-size:11px !important;
+  font-weight:700 !important;
+  color:#64748b !important;
+  white-space:normal !important;
+}
+#appointmentBookingSection .appt-close-btn{
+  width:36px !important;
+  height:36px !important;
+  min-height:36px !important;
+  border-radius:10px !important;
+}
+#appointmentBookingSection .appt-system-note summary{
+  min-height:36px !important;
+  padding:6px 12px !important;
+  border-radius:999px !important;
+  font-size:11px !important;
+}
+
+#appointmentBookingSection .appt-workspace{
+  display:grid !important;
+  grid-template-columns:minmax(260px,28%) minmax(360px,44%) minmax(260px,28%) !important;
+  gap:var(--prp-appt-gap) !important;
+  padding:var(--prp-appt-pad) !important;
+  height:calc(100% - 56px) !important;
+  overflow:hidden !important;
+}
+
+#appointmentBookingSection .appt-block,
+#appointmentBookingSection #apptSuggestBox,
+#appointmentBookingSection .appt-list-panel{
+  background:#fff !important;
+  border:1px solid #e5e7eb !important;
+  border-radius:var(--prp-appt-radius) !important;
+  box-shadow:0 4px 14px rgba(15,23,42,.04) !important;
+}
+#appointmentBookingSection .appt-block{
+  padding:12px !important;
+}
+#appointmentBookingSection .appt-block-title,
+#appointmentBookingSection .appt-list-head{
+  margin-bottom:10px !important;
+  font-size:13px !important;
+  font-weight:900 !important;
+  gap:8px !important;
+}
+#appointmentBookingSection .appt-panel-chip{
+  min-height:24px !important;
+  padding:3px 8px !important;
+  border-radius:999px !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+}
+
+#appointmentBookingSection input,
+#appointmentBookingSection select,
+#appointmentBookingSection button{
+  font-family:inherit !important;
+  border-radius:10px !important;
+}
+#appointmentBookingSection input,
+#appointmentBookingSection select{
+  min-height:var(--prp-appt-ctrl) !important;
+  height:var(--prp-appt-ctrl) !important;
+  padding:8px 12px !important;
+  font-size:var(--prp-appt-fs-sm) !important;
+  font-weight:700 !important;
+  border:1px solid #e2e8f0 !important;
+  background:#f8fafc !important;
+}
+#appointmentBookingSection button{
+  min-height:var(--prp-appt-ctrl) !important;
+  padding:8px 12px !important;
+  font-size:var(--prp-appt-fs-sm) !important;
+  font-weight:900 !important;
+}
+#appointmentBookingSection #apptSearchInput{
+  min-height:var(--prp-appt-ctrl) !important;
+  font-size:var(--prp-appt-fs) !important;
+}
+#appointmentBookingSection #apptListFilter{
+  min-height:32px !important;
+  height:32px !important;
+  font-size:11px !important;
+  padding:4px 8px !important;
+}
+
+#appointmentBookingSection .appt-main-panel{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+  overflow-y:auto !important;
+  min-height:0 !important;
+  padding-left:2px !important;
+}
+#appointmentBookingSection .appt-suggest-panel{
+  min-height:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+#appointmentBookingSection #apptSuggestBox{
+  flex-direction:column !important;
+  height:100% !important;
+  min-height:0 !important;
+  padding:12px !important;
+  overflow:hidden !important;
+}
+#appointmentBookingSection #apptSuggestBox[style*="display:none"],
+#appointmentBookingSection #apptSuggestBox[style*="display: none"]{
+  display:none !important;
+}
+#appointmentBookingSection #apptSuggestBox[style*="display: block"],
+#appointmentBookingSection #apptSuggestBox[style*="display:block"],
+#appointmentBookingSection #apptSuggestBox[style*="display: flex"],
+#appointmentBookingSection #apptSuggestBox[style*="display:flex"]{
+  display:flex !important;
+}
+#appointmentBookingSection #apptSuggestCards{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+  overflow-y:auto !important;
+  min-height:0 !important;
+  flex:1 1 auto !important;
+  padding:2px 2px 8px !important;
+  scrollbar-gutter:stable !important;
+}
+#appointmentBookingSection .appt-list-panel{
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  padding:12px !important;
+}
+#appointmentBookingSection .appt-list-body,
+#appointmentBookingSection #apptPendingList{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  scrollbar-gutter:stable !important;
+}
+#appointmentBookingSection .appt-list-title strong{
+  font-size:13px !important;
+}
+#appointmentBookingSection .appt-list-title span{
+  font-size:11px !important;
+  color:#64748b !important;
+  font-weight:700 !important;
+}
+
+/* کارت بیمار / تایید */
+#appointmentBookingSection #apptPatientName{ font-size:15px !important; font-weight:900 !important; }
+#appointmentBookingSection #apptPatientMeta{ font-size:11px !important; }
+#appointmentBookingSection #apptConfirmBox button,
+#appointmentBookingSection #apptSuccessBox button{
+  min-height:var(--prp-appt-ctrl-lg) !important;
+  font-size:13px !important;
+}
+#appointmentBookingSection #apptHolidayNote{
+  font-size:11px !important;
+  padding:8px 10px !important;
+  border-radius:10px !important;
+  margin-bottom:8px !important;
+}
+
+/* ردیف‌های پیشنهاد نوبت */
+#appointmentBookingSection .appt-suggest-row,
+#appointmentBookingSection #apptSuggestCards > button,
+#appointmentBookingSection #apptSuggestCards > div{
+  min-height:44px !important;
+  border-radius:10px !important;
+  font-size:12px !important;
+}
+#appointmentBookingSection .prp-active-day-badge{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px !important;
+  min-height:22px !important;
+  padding:2px 8px !important;
+  border-radius:999px !important;
+  background:#ecfdf5 !important;
+  color:#047857 !important;
+  border:1px solid #a7f3d0 !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+}
+
+@media (max-width:980px){
+  #appointmentBookingSection .appt-workspace{
+    grid-template-columns:1fr !important;
+    grid-template-rows:auto auto minmax(240px,1fr) !important;
+    overflow-y:auto !important;
+  }
+  #appointmentBookingSection .appt-main-panel,
+  #appointmentBookingSection .appt-suggest-panel,
+  #appointmentBookingSection .appt-list-panel{
+    grid-column:1 !important;
+    max-height:none !important;
+    position:static !important;
+  }
+  #appointmentBookingSection #apptSuggestBox{
+    height:auto !important;
+    max-height:42vh !important;
+  }
+}
+
+/* ═══════════ ثبت‌نام و ویرایش ═══════════ */
+#addModal,
+#editModal{
+  padding:12px !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#addModal .add-modal-card,
+#editModal .add-modal-card{
+  width:min(1100px, calc(100vw - 24px)) !important;
+  max-width:min(1100px, calc(100vw - 24px)) !important;
+  max-height:calc(100dvh - 24px) !important;
+  border-radius:16px !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+#addModal .add-modal-card > .bg-gradient-to-r,
+#editModal .add-modal-card > .bg-gradient-to-r{
+  padding:12px 16px !important;
+  flex:0 0 auto !important;
+}
+#addModal .add-modal-card > .bg-gradient-to-r h3,
+#editModal .add-modal-card > .bg-gradient-to-r h3{
+  font-size:15px !important;
+}
+#addModal .add-modal-body,
+#editModal .add-modal-body{
+  padding:12px !important;
+  max-height:calc(100dvh - 72px) !important;
+  overflow-y:auto !important;
+}
+#addModal .add-form-layout,
+#editModal .add-form-layout{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(300px,340px) !important;
+  gap:12px !important;
+  align-items:start !important;
+  direction:rtl !important;
+}
+#addModal .add-form-layout > :not([hidden]) ~ :not([hidden]),
+#editModal .add-form-layout > :not([hidden]) ~ :not([hidden]){
+  margin-top:0 !important;
+}
+#addModal .prp-register-main,
+#editModal .prp-register-main{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+}
+#addModal .prp-register-side,
+#editModal .prp-register-side{
+  position:sticky !important;
+  top:0 !important;
+  align-self:start !important;
+}
+#addModal .prp-schedule-shell,
+#editModal .prp-schedule-shell{
+  padding:10px !important;
+  border-radius:12px !important;
+}
+#addModal .prp-register-side .schedule-card,
+#editModal .prp-register-side .schedule-card{
+  padding:10px !important;
+  gap:8px !important;
+  border-radius:12px !important;
+}
+#addModal input,
+#addModal select,
+#addModal textarea,
+#editModal input,
+#editModal select,
+#editModal textarea{
+  min-height:40px !important;
+  padding:8px 12px !important;
+  border-radius:10px !important;
+  font-size:13px !important;
+}
+#addModal textarea,
+#editModal textarea{
+  min-height:72px !important;
+  height:auto !important;
+}
+#addModal label,
+#editModal label{
+  font-size:11px !important;
+  margin-bottom:4px !important;
+  font-weight:800 !important;
+}
+#addModal .add-hero-card,
+#editModal .add-hero-card,
+#addModal .bg-blue-50\/50,
+#editModal .bg-blue-50\/50{
+  padding:12px !important;
+  border-radius:12px !important;
+}
+#addModal .add-triple-row,
+#editModal .add-triple-row{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+#addModal .add-check-grid,
+#editModal .add-check-grid,
+#addModal .grid.grid-cols-2,
+#editModal .grid.grid-cols-2{
+  gap:10px !important;
+}
+#addModal .prp-register-side #visitDateButtons,
+#editModal .prp-register-side #editVisitDateButtons{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:8px !important;
+  max-height:min(36dvh, 300px) !important;
+  padding:6px !important;
+  overflow-y:auto !important;
+  border-radius:10px !important;
+}
+#addModal .prp-register-side .visit-day-btn,
+#editModal .prp-register-side .visit-day-btn{
+  min-height:64px !important;
+  height:auto !important;
+  padding:8px !important;
+  border-radius:10px !important;
+}
+#addModal button[type="submit"],
+#editModal button[type="submit"],
+#addModal .w-full.bg-blue-600,
+#editModal .w-full.bg-blue-600,
+#addModal button.bg-blue-600,
+#editModal button.bg-blue-600{
+  min-height:44px !important;
+  border-radius:12px !important;
+  font-size:14px !important;
+  font-weight:900 !important;
+}
+
+@media (max-width:860px){
+  #addModal .add-form-layout,
+  #editModal .add-form-layout{
+    grid-template-columns:1fr !important;
+  }
+  #addModal .prp-register-side,
+  #editModal .prp-register-side{
+    position:static !important;
+  }
+  #addModal .add-triple-row,
+  #editModal .add-triple-row{
+    grid-template-columns:1fr !important;
+  }
+}
+</style>
+
+<script id="prp-v172-appt-active-days-and-ui">
+(function(){
+  'use strict';
+  if(window.__PRP_V172_APPT_ACTIVE_DAYS__) return;
+  window.__PRP_V172_APPT_ACTIVE_DAYS__ = true;
+
+  var FALLBACK_DOWS = [6, 3];
+  var DAY_NAMES = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+  var WEEK_ORDER = [6,0,1,2,3,4,5];
+
+  function assignGlobal(name, value){
+    window[name] = value;
+    try{ (0, eval)(name + ' = window["' + name + '"];'); }catch(e){}
+  }
+  function normKey(v){
+    try{
+      var raw = (typeof jalaliStringFromMaybe === 'function') ? (jalaliStringFromMaybe(v) || v || '') : (v || '');
+      if(typeof normalizeJalaliDateKey === 'function') return normalizeJalaliDateKey(raw) || '';
+    }catch(e){}
+    return String(v || '').trim().replace(/-/g, '/');
+  }
+  function toG(key){
+    try{ return key && typeof jalaliToGregorian === 'function' ? jalaliToGregorian(key) : null; }
+    catch(e){ return null; }
+  }
+  function toJ(g){
+    try{ return normKey(gregorianToJalali(g.getFullYear(), g.getMonth()+1, g.getDate())); }
+    catch(e){ return ''; }
+  }
+  function midnight(d){
+    if(!(d instanceof Date)) d = new Date(d);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+  function dayName(dow){
+    try{ if(Array.isArray(window._WD_NAMES) && window._WD_NAMES[dow]) return window._WD_NAMES[dow]; }catch(e){}
+    return DAY_NAMES[Number(dow)] || ('روز ' + dow);
+  }
+  function addDow(list, value){
+    var dow = Number(value);
+    if(!Number.isFinite(dow) || dow < 0 || dow > 6 || dow === 5) return;
+    if(list.indexOf(dow) === -1) list.push(dow);
+  }
+  function sortDows(list){
+    return (list || []).slice().sort(function(a,b){
+      var ai = WEEK_ORDER.indexOf(Number(a));
+      var bi = WEEK_ORDER.indexOf(Number(b));
+      return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
+    });
+  }
+  function getActiveDatesArr(){
+    try{
+      if(Array.isArray(window.activeDates)) return window.activeDates;
+      if(typeof activeDates !== 'undefined' && Array.isArray(activeDates)) return activeDates;
+    }catch(e){}
+    return [];
+  }
+  function getActiveCapsArr(){
+    try{
+      if(Array.isArray(window.activeCaps)) return window.activeCaps;
+      if(typeof activeCaps !== 'undefined' && Array.isArray(activeCaps)) return activeCaps;
+    }catch(e){}
+    return [];
+  }
+  function getActiveWeekdaysArr(){
+    try{
+      if(Array.isArray(window.activeWeekdays)) return window.activeWeekdays;
+      if(typeof activeWeekdays !== 'undefined' && Array.isArray(activeWeekdays)) return activeWeekdays;
+    }catch(e){}
+    return [];
+  }
+
+  // روزهای هفته از تنظیمات + از روزهایی که در تقویم فعال شده‌اند
+  function clinicDowsFromSettingsAndCalendar(){
+    var out = [];
+    getActiveWeekdaysArr().forEach(function(row){ addDow(out, row && row.dow); });
+    // اگر دوشنبه را در تقویم فعال کرده، دوشنبه هم جزو روزهای کلینیک شود
+    getActiveDatesArr().forEach(function(raw){
+      var key = normKey(raw);
+      if(!key) return;
+      var g = toG(key);
+      if(!g || isNaN(g.getTime())) return;
+      addDow(out, g.getDay());
+    });
+    return sortDows(out);
+  }
+
+  function activeFutureRows(){
+    var rows = [], seen = Object.create(null);
+    var today = midnight(new Date()).getTime();
+    var dates = getActiveDatesArr();
+    var caps = getActiveCapsArr();
+    dates.forEach(function(raw, idx){
+      var key = normKey(raw);
+      if(!key || seen[key]) return;
+      var g = toG(key);
+      if(!g || isNaN(g.getTime()) || midnight(g).getTime() < today || g.getDay() === 5) return;
+      seen[key] = true;
+      rows.push({ key:key, gregorian:midnight(g), dow:g.getDay(), cap:Number(caps[idx] || 0) || 0 });
+    });
+    rows.sort(function(a,b){ return a.gregorian.getTime() - b.gregorian.getTime(); });
+    return rows;
+  }
+
+  function state(){
+    var weekly = clinicDowsFromSettingsAndCalendar();
+    if(!weekly.length) weekly = FALLBACK_DOWS.slice();
+    var exactRows = activeFutureRows();
+    var exactKeys = Object.create(null);
+    exactRows.forEach(function(row){ exactKeys[row.key] = true; });
+    window.PRP_APPT_ALLOWED_DOWS = weekly.slice();
+    window.__PRP_APPT_DAY_STATE = {
+      weeklyDows: weekly.slice(),
+      activeDateKeys: exactKeys,
+      activeFutureDates: exactRows.slice(),
+      allowedDows: weekly.slice()
+    };
+    return window.__PRP_APPT_DAY_STATE;
+  }
+
+  function quotaUsage(dateJ, bucket, excludeId){
+    try{
+      var q = (typeof prpGetQuotaForDate === 'function') ? prpGetQuotaForDate(dateJ) : {total:0};
+      var c = (typeof prpCountBookingsByType === 'function') ? prpCountBookingsByType(dateJ, excludeId, false) : {total:0};
+      var type = '';
+      try{ type = (typeof prpNormalizeBookingType === 'function') ? prpNormalizeBookingType(bucket || '') : (bucket || ''); }catch(e){ type = bucket || ''; }
+      var key = type === 'special' ? 'backlog' : type;
+      if(!key || !Object.prototype.hasOwnProperty.call(q, key)) key = 'total';
+      var max = Number(q[key] || 0), count = Number(c[key] || 0);
+      return { util:max > 0 ? count/max : 999, remain:Math.max(max - count, 0) };
+    }catch(e){ return { util:999, remain:0 }; }
+  }
+
+  function isBookable(key, g, bucket, excludeId, softQuota){
+    var st = state();
+    var exact = !!st.activeDateKeys[key];
+    var weekly = st.weeklyDows.indexOf(g.getDay()) !== -1;
+    if(!exact && !weekly) return 'روز فعال نیست';
+    try{
+      var holiday = (typeof getOfficialHolidayName === 'function') ? (getOfficialHolidayName(key) || '') : '';
+      if(holiday) return 'تعطیل رسمی: ' + holiday;
+    }catch(e){}
+    try{ if(typeof isDateLocked === 'function' && isDateLocked(key)) return 'روز قفل شده'; }catch(e){}
+    if(!softQuota){
+      try{
+        if(typeof prpCanBookByQuota === 'function'){
+          var can = prpCanBookByQuota(key, bucket, excludeId);
+          if(can && can.ok === false) return can.reason || 'سهمیه پر است';
+        }
+      }catch(e){}
+    }
+    return '';
+  }
+
+  assignGlobal('apptAllowedBookingDows', function(){ return state().allowedDows.slice(); });
+  assignGlobal('apptIsClinicAppointmentDow', function(dow){
+    dow = Number(dow);
+    return Number.isFinite(dow) && dow !== 5 && state().allowedDows.indexOf(dow) !== -1;
+  });
+  assignGlobal('apptValidateClinicAppointmentDate', function(dateJ){
+    var key = normKey(dateJ), g = toG(key);
+    if(!key || !g || isNaN(g.getTime())) return { ok:false, reason:'تاریخ نامعتبر است.' };
+    var st = state();
+    var exact = !!st.activeDateKeys[key];
+    var weekly = st.weeklyDows.indexOf(g.getDay()) !== -1;
+    if(!exact && !weekly){
+      return { ok:false, reason:'این تاریخ جزو روزهای فعال نوبت‌دهی نیست. روزهای فعال: ' + st.allowedDows.map(dayName).join('، ') + '.' };
+    }
+    try{
+      var holiday = (typeof getOfficialHolidayName === 'function') ? (getOfficialHolidayName(key) || '') : '';
+      if(holiday) return { ok:false, reason:holiday + ' — تعطیل رسمی است.' };
+    }catch(e){}
+    return { ok:true, key:key, gregorian:g, dow:g.getDay(), exactActiveDay:exact, weeklyActiveDay:weekly };
+  });
+
+  // پیشنهاد: اول همه روزهای فعال تقویم، بعد نزدیک‌ترین‌های هر روز هفته (حداکثر ۳ تا از هر DOW)
+  assignGlobal('apptFindNearestSatWed', function(jalaliDateStr, patientType, excludeId){
+    try{
+      var st = state();
+      var today = midnight(new Date());
+      var raw = toG(normKey(jalaliDateStr));
+      var ref = raw && !isNaN(raw.getTime()) ? midnight(raw) : today;
+      if(ref.getTime() < today.getTime()) ref = today;
+      var refMs = ref.getTime();
+      var results = [], seen = Object.create(null);
+
+      function pushCandidate(key, g, dow, fromActive, skipped){
+        if(!key || seen[key]) return;
+        var why = isBookable(key, g, patientType, excludeId, false);
+        if(why) return;
+        seen[key] = true;
+        var use = quotaUsage(key, patientType, excludeId);
+        results.push({
+          jalali:key,
+          gregorian:midnight(g),
+          type:dayName(dow),
+          typeEn:dow === 6 ? 'sat' : (dow === 3 ? 'wed' : ('day' + dow)),
+          dow:dow,
+          fromActive:!!fromActive,
+          skippedDates:Array.isArray(skipped) ? skipped.slice() : [],
+          bucketUtil:use.util,
+          bucketRemain:use.remain
+        });
+      }
+
+      // ۱) همه تاریخ‌های فعال آینده در تقویم — اولویت اول
+      st.activeFutureDates.forEach(function(row){
+        pushCandidate(row.key, row.gregorian, row.dow, true, []);
+      });
+
+      // ۲) نزدیک‌ترین‌های هر روز هفتهٔ فعال (تا ۳ نوبت آینده برای هر DOW)
+      st.weeklyDows.forEach(function(dow){
+        var first = null, skipped = [], found = 0;
+        for(var off=0; off<7; off++){
+          var d = new Date(refMs + off * 86400000);
+          if(d.getDay() === dow){ first = midnight(d); break; }
+        }
+        if(!first) return;
+        for(var w=0; w<52 && found < 3; w++){
+          var cur = new Date(first.getTime() + w * 7 * 86400000);
+          var key = toJ(cur);
+          if(seen[key]) continue;
+          var reason = isBookable(key, cur, patientType, excludeId, false);
+          if(!reason){
+            pushCandidate(key, cur, dow, !!st.activeDateKeys[key], skipped);
+            found++;
+            skipped = [];
+          } else {
+            skipped.push({ jalali:key, reason:reason });
+          }
+        }
+      });
+
+      results.sort(function(a,b){
+        // روز فعال تقویم کمی جلوتر
+        if(!!a.fromActive !== !!b.fromActive) return a.fromActive ? -1 : 1;
+        var da = Math.abs(a.gregorian.getTime() - refMs);
+        var db = Math.abs(b.gregorian.getTime() - refMs);
+        if(da !== db) return da - db;
+        if(a.bucketUtil !== b.bucketUtil) return a.bucketUtil - b.bucketUtil;
+        return b.bucketRemain - a.bucketRemain;
+      });
+
+      return {
+        sat: results.find(function(r){ return r.dow === 6; }) || results[0] || null,
+        wed: results.find(function(r){ return r.dow === 3; }) || results[1] || null,
+        all: results
+      };
+    }catch(e){
+      console.error('v172 appointment suggestions failed', e);
+      return { sat:null, wed:null, all:[] };
+    }
+  });
+
+  assignGlobal('apptUpdateAllowedDaysNote', function(){
+    var el = document.getElementById('apptAllowedDaysNote');
+    if(!el) return;
+    var st = state();
+    var exactN = (st.activeFutureDates || []).length;
+    el.innerHTML =
+      'روزهای فعال نوبت‌دهی: <b>' + st.allowedDows.map(dayName).join('، ') + '</b>.'
+      + (exactN ? (' از تقویم <b>' + exactN + '</b> روز فعال آینده هم مستقیماً پیشنهاد می‌شود.') : '')
+      + ' اگر دوشنبه‌ای را در تقویم فعال کرده باشید، دوشنبه در پیشنهادها می‌آید.';
+  });
+
+  // بج «روز فعال» روی کارت‌های پیشنهاد
+  function decorateSuggestCards(){
+    var box = document.getElementById('apptSuggestCards');
+    if(!box) return;
+    var st = state();
+    box.querySelectorAll('[data-jalali], button, .appt-suggest-card, div').forEach(function(el){
+      try{
+        var key = el.getAttribute('data-jalali') || '';
+        if(!key){
+          var txt = el.textContent || '';
+          var m = txt.match(/14\d{2}\/\d{2}\/\d{2}/);
+          if(m) key = normKey(m[0]);
+        }
+        if(!key || !st.activeDateKeys[key]) return;
+        if(el.querySelector && el.querySelector('.prp-active-day-badge')) return;
+        var badge = document.createElement('span');
+        badge.className = 'prp-active-day-badge';
+        badge.textContent = '✓ روز فعال تقویم';
+        if(el.firstChild) el.insertBefore(badge, el.firstChild);
+        else el.appendChild(badge);
+      }catch(e){}
+    });
+  }
+
+  var baseSelect = null;
+  function wrapSelectPatient(){
+    var fn = window.apptSelectPatient || (typeof apptSelectPatient === 'function' ? apptSelectPatient : null);
+    if(typeof fn !== 'function' || fn.__prpV172Wrapped) return;
+    var wrapped = function(){
+      var ret = fn.apply(this, arguments);
+      try{ if(typeof window.apptUpdateAllowedDaysNote === 'function') window.apptUpdateAllowedDaysNote(); }catch(e){}
+      setTimeout(decorateSuggestCards, 30);
+      setTimeout(decorateSuggestCards, 120);
+      return ret;
+    };
+    wrapped.__prpV172Wrapped = true;
+    try{ Object.keys(fn).forEach(function(k){ try{ wrapped[k] = fn[k]; }catch(e){} }); }catch(e){}
+    window.apptSelectPatient = wrapped;
+    try{ apptSelectPatient = wrapped; }catch(e){}
+    baseSelect = wrapped;
+  }
+
+  function wrapOpenAppt(){
+    var fn = window.openApptModal || (typeof openApptModal === 'function' ? openApptModal : null);
+    if(typeof fn !== 'function' || fn.__prpV172Wrapped) return;
+    var wrapped = function(){
+      var ret = fn.apply(this, arguments);
+      try{ state(); }catch(e){}
+      try{ if(typeof window.apptUpdateAllowedDaysNote === 'function') window.apptUpdateAllowedDaysNote(); }catch(e){}
+      return ret;
+    };
+    wrapped.__prpV172Wrapped = true;
+    try{ Object.keys(fn).forEach(function(k){ try{ wrapped[k] = fn[k]; }catch(e){} }); }catch(e){}
+    window.openApptModal = wrapped;
+    try{ openApptModal = wrapped; }catch(e){}
+  }
+
+  window.prpRunV172ScenarioTests = function(){
+    var results = [];
+    function ok(name, pass){ results.push({ name:name, ok:!!pass }); }
+    // شبیه‌سازی: دوشنبه در activeDates
+    var prevDates = window.activeDates, prevCaps = window.activeCaps, prevWd = window.activeWeekdays;
+    try{
+      window.activeWeekdays = [{dow:6,cap:40},{dow:3,cap:40}];
+      // یک دوشنبه آینده بساز
+      var today = new Date();
+      var mon = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      while(mon.getDay() !== 1) mon.setDate(mon.getDate() + 1);
+      if(mon.getTime() <= today.getTime()) mon.setDate(mon.getDate() + 7);
+      var monJ = toJ(mon);
+      window.activeDates = [monJ];
+      window.activeCaps = [40];
+      var st = state();
+      ok('دوشنبه از تقویم وارد روزهای کلینیک می‌شود', st.weeklyDows.indexOf(1) !== -1);
+      var sug = window.apptFindNearestSatWed(monJ, 'active', null);
+      ok('پیشنهاد شامل دوشنبه فعال است', !!(sug && sug.all && sug.all.some(function(r){ return r.dow === 1 || r.jalali === monJ; })));
+      ok('روز فعال تقویم fromActive دارد', !!(sug && sug.all && sug.all.some(function(r){ return r.fromActive && r.jalali === monJ; })));
+    }catch(e){
+      ok('سناریو بدون خطا', false);
+    }
+    try{
+      window.activeDates = prevDates;
+      window.activeCaps = prevCaps;
+      window.activeWeekdays = prevWd;
+    }catch(e){}
+    window.__PRP_V172_SCENARIO_TESTS = {
+      passed: results.filter(function(r){ return r.ok; }).length,
+      total: results.length,
+      results: results,
+      at: new Date().toISOString()
+    };
+    return window.__PRP_V172_SCENARIO_TESTS;
+  };
+
+  function install(){
+    try{ state(); }catch(e){}
+    wrapSelectPatient();
+    wrapOpenAppt();
+    try{ if(typeof window.apptUpdateAllowedDaysNote === 'function') window.apptUpdateAllowedDaysNote(); }catch(e){}
+    try{ window.prpRunV172ScenarioTests(); }catch(e){ console.error('v172 tests failed', e); }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 0);
+  setTimeout(install, 800);
+  setTimeout(install, 2000);
 })();
 </script>
 </body></html>
