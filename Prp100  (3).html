@@ -31115,5 +31115,561 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
   setTimeout(install, 1800);
 })();
 </script>
+
+<!-- PRP v171: نرمال‌سازی ابعاد و فاصله‌ها در کل برنامه -->
+<style id="prp-v171-ui-normalize">
+:root{
+  /* فاصله */
+  --prp-space-1:4px;
+  --prp-space-2:8px;
+  --prp-space-3:12px;
+  --prp-space-4:16px;
+  --prp-space-5:20px;
+  --prp-space-6:24px;
+
+  /* گوشه */
+  --prp-radius-sm:8px;
+  --prp-radius-md:12px;
+  --prp-radius-lg:16px;
+  --prp-radius-xl:20px;
+  --prp-radius-pill:999px;
+
+  /* ارتفاع کنترل‌ها */
+  --prp-ctrl-xs:28px;
+  --prp-ctrl-sm:32px;
+  --prp-ctrl-md:40px;
+  --prp-ctrl-lg:44px;
+  --prp-ctrl-xl:48px;
+
+  /* تایپ */
+  --prp-fs-micro:10px;
+  --prp-fs-xs:11px;
+  --prp-fs-sm:12px;
+  --prp-fs-md:13px;
+  --prp-fs-lg:14px;
+  --prp-fs-xl:15px;
+
+  /* مودال */
+  --prp-modal-pad:12px 16px;
+  --prp-modal-sm:24rem;
+  --prp-modal-lg:min(1080px, calc(100vw - 32px));
+  --prp-modal-xl:min(1400px, calc(100vw - 24px));
+
+  /* جدول */
+  --prp-table-pad-x:16px;
+  --prp-table-pad-y:12px;
+}
+
+/* ── پایه یکدست ── */
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-size:var(--prp-fs-md) !important;
+  line-height:1.5 !important;
+}
+button, input, select, textarea{
+  font-family:var(--app-font) !important;
+  line-height:1.35 !important;
+}
+button{
+  min-height:var(--prp-ctrl-sm);
+  border-radius:var(--prp-radius-md);
+}
+
+/* ── هدر ── */
+.header-tool-btn,
+.header-backup-btn{
+  width:var(--prp-ctrl-sm) !important;
+  height:var(--prp-ctrl-sm) !important;
+  min-width:var(--prp-ctrl-sm) !important;
+  min-height:var(--prp-ctrl-sm) !important;
+  border-radius:var(--prp-radius-pill) !important;
+  font-size:var(--prp-fs-xl) !important;
+  padding:0 !important;
+}
+.header-main-action{
+  min-height:var(--prp-ctrl-md) !important;
+  height:auto !important;
+  padding:8px 14px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+  gap:var(--prp-space-2) !important;
+}
+.header-pill{
+  min-height:var(--prp-ctrl-xs) !important;
+  padding:4px 10px !important;
+  border-radius:var(--prp-radius-pill) !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+
+/* ── تب‌ها ── */
+.tab-buttons{
+  min-height:var(--prp-ctrl-xl) !important;
+  padding-top:10px !important;
+  padding-bottom:10px !important;
+  font-size:var(--prp-fs-lg) !important;
+  border-radius:0 !important;
+}
+
+/* ── نوار جستجو و اکشن‌های بالا ── */
+#mainSearchRow{
+  gap:var(--prp-space-3) !important;
+  padding:var(--prp-space-3) !important;
+}
+#mainSearchRow #searchInput{
+  min-height:var(--prp-ctrl-lg) !important;
+  height:var(--prp-ctrl-lg) !important;
+  padding:10px 14px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-lg) !important;
+}
+#mainSearchRow #excelBtn,
+#mainSearchRow #printBtn,
+#mainSearchRow #blankFormBtn,
+#mainSearchRow #smsDateBtn,
+#mainSearchRow #bulkConfirmBtn,
+#mainSearchRow button.px-4,
+#mainSearchRow button.px-5{
+  min-height:var(--prp-ctrl-lg) !important;
+  height:var(--prp-ctrl-lg) !important;
+  padding:0 14px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+  width:auto !important;
+  max-width:none !important;
+}
+#sortSelect,
+#sortControls select{
+  min-height:var(--prp-ctrl-md) !important;
+  height:var(--prp-ctrl-md) !important;
+  padding:6px 10px !important;
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-xs) !important;
+}
+
+/* ── چیپ‌ها و بج‌ها ── */
+.stage-count-chip,
+.header-pill,
+.appt-panel-chip,
+.stage-plan-chip,
+.prp-v127-month-badge,
+.count-badge,
+.crisis-chip{
+  min-height:22px !important;
+  padding:3px 8px !important;
+  border-radius:var(--prp-radius-pill) !important;
+  font-size:var(--prp-fs-xs) !important;
+  line-height:1.2 !important;
+}
+.day-num-badge,
+.status-chip{
+  width:24px !important;
+  height:24px !important;
+  min-width:24px !important;
+  min-height:24px !important;
+  border-radius:var(--prp-radius-pill) !important;
+  font-size:var(--prp-fs-micro) !important;
+}
+
+/* ── دکمه‌های آیکونی جدول ── */
+.glass-icon-btn,
+.call-glass-btn,
+.confirmed-book-btn{
+  width:var(--prp-ctrl-sm) !important;
+  height:var(--prp-ctrl-sm) !important;
+  min-width:var(--prp-ctrl-sm) !important;
+  min-height:var(--prp-ctrl-sm) !important;
+  max-width:var(--prp-ctrl-sm) !important;
+  max-height:var(--prp-ctrl-sm) !important;
+  padding:0 !important;
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-xl) !important;
+}
+.confirmed-aux-btn,
+body[data-current-tab="confirmedList"] .confirmed-aux-btn,
+body[data-current-tab="callList"] .confirmed-aux-btn{
+  width:var(--prp-ctrl-xs) !important;
+  height:var(--prp-ctrl-xs) !important;
+  min-width:var(--prp-ctrl-xs) !important;
+  min-height:var(--prp-ctrl-xs) !important;
+  max-width:var(--prp-ctrl-xs) !important;
+  max-height:var(--prp-ctrl-xs) !important;
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-md) !important;
+  padding:0 !important;
+}
+
+/* دکمه‌های متنی عملیات (مثل ثبت نوبت در بایگانی) */
+.op-col button.px-3,
+.op-col button.text-xs{
+  min-height:var(--prp-ctrl-sm) !important;
+  height:auto !important;
+  padding:6px 10px !important;
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-xs) !important;
+  line-height:1.2 !important;
+}
+
+/* ── جدول ── */
+#tableContainer table thead th,
+#patientTable thead th,
+table thead th{
+  padding:10px var(--prp-table-pad-x) !important;
+  font-size:var(--prp-fs-xs) !important;
+}
+#tableContainer table tbody td,
+#patientTable tbody td,
+table tbody td{
+  padding:var(--prp-table-pad-y) var(--prp-table-pad-x) !important;
+  vertical-align:middle !important;
+}
+#tableContainer table tbody td.op-col,
+table tbody td.op-col{
+  padding:8px 10px !important;
+}
+.op-col > div{
+  gap:6px !important;
+}
+
+/* ── سایدبار / کارت روز ── */
+aside .bg-white.rounded-2xl,
+aside .rounded-2xl.border{
+  border-radius:var(--prp-radius-lg) !important;
+  padding:var(--prp-space-3) !important;
+}
+#activeDatesDisplay .capBtn,
+.capBtn{
+  min-height:56px !important;
+  border-radius:var(--prp-radius-md) !important;
+  padding:10px 12px !important;
+}
+.prp-v94-side-card,
+.prp-v127-day-card,
+.prp-v129-day-card,
+[class*="prp-v127"][class*="card"],
+[class*="prp-v129"][class*="card"]{
+  min-height:56px !important;
+  border-radius:var(--prp-radius-md) !important;
+}
+.capDate{ font-size:var(--prp-fs-lg) !important; }
+.capMeta, .capRow{ gap:var(--prp-space-2) !important; }
+
+/* ── فیلتر تاریخ تایید ── */
+#dateButtonsContainer button,
+#confirmedDateFilter button{
+  min-height:var(--prp-ctrl-md) !important;
+  min-width:84px !important;
+  padding:8px 10px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-xs) !important;
+}
+.visit-day-btn{
+  min-height:var(--prp-ctrl-md) !important;
+  padding:8px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+.visit-day-btn .vd-date{ font-size:var(--prp-fs-xs) !important; }
+.visit-day-btn .vd-day,
+.visit-day-btn .vd-badge{ font-size:var(--prp-fs-micro) !important; }
+.visit-day-grid{ gap:var(--prp-space-2) !important; }
+
+/* ── فرم‌ها و اینپوت‌ها ── */
+#addModal input,
+#addModal select,
+#addModal textarea,
+#editModal input,
+#editModal select,
+#editModal textarea,
+#settingsModal input,
+#settingsModal select,
+#settingsModal textarea,
+#appointmentBookingSection input,
+#appointmentBookingSection select,
+#appointmentBookingSection textarea,
+.setting-row input.date-input,
+.setting-row input.cap-input{
+  min-height:var(--prp-ctrl-md) !important;
+  padding:8px 12px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-md) !important;
+}
+#addModal textarea,
+#editModal textarea{
+  min-height:72px !important;
+  height:auto !important;
+}
+#addModal label,
+#editModal label,
+#settingsModal label{
+  font-size:var(--prp-fs-xs) !important;
+  margin-bottom:4px !important;
+}
+
+/* ── مودال‌ها ── */
+#msgModal > div{
+  max-width:var(--prp-modal-sm) !important;
+  width:100% !important;
+  border-radius:var(--prp-radius-xl) !important;
+  padding:var(--prp-modal-pad) !important;
+}
+#msgModal #msgTitle{
+  font-size:var(--prp-fs-xl) !important;
+  margin-bottom:var(--prp-space-3) !important;
+  padding-bottom:var(--prp-space-2) !important;
+}
+#msgModal #msgText{
+  font-size:var(--prp-fs-sm) !important;
+  margin-bottom:var(--prp-space-4) !important;
+  line-height:1.6 !important;
+  white-space:pre-wrap !important;
+}
+#msgModal #msgBtn,
+#msgModal #msgCancelBtn,
+#msgModal #msgExtraBtn{
+  min-height:var(--prp-ctrl-md) !important;
+  padding:8px 14px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+#msgModal > div > .flex.justify-end{
+  gap:var(--prp-space-2) !important;
+  flex-wrap:wrap !important;
+}
+#msgModal #confirmDateButtons button{
+  min-height:var(--prp-ctrl-md) !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+  padding:8px 10px !important;
+}
+
+#addModal > div,
+#editModal > div,
+.add-modal-card,
+.edit-modal-card{
+  max-width:var(--prp-modal-lg) !important;
+  border-radius:var(--prp-radius-xl) !important;
+}
+#addModal .p-6,
+#editModal .p-6,
+#addModal .add-modal-body,
+#editModal .edit-modal-body{
+  padding:var(--prp-space-4) !important;
+}
+
+#appointmentBookingSection > div,
+#appointmentBookingSection .appt-shell,
+#appointmentBookingSection [class*="max-w"]{
+  border-radius:var(--prp-radius-xl) !important;
+}
+#appointmentBookingSection button{
+  min-height:var(--prp-ctrl-md);
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+#appointmentBookingSection input[type="text"],
+#appointmentBookingSection input:not([type]),
+#appointmentBookingSection select{
+  min-height:var(--prp-ctrl-md) !important;
+  border-radius:var(--prp-radius-md) !important;
+}
+
+#statsModal > div{
+  border-radius:var(--prp-radius-xl) !important;
+}
+#histModal > div,
+#settingsModal > div{
+  border-radius:var(--prp-radius-xl) !important;
+}
+
+/* ── تنظیمات ردیف‌ها ── */
+.setting-row{
+  padding:var(--prp-space-2) var(--prp-space-3) !important;
+  border-radius:var(--prp-radius-md) !important;
+}
+.setting-row input.date-input,
+.setting-row input.cap-input{
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-md) !important;
+  padding:8px 10px !important;
+}
+.first-visit-btn{
+  min-height:var(--prp-ctrl-md) !important;
+  border-radius:var(--prp-radius-md) !important;
+  padding:8px 12px !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+
+/* ── نوار هشدار / undo / inventory ── */
+#undoBar,
+#invAlertBar,
+#backupWarningBar{
+  border-radius:var(--prp-radius-md) !important;
+  padding:8px 12px !important;
+  font-size:var(--prp-fs-sm) !important;
+  gap:var(--prp-space-2) !important;
+}
+#undoBar button,
+#invAlertBar button,
+#backupWarningBar button{
+  min-height:var(--prp-ctrl-sm) !important;
+  padding:6px 10px !important;
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-xs) !important;
+}
+
+/* ── توست ── */
+.prp-toast,
+[id*="toast"],
+#toastContainer > *{
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+  padding:10px 14px !important;
+}
+
+/* ── موبایل: عملیات مخفی نشود، فشرده شود ── */
+@media (max-width:640px){
+  .op-col{
+    display:table-cell !important;
+    min-width:132px !important;
+    max-width:160px !important;
+    padding:6px 6px !important;
+  }
+  .op-col > div{
+    flex-wrap:wrap !important;
+    justify-content:center !important;
+    gap:4px !important;
+  }
+  .glass-icon-btn,
+  .call-glass-btn,
+  .confirmed-book-btn{
+    width:30px !important;
+    height:30px !important;
+    min-width:30px !important;
+    min-height:30px !important;
+    font-size:14px !important;
+  }
+  .confirmed-aux-btn{
+    width:26px !important;
+    height:26px !important;
+    min-width:26px !important;
+    min-height:26px !important;
+  }
+  .tab-buttons{
+    min-height:44px !important;
+    padding-top:8px !important;
+    padding-bottom:8px !important;
+    font-size:var(--prp-fs-sm) !important;
+  }
+  #mainSearchRow #searchInput,
+  #mainSearchRow #excelBtn,
+  #mainSearchRow #printBtn,
+  #mainSearchRow #blankFormBtn,
+  #mainSearchRow #smsDateBtn,
+  #mainSearchRow #bulkConfirmBtn{
+    min-height:var(--prp-ctrl-md) !important;
+    height:var(--prp-ctrl-md) !important;
+  }
+  #tableContainer table tbody td,
+  table tbody td{
+    padding:10px 8px !important;
+  }
+  .header-main-action{
+    min-height:var(--prp-ctrl-sm) !important;
+    padding:6px 10px !important;
+    font-size:var(--prp-fs-xs) !important;
+  }
+  #msgModal{
+    align-items:flex-end !important;
+    padding:8px !important;
+  }
+  #msgModal > div{
+    max-width:100% !important;
+    border-radius:16px 16px 12px 12px !important;
+  }
+}
+
+@media (max-width:900px){
+  .header-tool-btn,
+  .header-backup-btn{
+    width:30px !important;
+    height:30px !important;
+    min-width:30px !important;
+    min-height:30px !important;
+  }
+  body[data-current-tab="confirmedList"] .op-col,
+  body[data-current-tab="callList"] .op-col{
+    min-width:200px !important;
+  }
+  #mainSearchRow{
+    padding:10px !important;
+  }
+}
+
+/* ── پنل کناری / فعالیت‌ها ── */
+aside input[type="text"],
+aside input:not([type]),
+aside select{
+  min-height:var(--prp-ctrl-md) !important;
+  height:var(--prp-ctrl-md) !important;
+  padding:8px 10px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+main{
+  gap:var(--prp-space-4) !important;
+  padding:var(--prp-space-4) !important;
+}
+
+/* چاپ: عملیات همچنان مخفی بماند */
+@media print{
+  .op-col{ display:none !important; }
+  #prp-v171-ui-normalize{ display:none !important; }
+}
+</style>
+
+<script id="prp-v171-ui-normalize-tune">
+(function(){
+  'use strict';
+  if(window.__PRP_V171_UI_NORMALIZE__) return;
+  window.__PRP_V171_UI_NORMALIZE__ = true;
+
+  // نرمال‌سازی سبک‌های inline روی پنل فعالیت و چند کنترل مانده
+  function tuneActivityPanel(){
+    var root = document.getElementById('activityPanel') || document.querySelector('[id*="activ"]');
+    var scope = root || document.body;
+    scope.querySelectorAll('input[type="text"], input:not([type]), select').forEach(function(el){
+      if(!el || el.id === 'searchInput') return;
+      // فقط کنترل‌های کوچک پنل کناری
+      var inAside = !!(el.closest && el.closest('aside'));
+      if(!inAside && !(root && root.contains(el))) return;
+      try{
+        el.style.minHeight = '40px';
+        el.style.height = '40px';
+        el.style.borderRadius = '12px';
+        el.style.fontSize = '12px';
+        el.style.padding = '8px 10px';
+      }catch(e){}
+    });
+  }
+
+  function tuneMainGaps(){
+    try{
+      var main = document.querySelector('main');
+      if(main){
+        main.style.gap = '16px';
+        main.style.padding = '16px';
+      }
+    }catch(e){}
+  }
+
+  function install(){
+    tuneMainGaps();
+    tuneActivityPanel();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 800);
+})();
+</script>
 </body></html>
 
