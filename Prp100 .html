@@ -156,6 +156,7 @@
 body.has-modal .sticky { z-index: 1 !important; position: relative !important; }
 body.has-modal [class*="sticky top"] { z-index: 1 !important; position: relative !important; }
 #tableContainer{position:relative;}#stageCounts{display:grid!important;grid-template-columns:repeat(2,minmax(76px,1fr));gap:6px;min-width:168px;max-width:220px;white-space:normal!important;}#stageCounts .stage-count-chip{display:flex;align-items:center;justify-content:center;padding:6px 8px;border-radius:12px;border:1px solid transparent;line-height:1.15;cursor:pointer;user-select:none;font-size:11px;font-weight:900;transition:transform .12s ease,box-shadow .12s ease,filter .12s ease;}#stageCounts .stage-count-chip:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(15,23,42,.10);filter:saturate(1.04);}#stageCounts .stage-count-chip:active{transform:scale(.97);}#stageCounts .stage-count-chip.is-active{box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(37,99,235,.28);}#stageCounts .s1{background:#e0f2fe;color:#075985;border-color:#bae6fd;}#stageCounts .s2{background:#fef3c7;color:#92400e;border-color:#fde68a;}#stageCounts .s3{background:#ede9fe;color:#5b21b6;border-color:#ddd6fe;}#stageCounts .s4{background:#fee2e2;color:#991b1b;border-color:#fecaca;}@media(max-width:760px){#stageCounts{width:100%;max-width:none;margin-top:4px;}.flex.gap-2{flex-wrap:wrap;}}#tableContainer::-webkit-scrollbar{width:5px;height:5px}#tableContainer::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:9999px}#tableContainer::-webkit-scrollbar-track{background:transparent}
+#stageCounts .overdue23{grid-column:1/-1;background:#fff1f2;color:#be123c;border-color:#fda4af;}
 
 /* === Fix top toolbar layout (tab scoped) ===
    Previous toolbar CSS was global; this keeps All Patients clean and applies
@@ -6053,6 +6054,7 @@ function copyCurrentSmsMessage(){
                 { v:'stage1',        l:'🔢 نوبت اول',       tip:'فیلتر واقعی: بیماران نوبت اول؛ اول تاریخ‌گذشته‌ها' },
                 { v:'stage2',        l:'🔢 نوبت دوم',       tip:'فیلتر واقعی: بیماران نوبت دوم؛ اول تاریخ‌گذشته‌ها' },
                 { v:'stage3',        l:'🔢 نوبت سوم',       tip:'فیلتر واقعی: بیماران نوبت سوم؛ اول تاریخ‌گذشته‌ها' },
+                { v:'overdueStage23',l:'📞 نوبت ۲/۳ معوق',  tip:'فقط نوبت‌های دوم و سومِ تاریخ‌گذشته که هنوز قطعی نشده‌اند' },
                 { v:'stage4',        l:'🔢 یادآور',       tip:'فیلتر واقعی: بیماران یادآور؛ اول تاریخ‌گذشته‌ها' },
                 { v:'actionTime',    l:'📅 موعد اقدام',      tip:'نزدیک‌ترین موعد تماس یا نوبت' },
                 { v:'overdueDays',   l:'⏰ عقب‌افتادگی',     tip:'بیشترین روز تأخیر بالاتر' },
@@ -10017,6 +10019,30 @@ else txt = toPersianDigits(String(window.pendingCallLaterDays)) + ' روز بع�
             return base;
         }
 
+        function treatmentFollowupDueDate(p){
+            if(!p) return null;
+            var fields = p.status === 'CONFIRMED'
+                ? ['nextAppointment']
+                : ['followupDueDate', 'idealNextDate', 'nextAppointment'];
+            for(var i = 0; i < fields.length; i++){
+                var d = dateFromMaybeJalali(p[fields[i]]);
+                if(d && !isNaN(d.getTime())) return d;
+            }
+            return null;
+        }
+
+        function isOverdueStage23Call(p, today){
+            if(!p || (p.status !== 'PENDING_CALL' && p.status !== 'NEEDS_DECISION')) return false;
+            var stage = parseInt(p.currentStage || p.stage || 0, 10) || 0;
+            if(stage !== 2 && stage !== 3) return false;
+            var due = treatmentFollowupDueDate(p);
+            if(!due) return false;
+            due.setHours(0,0,0,0);
+            var day = today ? new Date(today.getTime()) : new Date();
+            day.setHours(0,0,0,0);
+            return due.getTime() < day.getTime();
+        }
+
         function renderStageCountsForCallList(list){
             var el = document.getElementById('stageCounts');
             if(!el) return;
@@ -10031,12 +10057,15 @@ else txt = toPersianDigits(String(window.pendingCallLaterDays)) + ' روز بع�
                 var st = parseInt(p.currentStage || p.stage || 0, 10) || 0;
                 if(counts.hasOwnProperty(st)) counts[st]++;
             });
+            var overdue23Count = (list || []).filter(function(p){ return isOverdueStage23Call(p); }).length;
             var active = (sortState && sortState.col) ? sortState.col : '';
             function chip(stage, cls, label, title){
                 var isActive = active === ('stage' + stage) ? ' is-active' : '';
                 return '<button type="button" class="stage-count-chip '+cls+isActive+'" title="'+title+'" onclick="setStageSort('+stage+')">'+label+' (' + toPersianDigits(counts[stage]) + ')</button>';
             }
+            var overdueActive = active === 'overdueStage23' ? ' is-active' : '';
             el.innerHTML =
+                '<button type="button" class="stage-count-chip overdue23'+overdueActive+'" title="فقط نوبت‌های دوم و سومِ تاریخ‌گذشته و آماده تماس" onclick="setSortMode(\'overdueStage23\')">📞 نوبت ۲/۳ معوق (' + toPersianDigits(overdue23Count) + ')</button>' +
                 chip(1, 's1', 'اول', 'نمایش و سورت نوبت اول') +
                 chip(2, 's2', 'دوم', 'نمایش و سورت نوبت دوم') +
                 chip(3, 's3', 'سوم', 'نمایش و سورت نوبت سوم') +
@@ -10093,10 +10122,8 @@ var cache = getCallListBaseCached(tfVal);
       var d1 = new Date(p.callLaterAt);
       if(!isNaN(d1.getTime())) return d1;
     }
-    if(p.nextAppointment){
-      var d2 = dateFromMaybeJalali(p.nextAppointment);
-      if(d2 && !isNaN(d2.getTime())){ d2.setHours(0,0,0,0); return d2; }
-    }
+    var d2 = treatmentFollowupDueDate(p);
+    if(d2 && !isNaN(d2.getTime())){ d2.setHours(0,0,0,0); return d2; }
     return new Date(8640000000000000);
   }
 
@@ -10155,7 +10182,33 @@ var cache = getCallListBaseCached(tfVal);
   // شروع از base برای سورت‌های دستی
   list = cache.base.slice();
 
-  if(/^stage[1-4]$/.test(col)){
+  if(col === 'overdueStage23'){
+    var today23 = new Date(); today23.setHours(0,0,0,0);
+    list = list.filter(function(p){ return isOverdueStage23Call(p, today23); });
+    list.sort(function(a,b){
+      function calledToday(p){
+        if(!p.lastCallDate) return 0;
+        var d = new Date(p.lastCallDate);
+        if(isNaN(d.getTime())) return 0;
+        d.setHours(0,0,0,0);
+        return d.getTime() === today23.getTime() ? 1 : 0;
+      }
+      var ac = calledToday(a), bc = calledToday(b);
+      if(ac !== bc) return ac - bc;
+      var ad = treatmentFollowupDueDate(a);
+      var bd = treatmentFollowupDueDate(b);
+      var at = ad ? ad.getTime() : 8640000000000000;
+      var bt = bd ? bd.getTime() : 8640000000000000;
+      if(at !== bt) return (at - bt) * dir;
+      var as = parseInt(a.currentStage || a.stage || 0, 10) || 0;
+      var bs = parseInt(b.currentStage || b.stage || 0, 10) || 0;
+      if(as !== bs) return bs - as;
+      var ap = (a.isEmergency || a.isVip) ? 1 : 0;
+      var bp = (b.isEmergency || b.isVip) ? 1 : 0;
+      if(ap !== bp) return bp - ap;
+      return ((a.fullName || a.name || '').toString()).localeCompare((b.fullName || b.name || '').toString(), 'fa');
+    });
+  } else if(/^stage[1-4]$/.test(col)){
     var targetStage = parseInt(col.replace('stage',''), 10);
     var todayStage = new Date(); todayStage.setHours(0,0,0,0);
 
@@ -10500,7 +10553,7 @@ if (currentTab === 'callList') {
             });  // closes list.sort
             } // end callList smart sort
 
-            if(currentTab === 'callList') renderStageCountsForCallList(list); else renderStageCountsForCallList([]);
+            if(currentTab === 'callList') renderStageCountsForCallList(cache.base); else renderStageCountsForCallList([]);
 
             if(list.length === 0 && processedList.length === 0) { 
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400 font-medium">موردی یافت نشد</td></tr>';
