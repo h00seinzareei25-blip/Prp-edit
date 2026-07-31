@@ -1947,7 +1947,7 @@ body[data-current-tab="allList"] #bulkConfirmBtn{
         </div>
         <details class="appt-system-note">
           <summary>قوانین نوبت‌دهی</summary>
-          <div id="apptAllowedDaysNote">نوبت‌ها فقط روزهای <span style="color:#047857;font-weight:900">شنبه</span> و <span style="color:#1d4ed8;font-weight:900">چهارشنبه</span> ثبت می‌شوند</div>
+          <div id="apptAllowedDaysNote">پیشنهادها از <b>روزهای فعال تقویم</b> و <b>روزهای هفتهٔ فعال</b> ساخته می‌شوند.</div>
         </details>
         <button class="appt-close-btn" onclick="closeApptModal()" aria-label="بستن">✕</button>
       </div>
@@ -2056,26 +2056,26 @@ body[data-current-tab="allList"] #bulkConfirmBtn{
 </div> </div> <div class="flex-1 next-summary"> <div class="next-summary-title">نوبت بعدی تقریبی</div> <div class="next-summary-row"> <div id="nextDateValue" class="next-date">1405/01/21</div> <span id="nextDaysValue" class="next-badge">59 روز دیگر</span> </div> </div> </div> <div id="nextDatePreview" style="display:none">نوبت بعدی تقریبی: 1405/01/21 (59 روز دیگر)</div> </div> <div class="space-y-4"> <div class="grid grid-cols-2 gap-4"> <div><label class="block text-xs font-bold text-gray-500 mb-1">نام و نام خانوادگی</label><input id="addName" required="" class="w-full border border-gray-200 rounded-xl p-2.5 focus:ring-1 focus:ring-blue-500 outline-none transition bg-gray-50 focus:bg-white"></div> <div><label class="block text-xs font-bold text-gray-500 mb-1">کد ملی</label><input type="text" inputmode="numeric" maxlength="10" pattern="\d*" id="addNationalId" required="" class="w-full border border-gray-200 rounded-xl p-2.5 focus:ring-1 focus:ring-blue-500 outline-none transition bg-gray-50 focus:bg-white"></div> </div> <div class="w-full"> <div id="addDupHint" class="hidden -mt-2 mb-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"> <div class="font-extrabold mb-1">⚠️ اطلاعات تکراری</div> <div id="addDupHintText" class="leading-6"></div> </div>
 <div class="add-triple-row"> <div><label class="block text-xs font-bold text-gray-500 mb-1">موبایل</label><input type="tel" id="addPhone" required="" class="w-full border border-gray-200 rounded-xl p-2.5 focus:ring-1 focus:ring-blue-500 outline-none transition bg-gray-50 focus:bg-white"></div> <div><label class="block text-xs font-bold text-gray-500 mb-1">ناحیه تزریق</label> <select id="addSite" class="w-full border border-gray-200 rounded-xl p-2.5 bg-white focus:ring-1 focus:ring-blue-500 outline-none"><option>زانو چپ</option><option>زانو راست</option><option>کتف چپ</option><option>کتف راست</option><option>آرنج چپ</option><option>آرنج راست</option><option>دنبالچه</option><option>میخچه پای چپ</option><option>میخچه پای راست</option><option>سایر</option></select> </div> <div><label class="block text-xs font-bold text-gray-500 mb-1">مرحله شروع</label> <select id="addStage" class="w-full border border-gray-200 rounded-xl p-2.5 bg-white focus:ring-1 focus:ring-blue-500 outline-none" onchange="calculateNextDatePreview()"><option value="1">1 (اول)</option><option value="2">2 (دوم)</option><option value="3">3 (سوم)</option><option value="4">4 (یادآور)</option></select> </div>
 </div> </div> </div> <div class="add-check-grid w-full">
-<label class="flex items-center gap-2 p-2 border border-gray-200 rounded-xl bg-gray-50 cursor-pointer hover:bg-gray-100 transition hover:border-gray-300" style="flex:1; justify-content:center;"> <input type="checkbox" id="addIns" class="w-4 h-4 text-blue-600 rounded"> <span class="text-blue-600 text-sm font-medium" title="تکمیلی" aria-label="تکمیلی">🛡️ تکمیلی</span> </label>
-<label class="flex items-center gap-2 p-2 border border-green-100 rounded-xl bg-green-50 cursor-pointer hover:bg-green-100 transition" style="flex:1; justify-content:center;"> <input type="checkbox" id="addEmptySlot" class="w-4 h-4 text-green-600 rounded"> <span class="text-green-700 text-sm font-medium" title="لیست انتظار (تماس در صورت نوبت خالی)" aria-label="لیست انتظار (تماس در صورت نوبت خالی)">⏳ لیست انتظار</span> </label>
-<label class="flex items-center gap-2 p-2 border border-amber-100 rounded-xl bg-amber-50 cursor-pointer hover:bg-amber-100 transition" style="flex:1; justify-content:center;"> <input type="checkbox" id="addVip" class="w-4 h-4 text-amber-600 rounded"> <span class="text-amber-600 text-sm font-medium" title="سفارشی" aria-label="سفارشی">⭐ سفارشی</span> </label>
-<label class="flex items-center gap-2 p-2 border border-red-100 rounded-xl bg-red-50 cursor-pointer hover:bg-red-100 transition" style="flex:1; justify-content:center;"> <input type="checkbox" id="addEmg" class="w-4 h-4 text-red-600 rounded"> <span class="text-red-600 text-sm font-medium" title="اورژانسی" aria-label="اورژانسی">🚨 اورژانسی</span> </label> </div>
-<div class="grid grid-cols-2 gap-3 w-full mt-2">
-<label class="flex items-center justify-center gap-2 p-2 border border-emerald-100 rounded-xl bg-emerald-50 cursor-pointer hover:bg-emerald-100 transition" style="justify-content:center;"> <input type="checkbox" id="addFree" class="w-4 h-4 text-emerald-600 rounded"> <span class="text-emerald-700 text-sm font-medium" title="رایگان / بدون دریافت هزینه" aria-label="رایگان">💚 رایگان</span> </label>
-<label class="flex items-center justify-center gap-2 p-2 border border-indigo-100 rounded-xl bg-indigo-50 cursor-pointer hover:bg-indigo-100 transition" style="justify-content:center;"> <input type="checkbox" id="addDoctorLetter" class="w-4 h-4 text-indigo-600 rounded"> <span class="text-indigo-700 text-sm font-medium" title="دارای نامه پزشک" aria-label="نامه پزشک">📄 نامه پزشک</span> </label> </div> <div class="prp-notes-card"><label class="block text-xs font-bold text-gray-500 mb-1">توضیحات</label><textarea id="addDesc" class="w-full border border-gray-200 rounded-xl p-2.5 focus:ring-1 focus:ring-blue-500 outline-none bg-gray-50 focus:bg-white flex-1" rows="2"></textarea></div>
+<label class="flex items-center gap-2 px-2 py-1.5 border border-red-100 rounded-xl bg-red-50 cursor-pointer hover:bg-red-100 transition"> <input type="checkbox" id="addEmg" class="w-4 h-4 text-red-600 rounded"> <span class="text-red-600 text-[11px] font-bold whitespace-nowrap" title="اورژانسی" aria-label="اورژانسی">🚨 اورژانسی</span> </label>
+<label class="flex items-center gap-2 px-2 py-1.5 border border-amber-100 rounded-xl bg-amber-50 cursor-pointer hover:bg-amber-100 transition"> <input type="checkbox" id="addVip" class="w-4 h-4 text-amber-600 rounded"> <span class="text-amber-600 text-[11px] font-bold whitespace-nowrap" title="سفارشی" aria-label="سفارشی">⭐ سفارشی</span> </label>
+<label class="flex items-center gap-2 px-2 py-1.5 border border-green-100 rounded-xl bg-green-50 cursor-pointer hover:bg-green-100 transition"> <input type="checkbox" id="addEmptySlot" class="w-4 h-4 text-green-600 rounded"> <span class="text-green-700 text-[11px] font-bold whitespace-nowrap" title="لیست انتظار (تماس در صورت نوبت خالی)" aria-label="لیست انتظار (تماس در صورت نوبت خالی)">⏳ لیست انتظار</span> </label>
+<label class="flex items-center gap-2 px-2 py-1.5 border border-gray-200 rounded-xl bg-gray-50 cursor-pointer hover:bg-gray-100 transition hover:border-gray-300"> <input type="checkbox" id="addIns" class="w-4 h-4 text-blue-600 rounded"> <span class="text-blue-600 text-[11px] font-bold whitespace-nowrap" title="تکمیلی" aria-label="تکمیلی">🛡️ تکمیلی</span> </label>
+<label class="flex items-center justify-center gap-2 px-2 py-1.5 border border-indigo-100 rounded-xl bg-indigo-50 cursor-pointer hover:bg-indigo-100 transition"> <input type="checkbox" id="addDoctorLetter" class="w-4 h-4 text-indigo-600 rounded"> <span class="text-indigo-700 text-[11px] font-bold whitespace-nowrap" title="دارای نامه پزشک" aria-label="نامه پزشک">📄 نامه پزشک</span> </label>
+<label class="flex items-center justify-center gap-2 px-2 py-1.5 border border-emerald-100 rounded-xl bg-emerald-50 cursor-pointer hover:bg-emerald-100 transition"> <input type="checkbox" id="addFree" class="w-4 h-4 text-emerald-600 rounded"> <span class="text-emerald-700 text-[11px] font-bold whitespace-nowrap" title="رایگان / بدون دریافت هزینه" aria-label="رایگان">💚 رایگان</span> </label>
+</div> <div class="prp-notes-card"><label class="block text-xs font-bold text-gray-500 mb-1">توضیحات</label><textarea id="addDesc" class="w-full border border-gray-200 rounded-xl p-2.5 focus:ring-1 focus:ring-blue-500 outline-none bg-gray-50 focus:bg-white flex-1" rows="2"></textarea></div>
 <div class="flex gap-2 w-full prp-register-submit"><button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-200 transform active:scale-95">ثبت اطلاعات</button><button type="button" onclick="saveAndBookAppt()" style="background:linear-gradient(to right,#059669,#0891b2);color:#fff;box-shadow:0 4px 14px rgba(5,150,105,0.3);" class="flex-1 text-white font-bold py-3.5 rounded-xl transition transform active:scale-95">📅 ثبت + نوبت‌دهی</button></div></div>
 <aside class="prp-register-side"><div class="prp-schedule-shell"><div class="prp-schedule-head"><div><strong>📅 نوبت‌دهی بیمار</strong><span>انتخاب خوانا و سریع روزهای فعال</span></div><em class="prp-schedule-chip">فقط روزهای فعال</em></div> <div class="add-scheduling-grid"> <div class="schedule-column"><div class="schedule-card"> <label class="block text-xs font-extrabold text-slate-600 mb-1 text-center">📅 نوبت‌دهی — روزهای فعال</label> <button type="button" id="addStageToggleBtn" class="prp-stage-toggle-btn" onclick="prpToggleStagePlan('add')" aria-expanded="false" aria-controls="addStagePlanPanel">🗓️ تاریخ سه مرحله</button> <div id="addStagePlanPanel" class="prp-stage-toggle-panel hidden"><div class="stage-plan-card"> <div class="stage-plan-title"><span>🗓️ تاریخ سه مرحله</span><span class="text-[10px] text-blue-500">اختیاری</span></div> <div class="stage-plan-grid"> <div class="stage-plan-field"><label>مرحله ۱</label><input id="addStageDate1" placeholder="1404/xx/xx" dir="ltr" oninput="prpRefreshStagePlanPreview('add')"></div> <div class="stage-plan-field"><label>مرحله ۲</label><input id="addStageDate2" placeholder="1404/xx/xx" dir="ltr" oninput="prpRefreshStagePlanPreview('add')"></div> <div class="stage-plan-field"><label>مرحله ۳</label><input id="addStageDate3" placeholder="1404/xx/xx" dir="ltr" oninput="prpRefreshStagePlanPreview('add')"></div> </div> <div class="stage-plan-actions"><button type="button" class="primary" onclick="prpAutoFillStagePlan('add')">تکمیل خودکار</button><button type="button" onclick="prpClearStagePlan('add')">پاک کردن</button></div> <div id="addStagePlanPreview" class="stage-plan-hint">تاریخ‌ها اختیاری‌اند؛ اگر مرحله فعلی تاریخ داشته باشد، همان نوبت قطعی بیمار می‌شود.</div> </div></div> <button type="button" id="pickFirstVisitDateBtn" class="first-visit-btn">⚡ اولین نوبت ممکن</button> <div id="visitDateButtons" class="visit-day-grid"></div> <div id="selectedVisitDateText" class="text-[10px] font-black text-center text-gray-700 mt-1">---</div> <div id="addCapBarWrap" class="capModalBarWrap" aria-hidden="true"><div id="addCapBarFill" class="capModalBarFill"></div></div> <div id="addCapInfo" class="capModalBarInfo">---</div> </div></div>  </div></div></aside>
 </form> </div> </div> </div> <div id="editModal" style="z-index:100;" class="fixed inset-0 bg-gray-900/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm transition-all duration-300"> <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] transform scale-100 add-modal-card"> <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-5 flex justify-between items-center text-white"> <h3 class="font-bold text-lg flex items-center gap-2"><span>✏️</span> ویرایش پرونده</h3> <button onclick="closeModal(&#39;editModal&#39;)" class="hover:bg-white/20 rounded-full p-1.5 transition">✕</button> </div> <div class="p-6 overflow-y-auto add-modal-body"> <form id="editForm" onsubmit="saveEditPatient(event)" class="space-y-5 add-form-layout">
 <div class="prp-register-main"><input type="hidden" id="editId"> <div class="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-4 add-hero-card"> <label class="block text-xs font-extrabold text-indigo-800 mb-2">تاریخ ثبت نام / آخرین تزریق (شمسی):</label> <div class="reg-next-split flex flex-col gap-3 items-stretch"> <div class="flex-1 min-w-0"> <div class="jcal-wrap relative"> <input type="text" id="editRegDate" class="jcal-input w-full bg-white border border-indigo-200 rounded-xl p-2.5 text-center font-bold text-indigo-900 focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="1403/xx/xx" dir="ltr" oninput="calculateEditNextDatePreview()"> <button type="button" class="jcal-btn" aria-label="تقویم" onclick="openJalaliPicker(&#39;editRegDate&#39;)"> <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <rect x="3" y="4" width="18" height="18" rx="3"></rect> <path d="M16 2v4M8 2v4M3 10h18"></path> <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path> </svg> </button>
 </div> </div> <div class="flex-1 next-summary"> <div class="next-summary-title">نوبت بعدی تقریبی</div> <div class="next-summary-row"> <div id="editNextDateValue" class="next-date">---</div> <span id="editNextDaysValue" class="next-badge">---</span> </div> </div> </div> <div id="editNextDatePreview" style="display:none">نوبت بعدی تقریبی: ---</div> </div> <div class="space-y-4"> <div class="grid grid-cols-2 gap-4"> <div><label class="block text-xs font-bold text-gray-500 mb-1">نام و نام خانوادگی</label><input id="editName" required="" class="w-full border border-gray-200 rounded-xl p-2.5 focus:ring-1 focus:ring-indigo-500 outline-none transition bg-gray-50 focus:bg-white"></div> <div><label class="block text-xs font-bold text-gray-500 mb-1">کد ملی</label><input type="text" inputmode="numeric" maxlength="10" pattern="\d*" id="editNationalId" required="" class="w-full border border-gray-200 rounded-xl p-2.5 focus:ring-1 focus:ring-indigo-500 outline-none transition bg-gray-50 focus:bg-white"></div> </div> <div class="w-full"> <div class="add-triple-row"> <div><label class="block text-xs font-bold text-gray-500 mb-1">موبایل</label><input type="tel" id="editPhone" required="" class="w-full border border-gray-200 rounded-xl p-2.5 focus:ring-1 focus:ring-indigo-500 outline-none transition bg-gray-50 focus:bg-white"></div> <div><label class="block text-xs font-bold text-gray-500 mb-1">ناحیه تزریق</label> <select id="editSite" class="w-full border border-gray-200 rounded-xl p-2.5 bg-white focus:ring-1 focus:ring-indigo-500 outline-none"><option>زانو چپ</option><option>زانو راست</option><option>کتف چپ</option><option>کتف راست</option><option>آرنج چپ</option><option>آرنج راست</option><option>دنبالچه</option><option>میخچه پای چپ</option><option>میخچه پای راست</option><option>سایر</option></select> </div> <div><label class="block text-xs font-bold text-gray-500 mb-1">مرحله</label> <select id="editStage" class="w-full border border-gray-200 rounded-xl p-2.5 bg-white focus:ring-1 focus:ring-indigo-500 outline-none" onchange="calculateEditNextDatePreview()"><option value="1">1 (اول)</option><option value="2">2 (دوم)</option><option value="3">3 (سوم)</option><option value="4">4 (یادآور)</option></select> </div>
 </div> </div> </div> <div class="add-check-grid w-full">
-<label class="flex items-center gap-2 p-2 border border-gray-200 rounded-xl bg-gray-50 cursor-pointer hover:bg-gray-100 transition hover:border-gray-300" style="flex:1; justify-content:center;"> <input type="checkbox" id="editIns" class="w-4 h-4 text-blue-600 rounded"> <span class="text-blue-600 text-sm font-medium" title="تکمیلی" aria-label="تکمیلی">🛡️ تکمیلی</span> </label>
-<label class="flex items-center gap-2 p-2 border border-green-100 rounded-xl bg-green-50 cursor-pointer hover:bg-green-100 transition" style="flex:1; justify-content:center;"> <input type="checkbox" id="editEmptySlot" class="w-4 h-4 text-green-600 rounded"> <span class="text-green-700 text-sm font-medium" title="لیست انتظار (تماس در صورت نوبت خالی)" aria-label="لیست انتظار (تماس در صورت نوبت خالی)">⏳ لیست انتظار</span> </label>
-<label class="flex items-center gap-2 p-2 border border-amber-100 rounded-xl bg-amber-50 cursor-pointer hover:bg-amber-100 transition" style="flex:1; justify-content:center;"> <input type="checkbox" id="editVip" class="w-4 h-4 text-amber-600 rounded"> <span class="text-amber-600 text-sm font-medium" title="سفارشی" aria-label="سفارشی">⭐ سفارشی</span> </label>
-<label class="flex items-center gap-2 p-2 border border-red-100 rounded-xl bg-red-50 cursor-pointer hover:bg-red-100 transition" style="flex:1; justify-content:center;"> <input type="checkbox" id="editEmg" class="w-4 h-4 text-red-600 rounded"> <span class="text-red-600 text-sm font-medium" title="اورژانسی" aria-label="اورژانسی">🚨 اورژانسی</span> </label> </div>
-<div class="grid grid-cols-2 gap-3 w-full mt-2">
-<label class="flex items-center justify-center gap-2 p-2 border border-emerald-100 rounded-xl bg-emerald-50 cursor-pointer hover:bg-emerald-100 transition" style="justify-content:center;"> <input type="checkbox" id="editFree" class="w-4 h-4 text-emerald-600 rounded"> <span class="text-emerald-700 text-sm font-medium" title="رایگان / بدون دریافت هزینه" aria-label="رایگان">💚 رایگان</span> </label>
-<label class="flex items-center justify-center gap-2 p-2 border border-indigo-100 rounded-xl bg-indigo-50 cursor-pointer hover:bg-indigo-100 transition" style="justify-content:center;"> <input type="checkbox" id="editDoctorLetter" class="w-4 h-4 text-indigo-600 rounded"> <span class="text-indigo-700 text-sm font-medium" title="دارای نامه پزشک" aria-label="نامه پزشک">📄 نامه پزشک</span> </label> </div> <div class="prp-notes-card"><label class="block text-xs font-bold text-gray-500 mb-1">توضیحات</label><textarea id="editDesc" class="w-full border border-gray-200 rounded-xl p-2.5 focus:ring-1 focus:ring-indigo-500 outline-none bg-gray-50 focus:bg-white flex-1" rows="2"></textarea></div>
+<label class="flex items-center gap-2 px-2 py-1.5 border border-red-100 rounded-xl bg-red-50 cursor-pointer hover:bg-red-100 transition"> <input type="checkbox" id="editEmg" class="w-4 h-4 text-red-600 rounded"> <span class="text-red-600 text-[11px] font-bold whitespace-nowrap" title="اورژانسی" aria-label="اورژانسی">🚨 اورژانسی</span> </label>
+<label class="flex items-center gap-2 px-2 py-1.5 border border-amber-100 rounded-xl bg-amber-50 cursor-pointer hover:bg-amber-100 transition"> <input type="checkbox" id="editVip" class="w-4 h-4 text-amber-600 rounded"> <span class="text-amber-600 text-[11px] font-bold whitespace-nowrap" title="سفارشی" aria-label="سفارشی">⭐ سفارشی</span> </label>
+<label class="flex items-center gap-2 px-2 py-1.5 border border-green-100 rounded-xl bg-green-50 cursor-pointer hover:bg-green-100 transition"> <input type="checkbox" id="editEmptySlot" class="w-4 h-4 text-green-600 rounded"> <span class="text-green-700 text-[11px] font-bold whitespace-nowrap" title="لیست انتظار (تماس در صورت نوبت خالی)" aria-label="لیست انتظار (تماس در صورت نوبت خالی)">⏳ لیست انتظار</span> </label>
+<label class="flex items-center gap-2 px-2 py-1.5 border border-gray-200 rounded-xl bg-gray-50 cursor-pointer hover:bg-gray-100 transition hover:border-gray-300"> <input type="checkbox" id="editIns" class="w-4 h-4 text-blue-600 rounded"> <span class="text-blue-600 text-[11px] font-bold whitespace-nowrap" title="تکمیلی" aria-label="تکمیلی">🛡️ تکمیلی</span> </label>
+<label class="flex items-center justify-center gap-2 px-2 py-1.5 border border-indigo-100 rounded-xl bg-indigo-50 cursor-pointer hover:bg-indigo-100 transition"> <input type="checkbox" id="editDoctorLetter" class="w-4 h-4 text-indigo-600 rounded"> <span class="text-indigo-700 text-[11px] font-bold whitespace-nowrap" title="دارای نامه پزشک" aria-label="نامه پزشک">📄 نامه پزشک</span> </label>
+<label class="flex items-center justify-center gap-2 px-2 py-1.5 border border-emerald-100 rounded-xl bg-emerald-50 cursor-pointer hover:bg-emerald-100 transition"> <input type="checkbox" id="editFree" class="w-4 h-4 text-emerald-600 rounded"> <span class="text-emerald-700 text-[11px] font-bold whitespace-nowrap" title="رایگان / بدون دریافت هزینه" aria-label="رایگان">💚 رایگان</span> </label>
+</div> <div class="prp-notes-card"><label class="block text-xs font-bold text-gray-500 mb-1">توضیحات</label><textarea id="editDesc" class="w-full border border-gray-200 rounded-xl p-2.5 focus:ring-1 focus:ring-indigo-500 outline-none bg-gray-50 focus:bg-white flex-1" rows="2"></textarea></div>
 <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-200 transform active:scale-95 prp-register-submit">بروزرسانی اطلاعات</button></div>
 <aside class="prp-register-side"><div class="prp-schedule-shell"><div class="prp-schedule-head"><div><strong>📅 نوبت‌دهی بیمار</strong><span>انتخاب خوانا و سریع روزهای فعال</span></div><em class="prp-schedule-chip">فقط روزهای فعال</em></div> <div class="add-scheduling-grid"> <div class="schedule-column"><div class="schedule-card"> <label class="block text-xs font-extrabold text-slate-600 mb-1 text-center">📅 نوبت‌دهی — روزهای فعال</label> <div id="editScheduleLockBar"></div><div id="editScheduleControls"><button type="button" id="editStageToggleBtn" class="prp-stage-toggle-btn" onclick="prpToggleStagePlan('edit')" aria-expanded="false" aria-controls="editStagePlanPanel">🗓️ تاریخ سه مرحله</button> <div id="editStagePlanPanel" class="prp-stage-toggle-panel hidden"><div class="stage-plan-card"> <div class="stage-plan-title"><span>🗓️ تاریخ سه مرحله</span><span class="text-[10px] text-blue-500">اختیاری</span></div> <div class="stage-plan-grid"> <div class="stage-plan-field"><label>مرحله ۱</label><input id="editStageDate1" placeholder="1404/xx/xx" dir="ltr" oninput="prpRefreshStagePlanPreview('edit')"></div> <div class="stage-plan-field"><label>مرحله ۲</label><input id="editStageDate2" placeholder="1404/xx/xx" dir="ltr" oninput="prpRefreshStagePlanPreview('edit')"></div> <div class="stage-plan-field"><label>مرحله ۳</label><input id="editStageDate3" placeholder="1404/xx/xx" dir="ltr" oninput="prpRefreshStagePlanPreview('edit')"></div> </div> <div class="stage-plan-actions"><button type="button" class="primary" onclick="prpAutoFillStagePlan('edit')">تکمیل خودکار</button><button type="button" onclick="prpClearStagePlan('edit')">پاک کردن</button></div> <div id="editStagePlanPreview" class="stage-plan-hint">اگر برای مرحله فعلی تاریخ وارد شود، نوبت بیمار روی همان تاریخ تنظیم می‌شود.</div> </div></div> <button type="button" id="editPickFirstVisitDateBtn" class="first-visit-btn">⚡ اولین نوبت ممکن</button> <div id="editVisitDateButtons" class="visit-day-grid"></div> <div id="editSelectedVisitDateText" class="text-[10px] font-black text-center text-gray-700 mt-1">---</div> <div id="editCapBarWrap" class="capModalBarWrap" aria-hidden="true"><div id="editCapBarFill" class="capModalBarFill"></div></div> <div id="editCapInfo" class="capModalBarInfo">---</div></div> <div class="text-[10px] text-gray-400 mt-2 text-center font-bold">* انتخاب تاریخ مراجعه، وضعیت را «تایید شده» می‌کند.</div> </div></div>  </div></div></aside>
 </form> </div> </div> </div> <div id="msgModal" style="z-index:110;" class="fixed inset-0 bg-black/50 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm"> <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-4 transform transition-all scale-100"> <h3 id="msgTitle" class="font-black text-lg mb-3 text-gray-800 border-b pb-2">پیام</h3> <p id="msgText" class="text-gray-400 text-sm mb-4 leading-relaxed font-medium"></p> <input id="msgInput" class="w-full border border-gray-200 rounded-xl p-2.5 mb-4 hidden focus:border-blue-500 outline-none transition" placeholder="..."> <div id="absentControls" class="hidden space-y-3 mb-4 bg-gray-50 p-4 rounded-xl border border-gray-100"> <div> <label class="block text-xs font-bold text-gray-700 mb-1">علت غیبت:</label> <input id="absentReason" class="w-full border rounded-lg p-2 bg-white" placeholder="مثلا: مشغله کاری"> </div> <div> <label class="block text-xs font-bold text-gray-500 mb-1">نوبت جدید (اختیاری - شمسی):</label> <input id="absentNewDate" class="w-full bg-white border rounded p-1.5 text-center font-bold" placeholder="1403/xx/xx" dir="ltr"> <div class="text-[9px] text-gray-400 mt-0.5 text-right">خالی = برگشت به انتهای لیست تماس</div> </div> </div> <div id="confirmDateBox" class="hidden space-y-2 mb-4"> <label class="block text-xs font-extrabold text-gray-500 mb-2 uppercase tracking-wide">📅 تاریخ مراجعه را انتخاب کنید:</label> <div class="flex flex-col gap-1.5" id="confirmDateButtons"></div> <div class="relative flex items-center gap-2 my-3"> <div class="flex-grow border-t border-gray-200"></div> <span class="flex-shrink-0 text-[10px] text-gray-400 font-bold">یا تاریخ دستی</span> <div class="flex-grow border-t border-gray-200"></div> </div> <input id="confirmDateManual" class="w-full bg-white border-2 border-gray-200 rounded-xl p-3 text-center font-black text-base text-gray-800 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" placeholder="1404/xx/xx" dir="ltr"> </div> <div class="flex justify-end gap-2"> <button id="msgCancelBtn" class="px-5 py-2.5 border border-gray-100 rounded-xl text-gray-400 hover:bg-gray-50 text-sm font-bold transition" onclick="closeModal(&#39;msgModal&#39;)">بستن</button> <button id="msgBtn" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 text-sm font-bold shadow-lg shadow-blue-200 hidden transition transform active:scale-95">تایید</button> </div> </div> </div> <div id="histModal" style="z-index:105;" class="fixed inset-0 bg-black/50 z-[105] hidden items-center justify-center p-4 backdrop-blur-sm"> <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]"> <div class="bg-purple-600 p-4 flex justify-between items-center text-white"> <h3 class="font-bold flex items-center gap-2">📜 سوابق: <span id="histName"></span></h3> <button onclick="closeModal(&#39;histModal&#39;)" class="hover:bg-white/20 rounded-full p-1 transition">✕</button> </div> <div class="p-6 overflow-y-auto space-y-4" id="histBody"></div> <div class="p-4 border-t bg-gray-50 text-right"> <button onclick="closeModal(&#39;histModal&#39;)" class="px-6 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-100 font-bold transition">بستن</button> </div> </div> </div>
@@ -2241,8 +2241,10 @@ body[data-current-tab="allList"] #bulkConfirmBtn{
         // Normalize Jalali date key to YYYY/MM/DD (English digits) for reliable comparisons.
         function normalizeJalaliDateKey(v){
             var s = toEnglishDigits(String(v || '')).trim();
-            if(!s) return '';
+            // '-' / '—' فقط برای نمایش خالی‌اند و نباید به‌عنوان تاریخ معتبر بمانند
+            if(!s || s === '-' || s === '—' || s === '–' || s === '/' || s === '.' || s === '—') return '';
             s = s.replace(/\-/g, '/');
+            if(!s || s === '/') return '';
             var m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
             if(!m) return s;
             var jy = parseInt(m[1], 10);
@@ -2405,7 +2407,16 @@ function gregorianToJalali(gy,gm,gd){
             }catch(e){return '';}
         }
 
-        function getDayName(dateString) { const d = jalaliToGregorian(dateString); return d.toLocaleDateString('fa-IR', { weekday: 'long' }); }
+        function getDayName(dateString) {
+            try {
+                if(!dateString || dateString === '-' || dateString === '—' || dateString === '–') return '';
+                var key = (typeof normalizeJalaliDateKey === 'function') ? normalizeJalaliDateKey(dateString) : String(dateString || '').trim();
+                if(!key) return '';
+                const d = jalaliToGregorian(key);
+                if(!d || isNaN(d.getTime())) return '';
+                return d.toLocaleDateString('fa-IR', { weekday: 'long' });
+            } catch(e){ return ''; }
+        }
 
         function normalizeText(s){
             if(!s) return '';
@@ -3942,11 +3953,12 @@ function initDailyHistoryUI(){
 }
 
 async function clearDailyHistory(){
-    if(!confirm('حذف تاریخچه عملکرد روزانه؟')) return;
-    dailyLog = [];
-    try{ await idbSet(DAILY_LOG_KEY, dailyLog); }catch(e){}
-    try{ renderDailyHistory(document.getElementById('dailyHistoryDate') ? document.getElementById('dailyHistoryDate').value : ''); }catch(e){}
-    try{ showToast('پاک شد'); }catch(e){}
+    showConfirm('حذف تاریخچه', 'حذف تاریخچه عملکرد روزانه؟', async function(){
+        dailyLog = [];
+        try{ await idbSet(DAILY_LOG_KEY, dailyLog); }catch(e){}
+        try{ renderDailyHistory(document.getElementById('dailyHistoryDate') ? document.getElementById('dailyHistoryDate').value : ''); }catch(e){}
+        try{ showToast('پاک شد'); }catch(e){}
+    }, 'حذف', 'لغو');
 }
 
 // --- یادداشت اختیاری برای اقدامات داخل مودال نتیجه تماس (تاخیر تماس / تعویق نوبت) ---
@@ -4423,21 +4435,24 @@ const STAGES = { 1: {label:'تزریق اول', nextGap:2}, 2: {label:'تزری�
         function setWorkingHoursFromClock(){
             try{
                 var wh = getWorkingHours() || {start:'08:00', end:'18:00'};
-                var input = prompt('بازه پاسخ‌گویی را وارد کنید، مثلا: 08:00-18:00\nبرای حذف تنظیمات، خالی بگذارید و OK بزنید.', (wh.start || '08:00') + '-' + (wh.end || '18:00'));
-                if(input === null) return;
-                input = toEnglishDigits(String(input || '')).trim();
-                if(!input){
-                    localStorage.removeItem(WORKING_HOURS_KEY);
+                var def = (wh.start || '08:00') + '-' + (wh.end || '18:00');
+                showPrompt('بازه پاسخ‌گویی (مثل 08:00-18:00)\nبرای حذف، خالی بگذارید', function(input){
+                    if(input === null || input === undefined) return;
+                    input = toEnglishDigits(String(input || '')).trim();
+                    if(!input){
+                        localStorage.removeItem(WORKING_HOURS_KEY);
+                        updateLiveClock();
+                        return;
+                    }
+                    var parts = input.split('-');
+                    if(parts.length !== 2 || parseClockMinutes(parts[0].trim()) === null || parseClockMinutes(parts[1].trim()) === null){
+                        try{ showMsg('فرمت نامعتبر', 'بازه را مثل 08:00-18:00 وارد کنید.'); }catch(_e){}
+                        return;
+                    }
+                    localStorage.setItem(WORKING_HOURS_KEY, JSON.stringify({start:parts[0].trim(), end:parts[1].trim()}));
                     updateLiveClock();
-                    return;
-                }
-                var parts = input.split('-');
-                if(parts.length !== 2 || parseClockMinutes(parts[0].trim()) === null || parseClockMinutes(parts[1].trim()) === null){
-                    try{ showMsg('فرمت نامعتبر', 'بازه را مثل 08:00-18:00 وارد کنید.'); }catch(_e){ alert('فرمت نامعتبر است. مثال: 08:00-18:00'); }
-                    return;
-                }
-                localStorage.setItem(WORKING_HOURS_KEY, JSON.stringify({start:parts[0].trim(), end:parts[1].trim()}));
-                updateLiveClock();
+                }, 'ثبت', 'لغو');
+                try { var inp = document.getElementById('msgInput'); if(inp) inp.value = def; } catch(e) {}
             }catch(e){}
         }
         function triggerQuickBackup(ev){
@@ -5376,12 +5391,13 @@ window.renderSettingsInputs = function(skipSync){
         async function deletePatient(id){
             var p = patients.find(x => x.id === id);
             var name = p ? (p.fullName || '') : '';
-            if(!confirm('حذف کامل این بیمار از سیستم؟\n' + (name ? ('بیمار: ' + name + '\n') : '') + 'این عمل غیرقابل بازگشت است.')) return;
-            try{ logAction('DELETE_PATIENT', { id: id, name: name }); }catch(e){}
-            patients = patients.filter(x => x.id !== id);
-            await saveData();
-            renderTable();
-            showToast('حذف شد', 'success');
+            showConfirm('حذف بیمار', 'حذف کامل این بیمار از سیستم؟\n' + (name ? ('بیمار: ' + name + '\n') : '') + 'این عمل غیرقابل بازگشت است.', async function(){
+                try{ logAction('DELETE_PATIENT', { id: id, name: name }); }catch(e){}
+                patients = patients.filter(x => x.id !== id);
+                await saveData();
+                renderTable();
+                showToast('حذف شد', 'success');
+            }, 'حذف کامل', 'لغو');
         }
         async function saveSettings() {
             syncSettingsFromDom();
@@ -5900,7 +5916,7 @@ function clearDateFilter() { resetPager();
                 _renderSmsKdeCurrent();
             }catch(err){
                 console.error(err);
-                alert('خطا در آماده‌سازی پیامک');
+                try{ showMsg('خطا','خطا در آماده‌سازی پیامک'); }catch(e){}
             }
         }
 
@@ -6812,7 +6828,7 @@ function saveNewPatient(e) {
         }
 
         // --- شروع سیکل جدید برای بیمار تکراری ---
-        function startNewCycle(id) {
+        function startNewCycle(id, preferredSite) {
             var p = patients.find(x => x.id == id);
             if(!p) return;
             openModal('addModal');
@@ -6820,9 +6836,18 @@ function saveNewPatient(e) {
             document.getElementById('addNationalId').value = p.nationalId;
             document.getElementById('addPhone').value = p.phone;
             document.getElementById('addStage').value = "1";
-            document.getElementById('addDesc').value = `سیکل جدید (قبلاً ${p.site} بوده)`;
+            var nextSite = (preferredSite && String(preferredSite).trim()) || '';
+            try{
+                var siteEl = document.getElementById('addSite');
+                if(siteEl && nextSite) siteEl.value = nextSite;
+            }catch(e){}
+            document.getElementById('addDesc').value = nextSite
+                ? (`سیکل جدید برای «${nextSite}» (قبلاً ${p.site || '—'} بوده)`)
+                : (`سیکل جدید (قبلاً ${p.site} بوده)`);
             calculateNextDatePreview();
+            try{ if(typeof checkAddDuplicate === 'function') checkAddDuplicate(); }catch(e){}
         }
+        window.startNewCycle = startNewCycle;
 
                 function renderEditVisitDateButtons() {
             var container = document.getElementById('editVisitDateButtons');
@@ -7703,6 +7728,11 @@ function markAbsent(id) {
                 showPrompt('علت بایگانی (مثلا: انصراف):', function(val){
                     p.status = 'ARCHIVED';
                     p.nextAppointment = null;
+                    p.bookingBucket = '';
+                    p.bookingType = '';
+                    p.bookingBucketDate = '';
+                    p.followupMode = '';
+                    p.callLaterAt = null;
                     p.archiveReason = val || '-';
                     p.archiveAt = new Date().toISOString();
                     var recG = doneDateJ ? jalaliToGregorian(doneDateJ) : new Date();
@@ -9555,6 +9585,10 @@ try{ syncAutoNextToggle(); }catch(e){}
                 if(p.unreachableCount >= 3){
                     p.status = 'ARCHIVED';
                     p.nextAppointment = null;
+                    p.bookingBucket = '';
+                    p.bookingType = '';
+                    p.bookingBucketDate = '';
+                    p.followupMode = '';
                     p.callLaterAt = null;
                     p.doNotCall = true;
                     p.archiveReason = p.archiveReason || 'بایگانی تماس: عدم دسترسی';
@@ -9649,6 +9683,11 @@ if(p.status==='ARCHIVED'){ d = null; }
             if(type==='NO_ANSWER' && (p.noAnswerCount||0) >= 3){
                 p.status = 'ARCHIVED';
                 p.nextAppointment = null;
+                p.bookingBucket = '';
+                p.bookingType = '';
+                p.bookingBucketDate = '';
+                p.followupMode = '';
+                p.callLaterAt = null;
                 p.archiveReason = p.archiveReason || 'بایگانی تماس: پاسخ نداد (۳ بار)';
                 p.archiveAt = p.archiveAt || new Date().toISOString();
                 (p.history = p.history || []).push({date:new Date().toISOString(), type:'بایگانی خودکار', note:'۳ بار پاسخ نداد', stage:p.currentStage});
@@ -10747,6 +10786,7 @@ if(p.lastUnreachableSmsAt){ var _smsLbl = _smsLblMap[p.lastUnreachableSmsType]||
                     if(p.status === 'ARCHIVED'){
                         btns = `<div class="flex flex-col items-center gap-1 w-full">
                           <div class="flex items-center justify-center gap-1 flex-wrap">
+                            <button class="text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" onclick="openApptModalForPatient('${p.id}')" title="ثبت نوبت و خروج از بایگانی">📅 ثبت نوبت</button>
                             <button class="text-gray-400 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" onclick="startNewCycle('${p.id}')">🔄 ناحیه جدید</button>
                             <button class="text-gray-400 hover:text-orange-600 p-1.5 transition rounded-lg hover:bg-orange-50" onclick="moveBackToCallList('${p.id}')" title="بازگشت به لیست تماس">↩️</button>
                           </div>
@@ -12493,12 +12533,14 @@ ${pagesHtml}
 function showMsg(t, m) {
             document.getElementById('msgTitle').innerText = t; document.getElementById('msgText').innerText = m;
             document.getElementById('msgInput').classList.add('hidden'); document.getElementById('absentControls').classList.add('hidden'); document.getElementById('confirmDateBox').classList.add('hidden');
+            try{ var __xb = document.getElementById('msgExtraBtn'); if(__xb){ __xb.classList.add('hidden'); __xb.onclick = null; } }catch(e){}
             document.getElementById('msgBtn').classList.add('hidden'); document.getElementById('msgCancelBtn').innerText = 'بستن';
             openModal('msgModal'); setTimeout(() => closeModal('msgModal'), 2500);
         }
         function showConfirm(t, m, cb, okText, cancelText) {
             document.getElementById('msgTitle').innerText = t; document.getElementById('msgText').innerText = m;
             document.getElementById('msgInput').classList.add('hidden'); document.getElementById('absentControls').classList.add('hidden'); document.getElementById('confirmDateBox').classList.add('hidden');
+            try{ var __xb = document.getElementById('msgExtraBtn'); if(__xb){ __xb.classList.add('hidden'); __xb.onclick = null; } }catch(e){}
             var btn = document.getElementById('msgBtn'); btn.classList.remove('hidden'); btn.innerText = (okText || 'تایید');
             document.getElementById('msgCancelBtn').innerText = (cancelText || 'لغو');
             var newBtn = btn.cloneNode(true); btn.parentNode.replaceChild(newBtn, btn);
@@ -12665,7 +12707,7 @@ function copySMS(phone, name) {
         }
         
 
-        function clearAllData() { if(confirm('حذف کل؟')) { patients=[]; saveData(); refreshUI(); } }
+        function clearAllData() { showConfirm('حذف کل داده‌ها', 'همه بیماران حذف شوند؟ این عمل غیرقابل بازگشت است.', function(){ patients=[]; saveData(); refreshUI(); }, 'حذف کل', 'لغو'); }
         // --- Backup / Restore ---
         const BACKUP_SCHEMA_VERSION = 5;
 
@@ -13432,7 +13474,7 @@ function handleExcelImport(e){
                 importPatientsFromRows(rows, 'CSV');
             }catch(err){
                 console.error(err);
-                alert('خطا در خواندن فایل CSV');
+                try{ showMsg('خطا','خطا در خواندن فایل CSV'); }catch(e){}
             }
         };
         r.readAsArrayBuffer(file);
@@ -13441,7 +13483,7 @@ function handleExcelImport(e){
 
     // xlsx/xls
     if(typeof XLSX === 'undefined'){
-        alert('برای خواندن مستقیم فایل‌های .xlsx/.xls در حالت آفلاین، نیاز به کتابخانه Excel است و در این نسخه موجود نیست.\nراه‌حل: از اکسل خروجی بگیرید و یکی از این فرمت‌ها را وارد کنید:\n1) Unicode Text (*.txt) یا Text (Tab delimited) (*.txt)  (پیشنهادی برای فارسی)\n2) CSV (Comma delimited) (*.csv)');
+        try{ showMsg('فرمت اکسل', 'برای خواندن مستقیم فایل‌های .xlsx/.xls در حالت آفلاین، نیاز به کتابخانه Excel است.\nراه‌حل: خروجی Unicode Text/TXT یا CSV بگیرید.'); }catch(e){}
         return;
     }
 
@@ -13456,7 +13498,7 @@ function handleExcelImport(e){
             importPatientsFromRows(rows, 'Excel');
         }catch(err){
             console.error(err);
-            alert('خطا در خواندن فایل اکسل');
+            try{ showMsg('خطا','خطا در خواندن فایل اکسل'); }catch(e){}
         }
     };
     reader.readAsArrayBuffer(file);
@@ -13675,9 +13717,25 @@ function importPatientsFromRows(rows, sourceLabel){
     });
 
     var doReplace = false;
-    if(duplicates.length > 0){
-        doReplace = confirm('تعداد ' + duplicates.length + ' پرونده تکراری برای همان بیمار و همان ناحیه پیدا شد.\nاگر تایید کنید، فقط همان پرونده‌های هم‌ناحیه بروزرسانی می‌شوند.\nپرونده‌های ناحیه متفاوت (مثلاً زانو چپ و زانو راست) همیشه جدا می‌مانند.\nاگر لغو کنید، پرونده‌های تکراری نادیده گرفته می‌شوند.');
+    if(duplicates.length > 0 && window.__prpImportDupDecision == null){
+        var dupMsg = 'تعداد ' + duplicates.length + ' پرونده تکراری برای همان بیمار و همان ناحیه پیدا شد.\nاگر تایید کنید، فقط همان پرونده‌های هم‌ناحیه بروزرسانی می‌شوند.\nپرونده‌های ناحیه متفاوت (مثلاً زانو چپ و زانو راست) همیشه جدا می‌مانند.\nاگر لغو کنید، پرونده‌های تکراری نادیده گرفته می‌شوند.';
+        showConfirm('پرونده تکراری', dupMsg, function(){
+            window.__prpImportDupDecision = 'replace';
+            try { importPatientsFromRows(rows, sourceLabel); } finally { window.__prpImportDupDecision = null; }
+        }, 'بروزرسانی هم‌ناحیه', 'نادیده گرفتن');
+        try {
+            var cancelBtn = document.getElementById('msgCancelBtn');
+            if(cancelBtn){
+                cancelBtn.onclick = function(){
+                    try { closeModal('msgModal'); } catch(e) {}
+                    window.__prpImportDupDecision = 'skip';
+                    try { importPatientsFromRows(rows, sourceLabel); } finally { window.__prpImportDupDecision = null; }
+                };
+            }
+        } catch(e) {}
+        return;
     }
+    if(window.__prpImportDupDecision === 'replace') doReplace = true;
 
     rows.forEach(function(row){
         // extract fields
@@ -14047,7 +14105,7 @@ document.addEventListener('click', function(ev){
   const mv = btn.getAttribute('data-move');
   if(Number.isNaN(idx)) return;
   if(typeof window.moveSettingRow !== 'function'){
-    alert('خطا: تابع جابجایی پیدا نشد');
+    try{ showMsg('خطا','تابع جابجایی پیدا نشد'); }catch(e){}
     return;
   }
   window.moveSettingRow(idx, mv === 'up' ? -1 : 1);
@@ -14060,7 +14118,7 @@ document.addEventListener('click', function(ev){
   const idx = parseInt(btn.getAttribute('data-idx'), 10);
   if(Number.isNaN(idx)) return;
   if(typeof window.removeSettingRow !== 'function'){
-    alert('خطا: تابع حذف ردیف پیدا نشد');
+    try{ showMsg('خطا','تابع حذف ردیف پیدا نشد'); }catch(e){}
     return;
   }
   window.removeSettingRow(idx);
@@ -14073,7 +14131,7 @@ document.addEventListener('click', function(ev){
   const idx = parseInt(btn.getAttribute('data-idx'), 10);
   if(Number.isNaN(idx)) return;
   if(typeof window.toggleSettingLock !== 'function'){
-    alert('خطا: تابع قفل تاریخ پیدا نشد');
+    try{ showMsg('خطا','تابع قفل تاریخ پیدا نشد'); }catch(e){}
     return;
   }
   window.toggleSettingLock(idx);
@@ -14191,7 +14249,13 @@ function prpCancelEditAppointment(){
         if(!p) return;
         var apptJ = p.nextAppointment ? getJalaliFromISO(p.nextAppointment) : '';
         var msg = apptJ ? ('نوبت بیمار برای ' + apptJ + ' لغو شود؟\nبیمار به لیست «در انتظار تماس» برمی‌گردد.') : 'نوبت این بیمار لغو شود؟';
-        if(!window.confirm(msg)) return;
+        if(window.__prpCancelApptConfirmed !== true){
+            showConfirm('لغو نوبت', msg, function(){
+                window.__prpCancelApptConfirmed = true;
+                try { prpCancelEditAppointment(); } finally { window.__prpCancelApptConfirmed = false; }
+            }, 'لغو نوبت', 'انصراف');
+            return;
+        }
 
         var regJ = '';
         try{
@@ -14636,7 +14700,7 @@ function _activityRowsForExport(onlyFiltered){
 function _downloadActivityLogCSVOffline(onlyFiltered){
     try{
         var rows=_activityRowsForExport(!!onlyFiltered);
-        if(!rows.length){ alert('لاگی برای خروجی وجود ندارد.'); return; }
+        if(!rows.length){ try{ showMsg('اطلاع','لاگی برای خروجی وجود ندارد.'); }catch(e){} return; }
         var headers=Object.keys(rows[0]);
         function csvEscape(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
         var lines=[headers.map(csvEscape).join(',')];
@@ -14654,7 +14718,7 @@ function _downloadActivityLogCSVOffline(onlyFiltered){
 function exportActivityToExcel(){
     try{
         var rows=_activityRowsForExport(true);
-        if(!rows.length){ alert('لاگی برای خروجی وجود ندارد.'); return; }
+        if(!rows.length){ try{ showMsg('اطلاع','لاگی برای خروجی وجود ندارد.'); }catch(e){} return; }
         if(typeof XLSX==='undefined'){ _downloadActivityLogCSVOffline(true); return; }
         const ws=XLSX.utils.json_to_sheet(rows);
         try{
@@ -14673,10 +14737,12 @@ function exportActivityToExcel(){
 }
 function clearActivityLog(){
     if(!Array.isArray(dailyLog)||dailyLog.length===0){ try{showMsg('اطلاع','لاگی برای پاک‌سازی وجود ندارد.');}catch(e){} return; }
-    if(!confirm('قبل از پاک‌سازی، یک خروجی CSV از کل لاگ دانلود می‌شود. ادامه می‌دهید؟')) return;
-    try{ _downloadActivityLogCSVOffline(false); }catch(_e){}
-    if(!confirm('خروجی لاگ شروع شد. آیا مطمئن هستید که کل فعالیت‌های اخیر پاک شود؟')) return;
-    try{ dailyLog=[]; idbSet('prp_daily_log_v1',dailyLog); renderActivityPanel(); try{showMsg('انجام شد','لاگ فعالیت‌ها پاک شد.');}catch(e){} }catch(e){}
+    showConfirm('پاک‌سازی لاگ', 'قبل از پاک‌سازی، یک خروجی CSV از کل لاگ دانلود می‌شود. ادامه می‌دهید؟', function(){
+        try{ _downloadActivityLogCSVOffline(false); }catch(_e){}
+        showConfirm('تایید نهایی', 'خروجی لاگ شروع شد. آیا مطمئن هستید که کل فعالیت‌های اخیر پاک شود؟', function(){
+            try{ dailyLog=[]; idbSet('prp_daily_log_v1',dailyLog); renderActivityPanel(); try{showMsg('انجام شد','لاگ فعالیت‌ها پاک شد.');}catch(e){} }catch(e){}
+        }, 'پاک شود', 'لغو');
+    }, 'ادامه', 'لغو');
 }
 (function patchLogAction(){
     const _orig=logAction;
@@ -15303,7 +15369,17 @@ function apptDefaultBookingTarget(p) {
 
 function apptGetBookingTargetInfo(p) {
     var apptJ = '';
-    try { apptJ = jalaliStringFromMaybe(p && p.nextAppointment) || ''; } catch(e) {}
+    try {
+        apptJ = jalaliStringFromMaybe(p && p.nextAppointment) || '';
+        if (apptJ === '-' || apptJ === '—' || apptJ === '–') apptJ = '';
+        if (typeof normalizeJalaliDateKey === 'function') apptJ = normalizeJalaliDateKey(apptJ) || '';
+    } catch(e) { apptJ = ''; }
+    var idealRaw = '';
+    try {
+        idealRaw = (p && p.idealNextDate) ? (jalaliStringFromMaybe(p.idealNextDate) || String(p.idealNextDate || '')) : '';
+        if (idealRaw === '-' || idealRaw === '—' || idealRaw === '–') idealRaw = '';
+        if (typeof normalizeJalaliDateKey === 'function') idealRaw = normalizeJalaliDateKey(idealRaw) || '';
+    } catch(e) { idealRaw = ''; }
     var st = Number((p && p.currentStage) || 1) || 1;
     var mode = _apptBookingTarget || 'current';
     if (mode === 'nextStage' && p && st >= 1 && st <= 3 && apptJ) {
@@ -15312,6 +15388,11 @@ function apptGetBookingTargetInfo(p) {
         var rawIdealJ = addJalaliMonths(apptJ, gap);
         var plannedJ = '';
         try { plannedJ = prpGetStageDateFromPlan(p.stageAppointments || {}, nextStage); } catch(e) {}
+        if (plannedJ === '-' || plannedJ === '—' || plannedJ === '–') plannedJ = '';
+        if (typeof normalizeJalaliDateKey === 'function') {
+            plannedJ = normalizeJalaliDateKey(plannedJ) || '';
+            rawIdealJ = normalizeJalaliDateKey(rawIdealJ) || rawIdealJ;
+        }
         var label = (nextStage <= 3) ? ('مرحله ' + nextStage) : 'یادآور ۶ ماهه';
         return {
             mode: 'nextStage',
@@ -15319,8 +15400,8 @@ function apptGetBookingTargetInfo(p) {
             nextStage: nextStage,
             stageLabel: label,
             baseInjectionJ: apptJ,
-            baseDateJ: plannedJ || rawIdealJ,
-            idealDateJ: plannedJ || rawIdealJ,
+            baseDateJ: plannedJ || rawIdealJ || getTodayJalali(),
+            idealDateJ: plannedJ || rawIdealJ || '',
             rawIdealDateJ: rawIdealJ,
             plannedDateJ: plannedJ || '',
             gapMonths: gap,
@@ -15333,8 +15414,8 @@ function apptGetBookingTargetInfo(p) {
         nextStage: st,
         stageLabel: (st > 4 ? 'پایان' : ('مرحله ' + st)),
         baseInjectionJ: apptJ,
-        baseDateJ: apptJ || ((p && p.idealNextDate) ? p.idealNextDate : getTodayJalali()),
-        idealDateJ: (p && p.idealNextDate) ? p.idealNextDate : '',
+        baseDateJ: apptJ || idealRaw || getTodayJalali(),
+        idealDateJ: idealRaw || '',
         preserveCurrent: false
     };
 }
@@ -15631,15 +15712,23 @@ function apptSelectPatient(id, keepTarget) {
         (p.phone ? p.phone + ' · ' : '') + stageLabel + ' · ' + (statusMap[p.status] || p.status || '') + ' · ' + prpBookingBadgeHtml(p) + prpStagePlanMiniHtml(p) + prpSiblingCaseBadgeHtml(p, 'meta');
 
     // ── نمایش نوبت فعلی بیمار ──
-    var apptJ = jalaliStringFromMaybe(p.nextAppointment);
-    var apptG = p.nextAppointment ? dateFromMaybeJalali(p.nextAppointment) : null;
+    // jalaliStringFromMaybe برای خالی بودن '-' برمی‌گرداند؛ برای منطق نوبت باید خالی شود
+    var apptJ = '';
+    try {
+        apptJ = jalaliStringFromMaybe(p.nextAppointment) || '';
+        if (apptJ === '-' || apptJ === '—' || apptJ === '–') apptJ = '';
+        if (typeof normalizeJalaliDateKey === 'function') apptJ = normalizeJalaliDateKey(apptJ) || '';
+    } catch(e) { apptJ = ''; }
+    var apptG = (p.nextAppointment && apptJ) ? dateFromMaybeJalali(p.nextAppointment) : null;
     var todayRef = new Date(); // مرجع امروز برای همه محاسبات این تابع
 
     // apptDiffDays(a,b) → روزهای b منهای a → مثبت = b در آینده
     var diff = apptG ? apptDiffDays(todayRef, apptG) : null;
 
     document.getElementById('apptCurrentDate').textContent = apptJ || '—';
-    document.getElementById('apptCurrentDayName').textContent = apptJ ? '(' + getDayName(apptJ) + ')' : '';
+    var dayNm = '';
+    try { dayNm = apptJ ? getDayName(apptJ) : ''; } catch(e) { dayNm = ''; }
+    document.getElementById('apptCurrentDayName').textContent = dayNm ? ('(' + dayNm + ')') : '';
 
     var diffEl = document.getElementById('apptCurrentDiff');
     if (diff !== null) {
@@ -15654,13 +15743,24 @@ function apptSelectPatient(id, keepTarget) {
     // ── محاسبه پیشنهادها ──
     var targetInfo = apptGetBookingTargetInfo(p);
     var baseDate = (targetInfo && targetInfo.baseDateJ) || apptJ || getTodayJalali();
+    try {
+        if (baseDate === '-' || baseDate === '—' || baseDate === '–') baseDate = '';
+        if (typeof normalizeJalaliDateKey === 'function') baseDate = normalizeJalaliDateKey(baseDate) || '';
+        if (!baseDate) baseDate = getTodayJalali();
+    } catch(e) { baseDate = getTodayJalali(); }
     var bookingType = (targetInfo && targetInfo.mode === 'nextStage') ? 'active' : prpGetPatientBookingType(p);
     var suggestions = apptFindNearestSatWed(baseDate, bookingType, p.id);
+    if (!suggestions || (!suggestions.all && !suggestions.sat && !suggestions.wed)) {
+        suggestions = { sat:null, wed:null, all:[] };
+    }
+    if ((!suggestions.all || !suggestions.all.length) && !suggestions.sat && !suggestions.wed) {
+        try { suggestions = apptFindNearestSatWed(getTodayJalali(), bookingType, p.id) || suggestions; } catch(e) {}
+    }
 
     var suggestBox = document.getElementById('apptSuggestBox');
     var suggestCards = document.getElementById('apptSuggestCards');
     var holidayNote = document.getElementById('apptHolidayNote');
-    suggestBox.style.display='';
+    suggestBox.style.display='flex';
     holidayNote.style.display='none';
     holidayNote.textContent = '';
 
@@ -15706,7 +15806,18 @@ function apptSelectPatient(id, keepTarget) {
             if (da !== db) return da - db;
             return ua - ub;
         });
+    } else {
+        // بدون ایده‌آل هم نزدیک‌ترین‌ها را اول نگه دار
+        try {
+            candidates.sort(function(a, b){
+                var ta = (a.s && a.s.gregorian) ? a.s.gregorian.getTime() : 0;
+                var tb = (b.s && b.s.gregorian) ? b.s.gregorian.getTime() : 0;
+                return ta - tb;
+            });
+        } catch(e) {}
     }
+    // حداکثر ۴ پیشنهاد کافی است (از شلوغی UI جلوگیری می‌کند)
+    try { candidates = candidates.slice(0, 4); } catch(e) {}
 
     var notes = [];
     var html = '';
@@ -15769,7 +15880,7 @@ function apptSelectPatient(id, keepTarget) {
         } catch(e) {}
 
         var sourceBadge = s.fromActive
-            ? '<span style="font-size:10px;font-weight:900;background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe;border-radius:999px;padding:1px 7px">📋 برنامه</span>'
+            ? '<span class="prp-active-day-badge">✓ روز فعال تقویم</span>'
             : '';
 
         var devBadge = dev
@@ -15780,7 +15891,7 @@ function apptSelectPatient(id, keepTarget) {
             ? '<span style="font-size:10px;font-weight:900;background:#4f46e5;color:#fff;border-radius:999px;padding:2px 8px">✨ نزدیک‌تر</span>'
             : '';
 
-        html += '<div style="' + cardStyle + '" onclick="apptSelectDate(\'' + s.jalali + '\',\'' + s.type + '\')"' +
+        html += '<div data-jalali="' + s.jalali + '" data-from-active="' + (s.fromActive ? '1' : '0') + '" style="' + cardStyle + '" onclick="apptSelectDate(\'' + s.jalali + '\',\'' + s.type + '\')"' +
             ' onmouseover="this.style.background=\'' + c.hbg + '\'" onmouseout="this.style.background=\'' + c.bg + '\'">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-bottom:4px">' +
             '<span style="font-size:12px;font-weight:900;padding:4px 10px;border-radius:8px;background:' + c.badge + ';color:' + c.badgeTxt + '">' + s.type + '</span>' +
@@ -17595,7 +17706,17 @@ window.openModal = function(id) {
     window.apptDefaultBookingTarget = function(){ return 'current'; };
     window.apptGetBookingTargetInfo = function(p){
         var apptJ = '';
-        try { apptJ = jalaliStringFromMaybe(p && p.nextAppointment) || ''; } catch(e) {}
+        try {
+            apptJ = jalaliStringFromMaybe(p && p.nextAppointment) || '';
+            if (apptJ === '-' || apptJ === '—' || apptJ === '–') apptJ = '';
+            if (typeof normalizeJalaliDateKey === 'function') apptJ = normalizeJalaliDateKey(apptJ) || '';
+        } catch(e) { apptJ = ''; }
+        var idealRaw = '';
+        try {
+            idealRaw = (p && p.idealNextDate) ? (jalaliStringFromMaybe(p.idealNextDate) || String(p.idealNextDate || '')) : '';
+            if (idealRaw === '-' || idealRaw === '—' || idealRaw === '–') idealRaw = '';
+            if (typeof normalizeJalaliDateKey === 'function') idealRaw = normalizeJalaliDateKey(idealRaw) || '';
+        } catch(e) { idealRaw = ''; }
         var st = Number((p && p.currentStage) || 1) || 1;
         return {
             mode:'current',
@@ -17603,8 +17724,8 @@ window.openModal = function(id) {
             nextStage:st,
             stageLabel:(st > 4 ? 'پایان' : ('مرحله ' + st)),
             baseInjectionJ:apptJ,
-            baseDateJ:apptJ || ((p && p.idealNextDate) ? p.idealNextDate : getTodayJalali()),
-            idealDateJ:(p && p.idealNextDate) ? p.idealNextDate : '',
+            baseDateJ:apptJ || idealRaw || getTodayJalali(),
+            idealDateJ:idealRaw || '',
             preserveCurrent:false
         };
     };
@@ -18193,12 +18314,21 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v90', total:40, active:25, newPhone:10,
             'سهمیه: ' + bucketLabel(b) + '\n\n' +
             'آیا در هر صورت اضافه شود؟';
         var ok = false;
-        try { ok = window.confirm(msg); } catch(e) { ok = false; }
-        if (ok) {
-            window.prpRememberQuotaOverride(key, b, excludeId);
-            try { if (typeof showToast === 'function') showToast('⚠️ ثبت خارج از سهمیه برای ' + key + ' تایید شد'); } catch(e) {}
-            return true;
-        }
+        // v174: confirm مرورگر حذف شد — اگر پچ جدید لود نشده باشد، مودال داخلی
+        try {
+          if (typeof showConfirm === 'function') {
+            showConfirm(title, msg, function(){
+              window.prpRememberQuotaOverride(key, b, excludeId);
+              try { if (typeof showToast === 'function') showToast('⚠️ ثبت خارج از سهمیه برای ' + key + ' تایید شد'); } catch(e) {}
+              try {
+                var retry = window.__prpConfirmRetry;
+                window.__prpConfirmRetry = null;
+                if (typeof retry === 'function') setTimeout(retry, 0);
+              } catch(e) {}
+            }, 'ثبت شود', 'لغو');
+            return false;
+          }
+        } catch(e) {}
         return false;
     };
 
@@ -19616,13 +19746,15 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
     var items = getItems();
     var target = items.find(function(it){ return String(it.id) === String(id); });
     if(!target || target.locked) return;
-    if(!confirm('این سهمیه حذف شود؟')) return;
-    saveItems(items.filter(function(it){ return String(it.id) !== String(id); }));
-    renderEditor(); refreshViews();
+    showConfirm('حذف سهمیه', 'این سهمیه حذف شود؟', function(){
+      saveItems(items.filter(function(it){ return String(it.id) !== String(id); }));
+      renderEditor(); refreshViews();
+    }, 'حذف', 'لغو');
   }
   function resetItems(){
-    if(!confirm('سهمیه‌ها به حالت پیش‌فرض برگردد؟')) return;
-    saveItems(DEFAULT_ITEMS); renderEditor(); refreshViews();
+    showConfirm('بازنشانی سهمیه', 'سهمیه‌ها به حالت پیش‌فرض برگردد؟', function(){
+      saveItems(DEFAULT_ITEMS); renderEditor(); refreshViews();
+    }, 'بازنشانی', 'لغو');
   }
   function normalizeType(t){
     var s = String(t || '').trim();
@@ -19908,11 +20040,13 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
   }
   window.prpChangeArchiveLimit = function(){
     var cur = String(_autoArchiveLimit);
-    var v = window.prompt('تعداد تلاش قبل از بایگانی خودکار (۱ تا ۱۰):', cur);
-    if(v===null) return;
-    var n = parseInt(v);
-    if(!n || n<1 || n>10){ alert('عدد ۱ تا ۱۰ وارد کنید.'); return; }
-    window.setAutoArchiveLimit(n);
+    showPrompt('تعداد تلاش قبل از بایگانی خودکار (۱ تا ۱۰)', function(v){
+      if(v===null || v===undefined) return;
+      var n = parseInt(toEnglishDigits(String(v)), 10);
+      if(!n || n<1 || n>10){ showMsg('مقدار نامعتبر', 'عدد ۱ تا ۱۰ وارد کنید.'); return; }
+      window.setAutoArchiveLimit(n);
+    }, 'ثبت', 'لغو');
+    try { var inp = document.getElementById('msgInput'); if(inp) inp.value = cur; } catch(e) {}
   };
   function _updateArchiveHints(){
     _updateArchiveLimitNote();
@@ -20657,16 +20791,32 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       lockedText +
       '\nآیا با ثبت نوبت در همین تاریخ موافقی؟';
 
-    var ok = false;
-    try { ok = window.confirm(msg); } catch(e) { ok = false; }
-    if (!ok) {
-      try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'روز فوق‌العاده فقط با تایید شما ثبت می‌شود.'); }
-      catch(e) {}
-      return false;
-    }
-    rememberApproval(info.key, patientId);
-    try { if (typeof showToast === 'function') showToast('✅ روز فوق‌العاده تایید شد: ' + fa(info.key)); } catch(e) {}
-    return true;
+    // v174: بدون window.confirm — مودال داخل برنامه + ادامهٔ عمل پس از تایید
+    try {
+      if (typeof showConfirm === 'function') {
+        showConfirm('روز فوق‌العاده', msg, function(){
+          rememberApproval(info.key, patientId);
+          try { if (typeof showToast === 'function') showToast('✅ روز فوق‌العاده تایید شد: ' + fa(info.key)); } catch(e) {}
+          try {
+            var retry = window.__prpConfirmRetry;
+            window.__prpConfirmRetry = null;
+            if (typeof retry === 'function') setTimeout(retry, 0);
+          } catch(e) {}
+        }, 'تایید روز', 'لغو');
+        try {
+          var cancelBtn = document.getElementById('msgCancelBtn');
+          if (cancelBtn) {
+            cancelBtn.onclick = function(){
+              try { closeModal('msgModal'); } catch(e) {}
+              try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'روز فوق‌العاده فقط با تایید شما ثبت می‌شود.'); } catch(e) {}
+            };
+          }
+        } catch(e) {}
+        return false;
+      }
+    } catch(e) {}
+    try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'روز فوق‌العاده فقط با تایید شما ثبت می‌شود.'); } catch(e) {}
+    return false;
   }
   window.prpConfirmExtraActiveDate = confirmExtra;
 
@@ -21920,13 +22070,20 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       + 'دسته: ' + typeLabel(type) + ' (' + fa(used + '/' + max) + ')\n'
       + 'ظرفیت کل: ' + fa(c.total + '/' + q.total) + '، جای خالی کل: ' + fa(left) + '\n\n'
       + 'با وجود پر بودن سهمیه این دسته، نوبت ثبت شود؟';
-    var ok = false;
-    try { ok = window.confirm(msg); } catch(e) { ok = false; }
-    if (ok) {
-      window.prpRememberQuotaOverride(key, type, excludeId);
-      try { if (typeof showToast === 'function') showToast('ثبت خارج از سهمیه برای ' + fa(key) + ' تایید شد'); } catch(e) {}
-      return true;
-    }
+    try {
+      if (typeof showConfirm === 'function') {
+        showConfirm(title, msg, function(){
+          window.prpRememberQuotaOverride(key, type, excludeId);
+          try { if (typeof showToast === 'function') showToast('ثبت خارج از سهمیه برای ' + fa(key) + ' تایید شد'); } catch(e) {}
+          try {
+            var retry = window.__prpConfirmRetry;
+            window.__prpConfirmRetry = null;
+            if (typeof retry === 'function') setTimeout(retry, 0);
+          } catch(e) {}
+        }, 'ثبت شود', 'لغو');
+        return false;
+      }
+    } catch(e) {}
     return false;
   };
 
@@ -23150,10 +23307,13 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       var idx=(activeDates||[]).findIndex(function(d){ return nkey(d)===k; });
       if(idx===-1) return false;
       var cnt=0; try{ cnt=Number(getConfirmedCount(k))||0; }catch(e){}
-      if(cnt>0){
-        var ok=true;
-        try{ ok=confirm('این روز '+(typeof toPersianDigits==='function'?toPersianDigits(cnt):cnt)+' بیمارِ تاییدشده دارد.\nبا غیرفعال‌کردن، روز از «روزهای فعال» حذف می‌شود (اطلاعات بیماران پاک نمی‌شود).\nادامه می‌دهید؟'); }catch(e){ ok=true; }
-        if(!ok) return false;
+      if(cnt>0 && window.__prpRemoveActiveDayOk !== true){
+        var rmMsg='این روز '+(typeof toPersianDigits==='function'?toPersianDigits(cnt):cnt)+' بیمارِ تاییدشده دارد.\nبا غیرفعال‌کردن، روز از «روزهای فعال» حذف می‌شود (اطلاعات بیماران پاک نمی‌شود).\nادامه می‌دهید؟';
+        showConfirm('غیرفعال کردن روز', rmMsg, function(){
+          window.__prpRemoveActiveDayOk = true;
+          try { window.prpRemoveActiveDay(k); } finally { window.__prpRemoveActiveDayOk = false; }
+        }, 'غیرفعال شود', 'لغو');
+        return false;
       }
       activeDates.splice(idx,1); activeCaps.splice(idx,1);
       activeDates.push(''); activeCaps.push(40);
@@ -25637,7 +25797,7 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       openModal('msgModal');
     }catch(e){
       var body=rows.map(function(x,i){var d=caseDateJ(x);return toPersianDigits(i+1)+'. '+(x.site||'سایر')+' — مرحله '+(x.currentStage||'—')+' — '+statusLabel(x)+(d?' — '+toPersianDigits(d):'');}).join('\n');
-      alert(title+'\n\n'+body);
+      try{ showMsg(title, body); }catch(e){}
     }
   };
 
@@ -25884,11 +26044,16 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       if(key(p.lastInjectionDate)!==last.dateJ){p.lastInjectionDate=last.dateJ;changed++;}
       if(Number(p.lastInjectionStage||0)!==last.stage){p.lastInjectionStage=last.stage;changed++;}
       if(last.stage>=4){
-        if(p.status!=='ARCHIVED'){p.status='ARCHIVED';changed++;}
-        if(p.nextAppointment!=null){p.nextAppointment=null;changed++;}
-        if(p.idealNextDate){p.idealNextDate='';changed++;}
-        if(p.followupDueDate){p.followupDueDate='';changed++;}
-        p.followupMode=''; p.bookingBucket=''; p.bookingType=''; p.bookingBucketDate='';
+        // نوبت قطعی intentionally-rebooked (خروج از بایگانی/سیکل جدید روی همین پرونده)
+        // را دوباره بایگانی نکن — وگرنه از لیست تایید حذف می‌شود.
+        var hasActiveConfirmedBooking = (p.status==='CONFIRMED' && !!(p.nextAppointment || p.bookingBucketDate));
+        if(!hasActiveConfirmedBooking){
+          if(p.status!=='ARCHIVED'){p.status='ARCHIVED';changed++;}
+          if(p.nextAppointment!=null){p.nextAppointment=null;changed++;}
+          if(p.idealNextDate){p.idealNextDate='';changed++;}
+          if(p.followupDueDate){p.followupDueDate='';changed++;}
+          p.followupMode=''; p.bookingBucket=''; p.bookingType=''; p.bookingBucketDate='';
+        }
       }else{
         var expectedStage=last.stage+1;
         if(p.status!=='CONFIRMED' && Number(p.currentStage||0)!==expectedStage){p.currentStage=expectedStage;changed++;}
@@ -28174,18 +28339,24 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
       'آیا با این حال می‌خواهید بیمار در همین تاریخ ثبت شود؟\n' +
       '(این تایید فقط برای همین بیمار/تاریخ است و تنظیمات ظرفیت روزها را تغییر نمی‌دهد.)';
 
-    var ok = false;
-    try { ok = window.confirm(msg); } catch(e) { ok = false; }
-    if (!ok) {
-      try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'ثبت در روزهای گذشته فقط با تایید شما انجام می‌شود.'); }
-      catch(e) {}
-      return false;
-    }
-
-    if (approvalKey) approvedPastDates[approvalKey] = true;
-    try { if (typeof showToast === 'function') showToast('✅ ثبت در تاریخ گذشته تایید شد: ' + (typeof toPersianDigits === 'function' ? toPersianDigits(key) : key)); }
+    try {
+      if (typeof showConfirm === 'function') {
+        showConfirm('ثبت در تاریخ گذشته', msg, function(){
+          if (approvalKey) approvedPastDates[approvalKey] = true;
+          try { if (typeof showToast === 'function') showToast('✅ ثبت در تاریخ گذشته تایید شد: ' + (typeof toPersianDigits === 'function' ? toPersianDigits(key) : key)); }
+          catch(e) {}
+          try {
+            var retry = window.__prpConfirmRetry;
+            window.__prpConfirmRetry = null;
+            if (typeof retry === 'function') setTimeout(retry, 0);
+          } catch(e) {}
+        }, 'ثبت شود', 'لغو');
+        return false;
+      }
+    } catch(e) {}
+    try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'ثبت در روزهای گذشته فقط با تایید شما انجام می‌شود.'); }
     catch(e) {}
-    return true;
+    return false;
   };
 
   try{ ensureDateCanBeBooked = window.ensureDateCanBeBooked; }catch(e){}
@@ -29668,4 +29839,3224 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
   }
 })();
 </script>
+
+<!-- PRP v168: بایگانی→لیست تایید + یکپارچگی ناحیه تزریق (چپ/راست) -->
+<script id="prp-v168-archive-confirm-site-integrity">
+(function(){
+  'use strict';
+  if(window.__PRP_V168_ARCHIVE_CONFIRM_SITE__) return;
+  window.__PRP_V168_ARCHIVE_CONFIRM_SITE__ = true;
+
+  function fa(v){
+    try{ return (typeof toPersianDigits === 'function') ? toPersianDigits(String(v)) : String(v); }
+    catch(e){ return String(v); }
+  }
+  function dateKey(v){
+    try{
+      var raw = (typeof jalaliStringFromMaybe === 'function') ? (jalaliStringFromMaybe(v) || v || '') : (v || '');
+      return (typeof normalizeJalaliDateKey === 'function') ? (normalizeJalaliDateKey(raw) || '') : String(raw).trim().replace(/-/g,'/');
+    }catch(e){ return String(v||'').trim().replace(/-/g,'/'); }
+  }
+  function normSite(s){
+    return String(s||'').trim().replace(/\s+/g,' ');
+  }
+  function oppositeSideHint(site){
+    var s = normSite(site);
+    if(/راست/.test(s)) return s.replace(/راست/g,'چپ');
+    if(/چپ/.test(s)) return s.replace(/چپ/g,'راست');
+    return '';
+  }
+  function hasArchiveMarkers(p){
+    return !!(p && (
+      p.status === 'ARCHIVED' ||
+      p.archiveReason || p.archiveAt || p.callAutoArchivedAt ||
+      p.callArchiveReason || p.doNotCall || p.patientFollowupRequired
+    ));
+  }
+  function clearArchiveMarkers(p){
+    if(!p) return;
+    p.archiveReason = '';
+    p.archiveAt = null;
+    p.callAutoArchivedAt = null;
+    p.callArchiveReason = '';
+    p.doNotCall = false;
+    p.needsDecision = false;
+    p.patientFollowupRequired = false;
+    p.patientFollowupAt = null;
+  }
+  function finalizeRebook(p, dateJ, type, source){
+    if(!p) return false;
+    var key = dateKey(dateJ || p.bookingBucketDate || p.nextAppointment);
+    if(!key) return false;
+    if(typeof window.prpFinalizeArchivedRebooking === 'function'){
+      try{
+        return !!window.prpFinalizeArchivedRebooking(
+          p, key, type || p.bookingBucket || p.bookingType || '', source || 'v168', {}
+        );
+      }catch(e){ console.error('v168 finalize rebooking failed', e); }
+    }
+    // fallback if v167 helper missing
+    var iso = '';
+    try{ var g = jalaliToGregorian(key); iso = g && !isNaN(g.getTime()) ? g.toISOString() : ''; }catch(e){}
+    if(!iso) return false;
+    p.status = 'CONFIRMED';
+    p.nextAppointment = iso;
+    p.bookingBucketDate = key;
+    p.bookingBucket = type || p.bookingBucket || p.bookingType || 'active';
+    p.bookingType = p.bookingBucket;
+    p.followupMode = '';
+    clearArchiveMarkers(p);
+    return true;
+  }
+
+  // ─── سوابق ناحیه تزریق ─────────────────────────────────────────
+  function injectionSiteRows(p){
+    var rows = [];
+    (p && Array.isArray(p.history) ? p.history : []).forEach(function(h, idx){
+      if(!h) return;
+      var t = String(h.type || '') + ' ' + String(h.note || '');
+      if(!/تزریق|TREATMENT_DONE|INJECTION/i.test(t)) return;
+      var site = normSite(h.site || h.injectionSite || '');
+      if(!site){
+        var m = String(h.note || '').match(/(زانو|کتف|آرنج|میخچه پای|دنبالچه)\s*(چپ|راست)?/);
+        if(m) site = normSite(m[0]);
+      }
+      var st = Number(h.stage || 0) || 0;
+      try{
+        var mm = String(h.type || '').match(/تزریق\s*(\d+)/);
+        if(!st && mm) st = Number(mm[1]) || 0;
+      }catch(e){}
+      rows.push({
+        stage: st,
+        dateJ: dateKey(h.eventDateJ || h.dateJ || h.visitDateJ || ''),
+        site: site,
+        index: idx,
+        entry: h
+      });
+    });
+    rows.sort(function(a,b){
+      var c = String(a.dateJ||'').localeCompare(String(b.dateJ||''));
+      return c || (a.index - b.index);
+    });
+    return rows;
+  }
+  function sitesFromEditHistory(p){
+    var found = [];
+    (p && Array.isArray(p.history) ? p.history : []).forEach(function(h){
+      if(!h) return;
+      var note = String(h.note || '');
+      // قالب v138: ناحیه تزریق: «زانو راست» ← «زانو چپ»
+      var m = note.match(/ناحیه تزریق:\s*«([^»]*)»\s*←\s*«([^»]*)»/);
+      if(m){
+        var from = normSite(m[1]), to = normSite(m[2]);
+        if(from) found.push(from);
+        if(to) found.push(to);
+      }
+      if(Array.isArray(h.changes)){
+        h.changes.forEach(function(ch){
+          if(!ch) return;
+          if(ch.field === 'site' || /ناحیه/.test(String(ch.label||''))){
+            if(ch.from && ch.from !== '—') found.push(normSite(ch.from));
+            if(ch.to && ch.to !== '—') found.push(normSite(ch.to));
+          }
+        });
+      }
+    });
+    return found;
+  }
+  function historicalSiteConsensus(p){
+    var counts = Object.create(null);
+    var ordered = [];
+    function bump(s, n){
+      s = normSite(s);
+      if(!s) return;
+      if(!counts[s]){ counts[s] = 0; ordered.push(s); }
+      counts[s] += (n || 1);
+    }
+    var rows = injectionSiteRows(p);
+    rows.forEach(function(r){ if(r.site) bump(r.site, 2); }); // تزریق وزن بیشتر
+    sitesFromEditHistory(p).forEach(function(s){ bump(s, 1); });
+    // اگر هیچ سابقاً صریحی نبود، خود ناحیه فعلی را ملاک اولیه بگیر
+    var current = normSite(p && p.site);
+    if(!ordered.length && current) bump(current, 1);
+    // برای تزریق‌های بدون site ذخیره‌شده، اگر فقط یک ناحیهٔ غیرجاری در ویرایش‌ها بوده همان را پررنگ کن
+    var missingSiteInjections = rows.filter(function(r){ return !r.site; }).length;
+    if(missingSiteInjections && ordered.length){
+      // اولین ناحیه دیده‌شده در ویرایش (from) را به‌عنوان سابقه قدیمی‌تر در نظر بگیر
+      var editSites = sitesFromEditHistory(p);
+      if(editSites.length) bump(editSites[0], missingSiteInjections);
+    }
+    var best = '', bestN = 0;
+    ordered.forEach(function(s){
+      if(counts[s] > bestN){ best = s; bestN = counts[s]; }
+    });
+    return { site: best || current || '', count: bestN, counts: counts, rows: rows };
+  }
+  window.prpGetInjectionSiteHistory = function(p){ return injectionSiteRows(p); };
+  window.prpGetHistoricalSiteConsensus = historicalSiteConsensus;
+
+  function siteMismatchMessage(p, claimedSite){
+    var cons = historicalSiteConsensus(p);
+    var claimed = normSite(claimedSite || (p && p.site));
+    if(!cons.site || !claimed) return '';
+    if(cons.site === claimed) return '';
+    var histLines = cons.rows.filter(function(r){ return r.site; }).map(function(r){
+      return 'مرحله ' + fa(r.stage || '?') + (r.dateJ ? ' (' + fa(r.dateJ) + ')' : '') + ': ' + r.site;
+    });
+    var msg = 'ناحیه اعلام‌شده امروز «' + claimed + '» است، ولی سابقه پرونده «' + cons.site + '»';
+    if(cons.count >= 2) msg += ' (حداقل ' + fa(cons.count) + ' بار).';
+    else msg += '.';
+    if(histLines.length) msg += '\n\nسوابق ناحیه:\n- ' + histLines.join('\n- ');
+    var opp = oppositeSideHint(cons.site);
+    if(opp && opp === claimed){
+      msg += '\n\n⚠️ احتمال جابه‌جایی چپ/راست وجود دارد. قبل از تزریق حتماً با بیمار و پرونده چک کنید.';
+    }
+    return msg;
+  }
+  window.prpSiteMismatchMessage = siteMismatchMessage;
+
+  function confirmSiteChangeOrKeep(p, nextSite, onKeep, onChange){
+    var msg = siteMismatchMessage(p, nextSite);
+    if(!msg){ if(typeof onChange === 'function') onChange(); return; }
+    try{
+      showConfirm(
+        'اختلاف ناحیه تزریق',
+        msg + '\n\nناحیه پرونده حفظ شود یا به «' + normSite(nextSite) + '» تغییر کند؟',
+        function(){ if(typeof onChange === 'function') onChange(); },
+        'تغییر به ' + normSite(nextSite),
+        'حفظ «' + (historicalSiteConsensus(p).site || p.site || '') + '»'
+      );
+      // دکمه لغو = حفظ ناحیه قبلی
+      var cancelBtn = document.getElementById('msgCancelBtn');
+      if(cancelBtn){
+        var old = cancelBtn.onclick;
+        cancelBtn.onclick = function(){
+          try{ if(typeof onKeep === 'function') onKeep(); }catch(e){}
+          try{ closeModal('msgModal'); }catch(e){}
+          if(typeof old === 'function') try{ old(); }catch(e){}
+        };
+      }
+    }catch(e){
+      if(typeof window.prpFallbackSiteConfirm === 'function'){
+        window.prpFallbackSiteConfirm(msg + '\n\nتغییر ناحیه یا حفظ قبلی؟', onChange, onKeep);
+      } else {
+        if(typeof onKeep === 'function') onKeep();
+      }
+    }
+  }
+
+  // ─── wrap: ثبت نوبت ────────────────────────────────────────────
+  function wrapApptConfirmBook(){
+    var base = window.apptConfirmBook || (typeof apptConfirmBook === 'function' ? apptConfirmBook : null);
+    if(typeof base !== 'function' || base.__prpV168ArchiveWrapped) return;
+    var wrapped = function(){
+      var pid = null, beforeStatus = '', beforeMarkers = false;
+      try{
+        pid = (typeof _apptSelectedPatientId !== 'undefined') ? _apptSelectedPatientId : null;
+        var p0 = (window.patients || []).find(function(x){ return String(x && x.id) === String(pid); });
+        beforeStatus = p0 ? (p0.status || '') : '';
+        beforeMarkers = hasArchiveMarkers(p0);
+      }catch(e){}
+      var ret = base.apply(this, arguments);
+      try{
+        var p = (window.patients || []).find(function(x){ return String(x && x.id) === String(pid); });
+        if(p && p.status === 'CONFIRMED' && p.nextAppointment && (beforeStatus === 'ARCHIVED' || beforeMarkers || hasArchiveMarkers(p))){
+          finalizeRebook(p, p.bookingBucketDate || p.nextAppointment, p.bookingBucket || p.bookingType || '', 'appt-confirm-book');
+          try{ if(typeof markDataChanged === 'function') markDataChanged(); }catch(e){}
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+          try{ if(typeof renderTable === 'function') renderTable(); }catch(e){}
+          try{ if(typeof renderDateButtons === 'function') renderDateButtons(); }catch(e){}
+          try{ if(typeof updateSidebarDates === 'function') updateSidebarDates(); }catch(e){}
+        }
+      }catch(e){ console.error('v168 archive rebook after apptConfirmBook failed', e); }
+      return ret;
+    };
+    wrapped.__prpV168ArchiveWrapped = true;
+    window.apptConfirmBook = wrapped;
+    try{ apptConfirmBook = wrapped; }catch(e){}
+  }
+
+  function wrapApplyConfirm(){
+    var base = window.applyConfirm || (typeof applyConfirm === 'function' ? applyConfirm : null);
+    if(typeof base !== 'function' || base.__prpV168ArchiveWrapped) return;
+    var wrapped = function(dateJ){
+      var pid = null, beforeStatus = '', beforeMarkers = false;
+      try{
+        pid = (typeof tempConfirmId !== 'undefined') ? tempConfirmId : null;
+        var p0 = (window.patients || []).find(function(x){ return String(x && x.id) === String(pid); });
+        beforeStatus = p0 ? (p0.status || '') : '';
+        beforeMarkers = hasArchiveMarkers(p0);
+      }catch(e){}
+      var ret = base.apply(this, arguments);
+      try{
+        var p = (window.patients || []).find(function(x){ return String(x && x.id) === String(pid); });
+        if(p && p.status === 'CONFIRMED' && (beforeStatus === 'ARCHIVED' || beforeMarkers || hasArchiveMarkers(p))){
+          finalizeRebook(p, dateJ || p.bookingBucketDate || p.nextAppointment, p.bookingBucket || p.bookingType || '', 'manual-confirm');
+          try{ if(typeof markDataChanged === 'function') markDataChanged(); }catch(e){}
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+        }
+      }catch(e){ console.error('v168 archive rebook after applyConfirm failed', e); }
+      return ret;
+    };
+    wrapped.__prpV168ArchiveWrapped = true;
+    window.applyConfirm = wrapped;
+    try{ applyConfirm = wrapped; }catch(e){}
+  }
+
+  function wrapMoveBackToCallList(){
+    var base = window.moveBackToCallList || (typeof moveBackToCallList === 'function' ? moveBackToCallList : null);
+    if(typeof base !== 'function' || base.__prpV168ArchiveWrapped) return;
+    var wrapped = function(id){
+      var p = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+      var wasArchived = !!(p && (p.status === 'ARCHIVED' || hasArchiveMarkers(p)));
+      var ret = base.apply(this, arguments);
+      // اگر از بایگانی برگشت، نشانگرهای بایگانی را پاک کن تا بعداً دوباره بایگانی نشود
+      try{
+        var pp = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+        if(pp && wasArchived && pp.status !== 'ARCHIVED'){
+          clearArchiveMarkers(pp);
+          if(!Array.isArray(pp.history)) pp.history = [];
+          var now = new Date().toISOString();
+          var today = '';
+          try{ today = (typeof getTodayJalali === 'function') ? getTodayJalali() : ''; }catch(e){}
+          if(!pp.history.some(function(h){ return h && h.type === 'فعال‌سازی مجدد' && h.source === 'back-to-call-from-archive'; })){
+            pp.history.push({
+              date: now, recordedAt: now, dateJ: today, eventDateJ: today,
+              type: 'فعال‌سازی مجدد', stage: Number(pp.currentStage || 0),
+              source: 'back-to-call-from-archive',
+              note: 'خروج از بایگانی و بازگشت به لیست تماس'
+            });
+          }
+          try{ if(typeof logAction === 'function') logAction('REACTIVATE', { id:pp.id, name:pp.fullName||'', note:'خروج از بایگانی با بازگشت به لیست تماس', dateJ:today }); }catch(e){}
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+        }
+      }catch(e){ console.error('v168 clear archive on moveBackToCallList failed', e); }
+      return ret;
+    };
+    wrapped.__prpV168ArchiveWrapped = true;
+    window.moveBackToCallList = wrapped;
+    try{ moveBackToCallList = wrapped; }catch(e){}
+  }
+
+  // repairPatient نباید بیمار تاییدشدهٔ intentionally-rebooked را دوباره بایگانی کند
+  function wrapRepairInjectionConsistency(){
+    var base = window.prpRepairInjectionDateConsistency;
+    if(typeof base !== 'function' || base.__prpV168ArchiveWrapped) return;
+    var wrapped = function(){
+      var snapshot = Object.create(null);
+      try{
+        (window.patients || []).forEach(function(p){
+          if(!p) return;
+          if(p.status === 'CONFIRMED' && p.nextAppointment){
+            snapshot[String(p.id)] = {
+              status: p.status,
+              nextAppointment: p.nextAppointment,
+              bookingBucketDate: p.bookingBucketDate || '',
+              bookingBucket: p.bookingBucket || '',
+              bookingType: p.bookingType || '',
+              archiveReason: p.archiveReason || '',
+              archiveAt: p.archiveAt || null
+            };
+          }
+        });
+      }catch(e){}
+      var ret = base.apply(this, arguments);
+      try{
+        (window.patients || []).forEach(function(p){
+          if(!p) return;
+          var prev = snapshot[String(p.id)];
+          if(!prev) return;
+          // اگر قبل از repair تایید بود و بعداً به‌خاطر stage>=4 دوباره بایگانی شد، نوبت قطعی را برگردان
+          if(prev.status === 'CONFIRMED' && p.status === 'ARCHIVED' && prev.nextAppointment){
+            p.status = 'CONFIRMED';
+            p.nextAppointment = prev.nextAppointment;
+            p.bookingBucketDate = prev.bookingBucketDate || dateKey(prev.nextAppointment);
+            p.bookingBucket = prev.bookingBucket || p.bookingBucket || 'active';
+            p.bookingType = prev.bookingType || p.bookingBucket;
+            clearArchiveMarkers(p);
+          }
+        });
+      }catch(e){ console.error('v168 protect confirmed from repair-archive failed', e); }
+      return ret;
+    };
+    wrapped.__prpV168ArchiveWrapped = true;
+    window.prpRepairInjectionDateConsistency = wrapped;
+  }
+
+  // ─── wrap: ویرایش ناحیه ────────────────────────────────────────
+  function wrapSaveEditPatient(){
+    var base = window.saveEditPatient || (typeof saveEditPatient === 'function' ? saveEditPatient : null);
+    if(typeof base !== 'function' || base.__prpV168SiteWrapped) return;
+    var wrapped = function(e){
+      try{
+        var id = (document.getElementById('editId') || {}).value || '';
+        var p = (window.patients || []).find(function(x){ return String(x && x.id) === String(id); });
+        var nextSite = normSite((document.getElementById('editSite') || {}).value || '');
+        var prevSite = normSite(p && p.site);
+        if(p && nextSite && prevSite && nextSite !== prevSite){
+          var msg = siteMismatchMessage(Object.assign({}, p, {site: prevSite}), nextSite);
+          // حتی بدون سابقهٔ صریح site در history، اگر فقط فیلد عوض شده و سابقه تزریق دارد هشدار بده
+          var injCount = injectionSiteRows(p).length;
+          if(!msg && injCount >= 1){
+            msg = 'ناحیه پرونده از «' + prevSite + '» به «' + nextSite + '» تغییر می‌کند در حالی که ' + fa(injCount) + ' تزریق قبلی روی این پرونده ثبت شده است.';
+            var opp = oppositeSideHint(prevSite);
+            if(opp && opp === nextSite){
+              msg += '\n\n⚠️ این تغییر دقیقاً جابه‌جایی چپ/راست است. اگر بیمار امروز سمت دیگر را می‌گوید، ابتدا پرونده و سوابق را چک کنید.';
+            }
+          }
+          if(msg){
+            // v170 پیغام داخل برنامه را نشان می‌دهد؛ confirm مرورگر نشان داده نشود
+            if(window.__PRP_V170_INAPP_SITE_ACTIONS__ && window.__prpEditSiteChoiceDone){
+              // انتخاب از مودال داخلی انجام شده
+            } else if(window.__PRP_V170_INAPP_SITE_ACTIONS__){
+              // اگر به هر دلیل به اینجا رسیدیم بدون مودال v170، ناحیه را نگه دار و ادامه بده
+            } else {
+              var ok = false;
+              // v174: بدون confirm مرورگر — اگر مودال v170 نبود، ناحیه قبلی حفظ می‌شود
+              try{ document.getElementById('editSite').value = prevSite; }catch(err){}
+              nextSite = prevSite;
+            }
+          }
+        }
+        // اگر از بایگانی نوبت قطعی ثبت می‌شود، بعد از ذخیره finalize کن
+        var form = document.getElementById('editForm');
+        var origStatus = form ? (form.dataset.origStatus || '') : '';
+        var ret = base.apply(this, arguments);
+        try{
+          var pp = (window.patients || []).find(function(x){ return String(x && x.id) === String(id); });
+          if(pp && (origStatus === 'ARCHIVED' || hasArchiveMarkers(pp)) && pp.status === 'CONFIRMED' && pp.nextAppointment){
+            finalizeRebook(pp, pp.bookingBucketDate || pp.nextAppointment, pp.bookingBucket || pp.bookingType || '', 'edit-patient-v168');
+            try{ if(typeof saveData === 'function') saveData(); }catch(err){}
+          }
+        }catch(err){}
+        return ret;
+      }catch(err){
+        return base.apply(this, arguments);
+      }
+    };
+    wrapped.__prpV168SiteWrapped = true;
+    window.saveEditPatient = wrapped;
+    try{ saveEditPatient = wrapped; }catch(e){}
+  }
+
+  // ─── wrap: تکمیل تزریق + ثبت site در history ───────────────────
+  function wrapCompleteTreatment(){
+    var base = window.completeTreatment || (typeof completeTreatment === 'function' ? completeTreatment : null);
+    if(typeof base !== 'function' || base.__prpV168SiteWrapped) return;
+    var wrapped = function(id){
+      var p = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+      if(!p) return base.apply(this, arguments);
+
+      var cons = historicalSiteConsensus(p);
+      var current = normSite(p.site);
+      var mismatch = (cons.site && current && cons.site !== current) ? siteMismatchMessage(p, current) : '';
+      var siteLine = current ? ('ناحیه پرونده: ' + current) : 'ناحیه پرونده ثبت نشده';
+      if(cons.site && cons.count >= 1){
+        siteLine += '\nسابقه غالب: ' + cons.site + (cons.count >= 2 ? (' (' + fa(cons.count) + ' بار)') : '');
+      }
+
+      // فقط وقتی سابقه با ناحیه فعلی فرق دارد (مثلاً دو بار زانو راست، امروز زانو چپ) هشدار بده
+      if(mismatch && !window.__prpSkipSiteMismatchOnce){
+        try{
+          showConfirm(
+            'هشدار ناحیه تزریق',
+            mismatch + '\n\n' + siteLine + '\n\nاگر بیمار امروز سمت دیگر را می‌گوید، اول ناحیه را در ویرایش پرونده اصلاح یا تأیید کنید.',
+            function(){ runCompleteWithSiteSnapshot(id, base); },
+            'ادامه با همین ناحیه',
+            'انصراف'
+          );
+          return;
+        }catch(e){}
+      }
+      try{ window.__prpSkipSiteMismatchOnce = false; }catch(e){}
+      return runCompleteWithSiteSnapshot(id, base);
+    };
+    wrapped.__prpV168SiteWrapped = true;
+    window.completeTreatment = wrapped;
+    try{ completeTreatment = wrapped; }catch(e){}
+  }
+
+  function runCompleteWithSiteSnapshot(id, baseFn){
+    var p = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+    var siteBefore = normSite(p && p.site);
+    var histLenBefore = p && Array.isArray(p.history) ? p.history.length : 0;
+    var ret = baseFn.call(window, id);
+    // base از showConfirm استفاده می‌کند؛ بعد از ثبت واقعی site را روی آخرین تزریق بنویس
+    var tries = 0;
+    (function poll(){
+      tries++;
+      try{
+        var pp = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+        if(!pp || !Array.isArray(pp.history)) return;
+        if(pp.history.length > histLenBefore){
+          for(var i = pp.history.length - 1; i >= histLenBefore; i--){
+            var h = pp.history[i];
+            if(!h) continue;
+            if(/تزریق|TREATMENT_DONE|INJECTION/i.test(String(h.type||'')+' '+String(h.note||''))){
+              if(!h.site) h.site = siteBefore || normSite(pp.site);
+              if(h.site && String(h.note||'').indexOf(h.site) < 0){
+                h.note = (h.note ? (h.note + ' - ') : '') + 'ناحیه: ' + h.site;
+              }
+              try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+              break;
+            }
+          }
+          return;
+        }
+      }catch(e){}
+      if(tries < 40) setTimeout(poll, 50);
+    })();
+    return ret;
+  }
+
+  // normalizeAllPatients: PENDING_CALL با نشانگر بایگانی را هم پاک کن
+  function enhanceNormalize(){
+    var base = window.prpEnsureArchiveBookingConsistency;
+    if(typeof base === 'function' && !base.__prpV168Enhanced){
+      var wrapped = function(){
+        var changed = 0;
+        try{ changed = Number(base.apply(this, arguments) || 0) || 0; }catch(e){ changed = 0; }
+        try{ changed += scrubPatients(); }catch(e){}
+        return changed;
+      };
+      wrapped.__prpV168Enhanced = true;
+      window.prpEnsureArchiveBookingConsistency = wrapped;
+    }
+    // مهم: saveData در v167 مستقیم normalize داخلی را صدا می‌زند، نه window.* را.
+    var baseSave = window.saveData || (typeof saveData === 'function' ? saveData : null);
+    if(typeof baseSave === 'function' && !baseSave.__prpV168Scrub){
+      var wrappedSave = function(){
+        try{ scrubPatients(); }catch(e){ console.error('v168 scrub before save failed', e); }
+        return baseSave.apply(this, arguments);
+      };
+      wrappedSave.__prpV168Scrub = true;
+      // حفظ فلگ‌های قبلی
+      try{
+        Object.keys(baseSave).forEach(function(k){
+          try{ wrappedSave[k] = baseSave[k]; }catch(e){}
+        });
+      }catch(e){}
+      window.saveData = wrappedSave;
+      try{ saveData = wrappedSave; }catch(e){}
+    }
+  }
+  function scrubPatients(){
+    var changed = 0;
+    (window.patients || []).forEach(function(p){
+      if(!p) return;
+      if(p.status === 'CONFIRMED' && p.nextAppointment && hasArchiveMarkers(p)){
+        if(finalizeRebook(p, p.bookingBucketDate || p.nextAppointment, p.bookingBucket || p.bookingType || '', 'normalize-v168')) changed++;
+      } else if(p.status === 'PENDING_CALL' && hasArchiveMarkers(p)){
+        clearArchiveMarkers(p);
+        changed++;
+      }
+    });
+    return changed;
+  }
+
+  // ─── scenario tests ────────────────────────────────────────────
+  window.prpRunV168ScenarioTests = function(){
+    var results = [];
+    function ok(name, pass){ results.push({name:name, ok:!!pass}); }
+
+    // 1) archived + book => confirmed & markers cleared
+    var p1 = {
+      id:'v168-a', fullName:'تست بایگانی', currentStage:2, status:'ARCHIVED',
+      nextAppointment:null, bookingBucketDate:'', archiveReason:'انصراف',
+      archiveAt:'2026-07-01T10:00:00.000Z', doNotCall:true, history:[], site:'زانو راست'
+    };
+    ok('فعال‌سازی مجدد از بایگانی', finalizeRebook(p1, '1405/05/10', 'active', 'test') && p1.status==='CONFIRMED' && !p1.archiveReason && !p1.doNotCall && !!p1.bookingBucketDate);
+
+    // 2) repair must not re-archive confirmed rebooked stage-4
+    var p2 = {
+      id:'v168-b', status:'CONFIRMED', currentStage:4,
+      nextAppointment:'2026-08-01T00:00:00.000Z', bookingBucketDate:'1405/05/10',
+      history:[{type:'تزریق 4', stage:4, dateJ:'1405/01/01', eventDateJ:'1405/01/01', site:'زانو راست'}],
+      site:'زانو راست'
+    };
+    var snap = {status:p2.status, nextAppointment:p2.nextAppointment, bookingBucketDate:p2.bookingBucketDate};
+    // simulate bad repair
+    p2.status = 'ARCHIVED'; p2.nextAppointment = null;
+    if(snap.status==='CONFIRMED'){ p2.status=snap.status; p2.nextAppointment=snap.nextAppointment; p2.bookingBucketDate=snap.bookingBucketDate; clearArchiveMarkers(p2); }
+    ok('بیمار تاییدشده stage4 دوباره بایگانی نمی‌شود', p2.status==='CONFIRMED' && !!p2.nextAppointment);
+
+    // 3) site mismatch detection for left/right flip after two right injections
+    var p3 = {
+      id:'v168-c', site:'زانو چپ', currentStage:3, status:'CONFIRMED',
+      history:[
+        {type:'تزریق 1', stage:1, dateJ:'1404/10/01', eventDateJ:'1404/10/01', site:'زانو راست'},
+        {type:'تزریق 2', stage:2, dateJ:'1404/12/01', eventDateJ:'1404/12/01', site:'زانو راست'}
+      ]
+    };
+    var cons = historicalSiteConsensus(p3);
+    var msg = siteMismatchMessage(p3, 'زانو چپ');
+    ok('اجماع سابقه زانو راست است', cons.site==='زانو راست' && cons.count>=2);
+    ok('هشدار جابه‌جایی چپ/راست ساخته می‌شود', !!msg && msg.indexOf('زانو راست')>=0 && msg.indexOf('زانو چپ')>=0);
+
+    window.__PRP_V168_SCENARIO_TESTS = {
+      passed: results.filter(function(r){ return r.ok; }).length,
+      total: results.length,
+      results: results,
+      at: new Date().toISOString()
+    };
+    return window.__PRP_V168_SCENARIO_TESTS;
+  };
+
+  function install(){
+    wrapApptConfirmBook();
+    wrapApplyConfirm();
+    wrapMoveBackToCallList();
+    wrapRepairInjectionConsistency();
+    wrapSaveEditPatient();
+    wrapCompleteTreatment();
+    enhanceNormalize();
+    try{ window.prpRunV168ScenarioTests(); }catch(e){ console.error('v168 scenario tests failed', e); }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  // wrappers بعدی ممکن است بعداً توابع را عوض کنند؛ چند بار دیگر هم نصب کن
+  setTimeout(install, 800);
+})();
+</script>
+
+<!-- PRP v169: ناوبری به لیست تایید + تأیید اجباری ناحیه در روز تزریق -->
+<script id="prp-v169-confirm-nav-site-gate">
+(function(){
+  'use strict';
+  if(window.__PRP_V169_CONFIRM_SITE_GATE__) return;
+  window.__PRP_V169_CONFIRM_SITE_GATE__ = true;
+
+  function fa(v){
+    try{ return (typeof toPersianDigits === 'function') ? toPersianDigits(String(v)) : String(v); }
+    catch(e){ return String(v); }
+  }
+  function dateKey(v){
+    try{
+      var raw = (typeof jalaliStringFromMaybe === 'function') ? (jalaliStringFromMaybe(v) || v || '') : (v || '');
+      return (typeof normalizeJalaliDateKey === 'function') ? (normalizeJalaliDateKey(raw) || '') : String(raw).trim().replace(/-/g,'/');
+    }catch(e){ return String(v||'').trim().replace(/-/g,'/'); }
+  }
+  function normSite(s){ return String(s||'').trim().replace(/\s+/g,' '); }
+  function oppositeSide(site){
+    var s = normSite(site);
+    if(/راست/.test(s)) return s.replace(/راست/g,'چپ');
+    if(/چپ/.test(s)) return s.replace(/چپ/g,'راست');
+    return '';
+  }
+  function consensus(p){
+    try{
+      if(typeof window.prpGetHistoricalSiteConsensus === 'function') return window.prpGetHistoricalSiteConsensus(p) || {};
+    }catch(e){}
+    return { site: normSite(p && p.site), count: 0, rows: [] };
+  }
+  function goConfirmed(dateJ){
+    var key = dateKey(dateJ);
+    if(!key) return;
+    try{ currentFilterDate = key; }catch(e){ try{ window.currentFilterDate = key; }catch(err){} }
+    try{
+      if(typeof switchTab === 'function') switchTab('confirmedList');
+      else if(typeof renderTable === 'function') renderTable();
+    }catch(e){}
+    try{ if(typeof renderDateButtons === 'function') renderDateButtons(); }catch(e){}
+    try{ if(typeof updateSidebarDates === 'function') updateSidebarDates(); }catch(e){}
+    try{ if(typeof showToast === 'function') showToast('بیمار در لیست تایید تاریخ ' + fa(key) + ' قرار گرفت'); }catch(e){}
+  }
+  window.prpGoToConfirmedListForDate = goConfirmed;
+
+  function logSiteDecision(p, decision, fromSite, toSite, note){
+    if(!p) return;
+    var now = new Date().toISOString();
+    var today = '';
+    try{ today = (typeof getTodayJalali === 'function') ? getTodayJalali() : ''; }catch(e){}
+    (p.history = p.history || []).push({
+      date: now, recordedAt: now, dateJ: today, eventDateJ: today,
+      type: 'تصمیم ناحیه تزریق',
+      stage: Number(p.currentStage || 0),
+      site: toSite || fromSite || '',
+      decision: decision || '',
+      note: note || ('تصمیم ناحیه: ' + (decision||'') + (fromSite ? (' | از «'+fromSite+'»') : '') + (toSite ? (' به «'+toSite+'»') : ''))
+    });
+    try{
+      if(typeof logAction === 'function') logAction('SITE_DECISION', {
+        id: p.id, name: p.fullName || '', note: note || decision || '', dateJ: today
+      });
+    }catch(e){}
+  }
+
+  // بعد از ثبت نوبت از بایگانی → مستقیم به لیست تایید همان تاریخ
+  function wrapApptForNav(){
+    var base = window.apptConfirmBook;
+    if(typeof base !== 'function' || base.__prpV169NavWrapped) return;
+    var wrapped = function(){
+      var pid = null, beforeStatus = '';
+      try{
+        pid = (typeof _apptSelectedPatientId !== 'undefined') ? _apptSelectedPatientId : null;
+        var p0 = (window.patients || []).find(function(x){ return String(x && x.id) === String(pid); });
+        beforeStatus = p0 ? (p0.status || '') : '';
+      }catch(e){}
+      var ret = base.apply(this, arguments);
+      try{
+        var p = (window.patients || []).find(function(x){ return String(x && x.id) === String(pid); });
+        var booked = p && p.status === 'CONFIRMED' && (p.bookingBucketDate || p.nextAppointment);
+        if(booked && (beforeStatus === 'ARCHIVED' || beforeStatus === 'CONFIRMED')){
+          // فقط وقتی از بایگانی آمده، به لیست تایید ببر
+          if(beforeStatus === 'ARCHIVED'){
+            var key = dateKey(p.bookingBucketDate || p.nextAppointment);
+            setTimeout(function(){ goConfirmed(key); }, 120);
+          }
+        }
+      }catch(e){}
+      return ret;
+    };
+    wrapped.__prpV169NavWrapped = true;
+    // حفظ فلگ‌های قبلی wrap
+    try{ Object.keys(base).forEach(function(k){ try{ wrapped[k] = base[k]; }catch(e){} }); }catch(e){}
+    window.apptConfirmBook = wrapped;
+    try{ apptConfirmBook = wrapped; }catch(e){}
+  }
+
+  function wrapEditSaveForNav(){
+    var base = window.saveEditPatient;
+    if(typeof base !== 'function' || base.__prpV169NavWrapped) return;
+    var wrapped = function(e){
+      var id = '', origStatus = '';
+      try{
+        id = (document.getElementById('editId') || {}).value || '';
+        var form = document.getElementById('editForm');
+        origStatus = form ? (form.dataset.origStatus || '') : '';
+      }catch(err){}
+      var ret = base.apply(this, arguments);
+      try{
+        if(origStatus === 'ARCHIVED'){
+          var p = (window.patients || []).find(function(x){ return String(x && x.id) === String(id); });
+          if(p && p.status === 'CONFIRMED' && (p.bookingBucketDate || p.nextAppointment)){
+            setTimeout(function(){ goConfirmed(p.bookingBucketDate || p.nextAppointment); }, 120);
+          }
+        }
+      }catch(err){}
+      return ret;
+    };
+    wrapped.__prpV169NavWrapped = true;
+    try{ Object.keys(base).forEach(function(k){ try{ wrapped[k] = base[k]; }catch(e){} }); }catch(e){}
+    window.saveEditPatient = wrapped;
+    try{ saveEditPatient = wrapped; }catch(e){}
+  }
+
+  // روز تزریق: همیشه ناحیه را با سابقه چک کن؛ اگر بیمار سمت دیگر گفت مسیر مشخص بده
+  function wrapCompleteTreatmentGate(){
+    var base = window.completeTreatment;
+    if(typeof base !== 'function' || base.__prpV169SiteGate) return;
+    var wrapped = function(id){
+      // اگر v170 پیغام داخل‌برنامه‌ای با دکمه سیکل جدید را گرفته، اینجا دوباره نپرس
+      if(window.__PRP_V170_INAPP_SITE_ACTIONS__){
+        return base.apply(this, arguments);
+      }
+      if(window.__prpSiteGatePassedFor && String(window.__prpSiteGatePassedFor) === String(id)){
+        return base.apply(this, arguments);
+      }
+      var p = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+      if(!p) return base.apply(this, arguments);
+
+      var cons = consensus(p);
+      var current = normSite(p.site);
+      var hist = cons.site || current || '';
+      var opp = oppositeSide(hist);
+      var injRows = [];
+      try{
+        if(typeof window.prpGetInjectionSiteHistory === 'function') injRows = window.prpGetInjectionSiteHistory(p) || [];
+      }catch(e){}
+      var histLines = injRows.filter(function(r){ return r && r.site; }).map(function(r){
+        return 'مرحله ' + fa(r.stage || '?') + (r.dateJ ? ' (' + fa(r.dateJ) + ')' : '') + ': ' + r.site;
+      });
+
+      var body = 'ناحیه پرونده: «' + (current || '—') + '»';
+      if(hist){
+        body += '\nسابقه غالب: «' + hist + '»' + (cons.count >= 2 ? (' (' + fa(cons.count) + ' بار)') : '');
+      }
+      if(histLines.length) body += '\n\nسوابق ناحیه:\n- ' + histLines.join('\n- ');
+      body += '\n\nآیا بیمار امروز همین ناحیه را تأیید کرد؟';
+      if(opp) body += '\nاگر گفت «' + opp + '» روی «بیمار سمت دیگر را می‌گوید» بزنید.';
+
+      // اگر پرونده از قبل با سابقه فرق دارد، همان مسیر اختلاف قبلی
+      var alreadyMismatch = !!(hist && current && hist !== current);
+      if(alreadyMismatch){
+        try{
+          var mismatchMsg = '';
+          try{ mismatchMsg = (typeof window.prpSiteMismatchMessage === 'function') ? (window.prpSiteMismatchMessage(p, current) || '') : ''; }catch(e){}
+          showConfirm(
+            'اختلاف ناحیه تزریق',
+            (mismatchMsg || ('ناحیه پرونده «' + current + '» با سابقه «' + hist + '» فرق دارد.'))
+              + '\n\nچه کار کنیم؟\n• ادامه با ناحیه فعلی پرونده\n• یا انصراف و اصلاح از ویرایش / ناحیه جدید',
+            function(){
+              try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+              proceedInjection(id, base);
+            },
+            'ادامه با «' + current + '»',
+            'انصراف'
+          );
+          return;
+        }catch(e){}
+      }
+
+      try{
+        showConfirm(
+          'تأیید ناحیه تزریق',
+          body,
+          function(){
+            logSiteDecision(p, 'confirmed_same_site', hist, current, 'بیمار ناحیه پرونده را تأیید کرد: ' + (current || hist || '—'));
+            try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+            try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+            proceedInjection(id, base);
+          },
+          'بله، همین ناحیه',
+          opp ? ('بیمار «' + opp + '» می‌گوید') : 'بیمار سمت دیگر می‌گوید'
+        );
+        var cancelBtn = document.getElementById('msgCancelBtn');
+        if(cancelBtn){
+          cancelBtn.onclick = function(){
+            try{ closeModal('msgModal'); }catch(e){}
+            handlePatientSaidOtherSide(p, hist, opp || '', id, base);
+          };
+        }
+        return;
+      }catch(e){
+        return proceedInjection(id, base);
+      }
+    };
+    wrapped.__prpV169SiteGate = true;
+    try{ Object.keys(base).forEach(function(k){ try{ wrapped[k] = base[k]; }catch(e){} }); }catch(e){}
+    window.completeTreatment = wrapped;
+    try{ completeTreatment = wrapped; }catch(e){}
+  }
+
+  function proceedInjection(id, baseFn){
+    try{ return baseFn.call(window, id); }catch(e){ try{ return baseFn(id); }catch(err){} }
+  }
+
+  function handlePatientSaidOtherSide(p, histSite, claimedSite, id, baseFn){
+    var claim = normSite(claimedSite) || oppositeSide(histSite) || '';
+    var siblings = [];
+    try{
+      if(typeof window.prpGetSiblingCases === 'function') siblings = window.prpGetSiblingCases(p) || [];
+    }catch(e){}
+    var siblingMatch = siblings.filter(function(s){
+      return s && normSite(s.site) === claim;
+    })[0];
+
+    var guide =
+      'بیمار امروز ناحیه دیگری می‌گوید.\n\n'
+      + 'سابقه این پرونده: «' + (histSite || '—') + '»\n'
+      + 'ادعای امروز: «' + (claim || 'سمت دیگر') + '»\n\n'
+      + 'قانون کلینیک:\n'
+      + '۱) اگر همان مفصل است و احتمالاً اشتباه گفت → حفظ سابقه و تزریق روی «' + (histSite || 'پرونده') + '»\n'
+      + '۲) اگر واقعاً مفصل دیگر است → پرونده جدا / ناحیه جدید (نه تغییر وسط سیکل)\n'
+      + '۳) فقط اگر اشتباه ثبت قبلی است → تغییر ناحیه با ثبت دلیل\n\n'
+      + 'کدام را انتخاب می‌کنید؟';
+
+    try{
+      showConfirm(
+        'بیمار سمت دیگر را می‌گوید',
+        guide,
+        function(){
+          // حفظ سابقه و تزریق
+          if(claim && p.site && normSite(p.site) !== histSite && histSite){
+            p.site = histSite;
+          }
+          logSiteDecision(p, 'keep_historical_despite_claim', histSite, histSite,
+            'بیمار «' + (claim||'سمت دیگر') + '» گفت ولی تزریق با حفظ سابقه «' + (histSite||'') + '» انجام شد');
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+          try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+          proceedInjection(id, baseFn);
+        },
+        'حفظ «' + (histSite || 'سابقه') + '» و تزریق',
+        claim ? ('ناحیه جدید «' + claim + '»') : 'ناحیه جدید'
+      );
+      var cancelBtn = document.getElementById('msgCancelBtn');
+      if(cancelBtn){
+        cancelBtn.onclick = function(){
+          try{ closeModal('msgModal'); }catch(e){}
+          // مسیر ناحیه جدید / پرونده هم‌کدملی
+          logSiteDecision(p, 'redirect_new_site_case', histSite, claim,
+            'بیمار سمت دیگر گفت؛ هدایت به ناحیه جدید/پرونده جدا برای «' + (claim||'') + '»');
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+          if(siblingMatch){
+            try{
+              showMsg(
+                'پرونده دیگر موجود است',
+                'برای «' + claim + '» پرونده جدا با همین کدملی وجود دارد.\nاز دکمه پرونده‌های هم‌کدملی باز کنید یا همان پرونده را نوبت دهید.\nاین سیکل را روی ناحیه اشتباه تزریق نکنید.'
+              );
+              try{ if(typeof window.showSameNationalIdCases === 'function') window.showSameNationalIdCases(p.id); }catch(e){}
+            }catch(e){}
+            return;
+          }
+          try{
+            showConfirm(
+              'ایجاد ناحیه جدید؟',
+              'برای «' + (claim || 'ناحیه دیگر') + '» پرونده/سیکل جدید باز شود؟\n(ناحیه فعلی این پرونده دست‌نخورده می‌ماند)',
+              function(){
+                try{
+                  if(typeof startNewCycle === 'function'){
+                    startNewCycle(p.id);
+                    setTimeout(function(){
+                      try{
+                        var siteEl = document.getElementById('addSite');
+                        if(siteEl && claim) siteEl.value = claim;
+                        var descEl = document.getElementById('addDesc');
+                        if(descEl && !descEl.value) descEl.value = 'سیکل جدید به‌خاطر اعلام سمت دیگر در روز تزریق (سابقه: ' + (histSite||'') + ')';
+                      }catch(e){}
+                    }, 100);
+                  }
+                }catch(e){}
+              },
+              'باز کردن ثبت ناحیه جدید',
+              'انصراف'
+            );
+          }catch(e){}
+        };
+      }
+    }catch(e){
+      // fallback
+      try{
+        if(typeof window.prpFallbackSiteConfirm === 'function'){
+          window.prpFallbackSiteConfirm(guide + '\n\nحفظ سابقه و ادامه تزریق؟', function(){ proceedInjection(id, baseFn); }, function(){});
+        }
+      }catch(err){}
+    }
+  }
+
+  // نشان هشدار ناحیه روی ردیف لیست تایید
+  function enhanceConfirmedSiteBadge(){
+    if(window.__prpV169BadgePatched) return;
+    window.__prpV169BadgePatched = true;
+    var style = document.createElement('style');
+    style.id = 'prp-v169-site-warn-style';
+    style.textContent =
+      '.prp-site-hist-warn{display:inline-block;margin-right:4px;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:900;' +
+      'background:#fff7ed;color:#c2410c;border:1px solid #fdba74;vertical-align:middle;}' +
+      '.prp-site-hist-ok{display:inline-block;margin-right:4px;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:800;' +
+      'background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;vertical-align:middle;}';
+    document.head.appendChild(style);
+
+    // بعد از renderTable، روی سلول ناحیه badge بگذار
+    var baseRender = window.renderTable || (typeof renderTable === 'function' ? renderTable : null);
+    if(typeof baseRender !== 'function' || baseRender.__prpV169Badge) return;
+    var wrapped = function(){
+      var ret = baseRender.apply(this, arguments);
+      try{
+        if(typeof currentTab === 'undefined' || currentTab !== 'confirmedList') return ret;
+        var rows = document.querySelectorAll('#patientTableBody tr, #tableBody tr, tbody tr');
+        // fallback: هر ردیفی که data-id دارد
+        (window.patients || []).forEach(function(p){
+          if(!p || p.status !== 'CONFIRMED') return;
+          var cons = consensus(p);
+          var cur = normSite(p.site);
+          if(!cons.site || !cur) return;
+          // پیدا کردن badge ناحیه در ردیف
+          var tr = null;
+          try{
+            var all = document.querySelectorAll('tbody tr');
+            for(var i=0;i<all.length;i++){
+              var html = all[i].innerHTML || '';
+              if(html.indexOf("completeTreatment('" + p.id + "')") >= 0 || html.indexOf('completeTreatment("' + p.id + '")') >= 0){
+                tr = all[i]; break;
+              }
+            }
+          }catch(e){}
+          if(!tr) return;
+          var siteSpan = tr.querySelector('span.text-blue-600, span.text-\\[11px\\].text-blue-600');
+          if(!siteSpan){
+            var spans = tr.querySelectorAll('span');
+            for(var j=0;j<spans.length;j++){
+              if(normSite(spans[j].textContent) === cur){ siteSpan = spans[j]; break; }
+            }
+          }
+          if(!siteSpan) return;
+          if(siteSpan.parentNode && siteSpan.parentNode.querySelector('.prp-site-hist-warn,.prp-site-hist-ok')) return;
+          var badge = document.createElement('span');
+          if(cons.site !== cur){
+            badge.className = 'prp-site-hist-warn';
+            badge.textContent = 'سابقه: ' + cons.site;
+            badge.title = 'ناحیه پرونده با سابقه تزریق فرق دارد';
+          } else if(cons.count >= 2){
+            badge.className = 'prp-site-hist-ok';
+            badge.textContent = fa(cons.count) + '× ' + cons.site;
+            badge.title = 'سابقه غالب ناحیه تزریق';
+          } else return;
+          siteSpan.parentNode.insertBefore(badge, siteSpan.nextSibling);
+        });
+      }catch(e){}
+      return ret;
+    };
+    wrapped.__prpV169Badge = true;
+    try{ Object.keys(baseRender).forEach(function(k){ try{ wrapped[k] = baseRender[k]; }catch(e){} }); }catch(e){}
+    window.renderTable = wrapped;
+    try{ renderTable = wrapped; }catch(e){}
+  }
+
+  window.prpRunV169ScenarioTests = function(){
+    var results = [];
+    function ok(name, pass){ results.push({name:name, ok:!!pass}); }
+
+    var p = {
+      id:'v169-a', status:'CONFIRMED', site:'زانو راست', currentStage:3,
+      history:[
+        {type:'تزریق 1', stage:1, dateJ:'1404/10/01', eventDateJ:'1404/10/01', site:'زانو راست'},
+        {type:'تزریق 2', stage:2, dateJ:'1404/12/01', eventDateJ:'1404/12/01', site:'زانو راست'}
+      ]
+    };
+    var cons = consensus(p);
+    ok('اجماع دو بار زانو راست', cons.site==='زانو راست' && cons.count>=2);
+    ok('سمت مقابل زانو چپ است', oppositeSide('زانو راست')==='زانو چپ');
+
+    // stage4 confirmed با نوبت نباید بایگانی شود (منطق repair)
+    var p4 = {
+      id:'v169-b', status:'CONFIRMED', currentStage:4,
+      nextAppointment:'2026-08-01T00:00:00.000Z', bookingBucketDate:'1405/05/10',
+      history:[{type:'تزریق 4', stage:4, dateJ:'1405/01/01', eventDateJ:'1405/01/01', site:'زانو راست'}]
+    };
+    var hasActive = (p4.status==='CONFIRMED' && !!(p4.nextAppointment || p4.bookingBucketDate));
+    ok('نوبت تاییدشده stage4 فعال می‌ماند', hasActive && p4.status==='CONFIRMED');
+
+    window.__PRP_V169_SCENARIO_TESTS = {
+      passed: results.filter(function(r){ return r.ok; }).length,
+      total: results.length,
+      results: results,
+      at: new Date().toISOString()
+    };
+    return window.__PRP_V169_SCENARIO_TESTS;
+  };
+
+  function install(){
+    wrapApptForNav();
+    wrapEditSaveForNav();
+    wrapCompleteTreatmentGate();
+    enhanceConfirmedSiteBadge();
+    try{ window.prpRunV169ScenarioTests(); }catch(e){ console.error('v169 scenario tests failed', e); }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 900);
+})();
+</script>
+
+<!-- PRP v170: پیغام داخل برنامه + دکمه سیکل جدید کنار تغییر ناحیه -->
+<script id="prp-v170-inapp-site-actions">
+(function(){
+  'use strict';
+  if(window.__PRP_V170_INAPP_SITE_ACTIONS__) return;
+  window.__PRP_V170_INAPP_SITE_ACTIONS__ = true;
+
+  function fa(v){
+    try{ return (typeof toPersianDigits === 'function') ? toPersianDigits(String(v)) : String(v); }
+    catch(e){ return String(v); }
+  }
+  function normSite(s){ return String(s||'').trim().replace(/\s+/g,' '); }
+  function oppositeSide(site){
+    var s = normSite(site);
+    if(/راست/.test(s)) return s.replace(/راست/g,'چپ');
+    if(/چپ/.test(s)) return s.replace(/چپ/g,'راست');
+    return '';
+  }
+
+  function ensureExtraBtn(){
+    var cancel = document.getElementById('msgCancelBtn');
+    var btn = document.getElementById('msgExtraBtn');
+    if(btn) return btn;
+    if(!cancel || !cancel.parentNode) return null;
+    btn = document.createElement('button');
+    btn.id = 'msgExtraBtn';
+    btn.type = 'button';
+    btn.className = 'hidden px-4 py-2.5 rounded-xl text-sm font-black border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition';
+    btn.textContent = '🔄 سیکل جدید';
+    // قبل از دکمه تایید/اصلی بگذار تا در RTL کنار پیام منطقی باشد
+    var primary = document.getElementById('msgBtn');
+    if(primary && primary.parentNode === cancel.parentNode){
+      cancel.parentNode.insertBefore(btn, primary);
+    } else {
+      cancel.parentNode.insertBefore(btn, cancel);
+    }
+    // دکمه‌ها را کمی منعطف‌تر کن تا ۳ تا جا شوند
+    try{
+      cancel.parentNode.classList.add('flex-wrap');
+      cancel.parentNode.style.gap = '8px';
+    }catch(e){}
+    return btn;
+  }
+
+  function resetModalChrome(){
+    try{
+      document.getElementById('msgInput').classList.add('hidden');
+      document.getElementById('absentControls').classList.add('hidden');
+      document.getElementById('confirmDateBox').classList.add('hidden');
+    }catch(e){}
+  }
+
+  /**
+   * پیغام داخل برنامه با حداکثر ۳ دکمه (بدون window.confirm مرورگر)
+   * options: {title, message, okText, onOk, cancelText, onCancel, extraText, onExtra, extraClass}
+   */
+  function showInAppActions(options){
+    options = options || {};
+    resetModalChrome();
+    var titleEl = document.getElementById('msgTitle');
+    var textEl = document.getElementById('msgText');
+    if(titleEl) titleEl.innerText = options.title || 'پیام';
+    if(textEl) textEl.innerText = options.message || '';
+
+    var okBtn = document.getElementById('msgBtn');
+    var cancelBtn = document.getElementById('msgCancelBtn');
+    var extraBtn = ensureExtraBtn();
+
+    // OK
+    if(okBtn){
+      var freshOk = okBtn.cloneNode(true);
+      okBtn.parentNode.replaceChild(freshOk, okBtn);
+      okBtn = freshOk;
+      okBtn.classList.remove('hidden');
+      okBtn.innerText = options.okText || 'تایید';
+      okBtn.onclick = function(){
+        try{ closeModal('msgModal'); }catch(e){}
+        if(typeof options.onOk === 'function') options.onOk();
+      };
+    }
+    // Cancel
+    if(cancelBtn){
+      cancelBtn.innerText = options.cancelText || 'انصراف';
+      cancelBtn.onclick = function(){
+        try{ closeModal('msgModal'); }catch(e){}
+        if(typeof options.onCancel === 'function') options.onCancel();
+      };
+    }
+    // Extra (سیکل جدید و ...)
+    if(extraBtn){
+      if(options.extraText && typeof options.onExtra === 'function'){
+        extraBtn.classList.remove('hidden');
+        extraBtn.innerText = options.extraText;
+        if(options.extraClass){
+          extraBtn.className = options.extraClass;
+        } else {
+          extraBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-black border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition';
+        }
+        extraBtn.onclick = function(){
+          try{ closeModal('msgModal'); }catch(e){}
+          options.onExtra();
+        };
+      } else {
+        extraBtn.classList.add('hidden');
+        extraBtn.onclick = null;
+      }
+    }
+
+    try{ openModal('msgModal'); }catch(e){}
+  }
+  window.prpShowInAppActions = showInAppActions;
+  window.prpEnsureMsgExtraBtn = ensureExtraBtn;
+
+  function openNewCycleForPatient(p, preferredSite, reasonNote){
+    if(!p) return;
+    try{
+      if(typeof closeModal === 'function'){
+        try{ closeModal('editModal'); }catch(e){}
+        try{ closeModal('msgModal'); }catch(e){}
+      }
+    }catch(e){}
+    try{
+      if(typeof startNewCycle === 'function') startNewCycle(p.id, preferredSite || '');
+      else if(typeof window.startNewCycle === 'function') window.startNewCycle(p.id, preferredSite || '');
+    }catch(e){ console.error('startNewCycle failed', e); }
+    setTimeout(function(){
+      try{
+        var siteEl = document.getElementById('addSite');
+        if(siteEl && preferredSite) siteEl.value = preferredSite;
+        var descEl = document.getElementById('addDesc');
+        if(descEl){
+          var base = preferredSite
+            ? ('سیکل جدید برای «' + preferredSite + '»')
+            : 'سیکل جدید';
+          if(reasonNote) base += ' — ' + reasonNote;
+          else if(p.site) base += ' (قبلاً ' + p.site + ' بوده)';
+          descEl.value = base;
+        }
+        if(typeof checkAddDuplicate === 'function') checkAddDuplicate();
+      }catch(e){}
+    }, 80);
+    try{
+      if(typeof showToast === 'function') showToast('فرم سیکل جدید باز شد' + (preferredSite ? (' — ' + preferredSite) : ''));
+    }catch(e){}
+  }
+  window.prpOpenNewCycleForPatient = openNewCycleForPatient;
+
+  function consensus(p){
+    try{
+      if(typeof window.prpGetHistoricalSiteConsensus === 'function') return window.prpGetHistoricalSiteConsensus(p) || {};
+    }catch(e){}
+    return { site: normSite(p && p.site), count: 0, rows: [] };
+  }
+
+  function logSiteDecision(p, decision, fromSite, toSite, note){
+    if(!p) return;
+    var now = new Date().toISOString();
+    var today = '';
+    try{ today = (typeof getTodayJalali === 'function') ? getTodayJalali() : ''; }catch(e){}
+    (p.history = p.history || []).push({
+      date: now, recordedAt: now, dateJ: today, eventDateJ: today,
+      type: 'تصمیم ناحیه تزریق', stage: Number(p.currentStage || 0),
+      site: toSite || fromSite || '', decision: decision || '',
+      note: note || ''
+    });
+    try{
+      if(typeof logAction === 'function') logAction('SITE_DECISION', { id:p.id, name:p.fullName||'', note: note || decision || '', dateJ: today });
+    }catch(e){}
+  }
+
+  // ویرایش پرونده: به‌جای window.confirm مرورگر، مودال داخلی + دکمه سیکل جدید
+  function wrapSaveEditPatientInApp(){
+    var base = window.saveEditPatient;
+    if(typeof base !== 'function' || base.__prpV170InAppSite) return;
+    var wrapped = function(e){
+      try{
+        if(window.__prpEditSiteChoiceDone){
+          window.__prpEditSiteChoiceDone = false;
+          return base.apply(this, arguments);
+        }
+        var id = (document.getElementById('editId') || {}).value || '';
+        var p = (window.patients || []).find(function(x){ return String(x && x.id) === String(id); });
+        var nextSite = normSite((document.getElementById('editSite') || {}).value || '');
+        var prevSite = normSite(p && p.site);
+        if(!(p && nextSite && prevSite && nextSite !== prevSite)){
+          return base.apply(this, arguments);
+        }
+
+        var msg = '';
+        try{
+          if(typeof window.prpSiteMismatchMessage === 'function'){
+            msg = window.prpSiteMismatchMessage(Object.assign({}, p, {site: prevSite}), nextSite) || '';
+          }
+        }catch(err){}
+        var injCount = 0;
+        try{
+          if(typeof window.prpGetInjectionSiteHistory === 'function'){
+            injCount = (window.prpGetInjectionSiteHistory(p) || []).length;
+          }
+        }catch(err){}
+        if(!msg && injCount >= 1){
+          msg = 'ناحیه پرونده از «' + prevSite + '» به «' + nextSite + '» تغییر می‌کند در حالی که ' + fa(injCount) + ' تزریق قبلی روی این پرونده ثبت شده است.';
+          if(oppositeSide(prevSite) === nextSite){
+            msg += '\n\nاین تغییر جابه‌جایی چپ/راست است. اگر عضو دیگر واقعاً مدنظر است، سیکل جدید باز کنید.';
+          }
+        }
+        if(!msg){
+          // تغییر ساده بدون سابقه تزریق — اجازه بده ادامه دهد
+          return base.apply(this, arguments);
+        }
+
+        if(e && typeof e.preventDefault === 'function') e.preventDefault();
+        var args = arguments;
+        var self = this;
+        showInAppActions({
+          title: 'تغییر ناحیه تزریق',
+          message: msg + '\n\nاگر عضو/سمت دیگر است، «سیکل جدید» را بزنید تا پرونده جدا ساخته شود.',
+          okText: 'تغییر به «' + nextSite + '»',
+          onOk: function(){
+            window.__prpEditSiteChoiceDone = true;
+            try{ document.getElementById('editSite').value = nextSite; }catch(err){}
+            return base.apply(self, args);
+          },
+          cancelText: 'حفظ «' + prevSite + '»',
+          onCancel: function(){
+            try{ document.getElementById('editSite').value = prevSite; }catch(err){}
+            // ذخیره بقیه فیلدها با ناحیه قبلی
+            window.__prpEditSiteChoiceDone = true;
+            return base.apply(self, args);
+          },
+          extraText: '🔄 سیکل جدید «' + nextSite + '»',
+          onExtra: function(){
+            try{ document.getElementById('editSite').value = prevSite; }catch(err){}
+            logSiteDecision(p, 'edit_open_new_cycle', prevSite, nextSite,
+              'به‌جای تغییر ناحیه، سیکل جدید برای «' + nextSite + '» باز شد');
+            try{ if(typeof saveData === 'function') saveData(); }catch(err){}
+            openNewCycleForPatient(p, nextSite, 'به‌خاطر تغییر عضو از ویرایش پرونده');
+          }
+        });
+        return false;
+      }catch(err){
+        return base.apply(this, arguments);
+      }
+    };
+    wrapped.__prpV170InAppSite = true;
+    try{ Object.keys(base).forEach(function(k){ try{ wrapped[k] = base[k]; }catch(e){} }); }catch(e){}
+    window.saveEditPatient = wrapped;
+    try{ saveEditPatient = wrapped; }catch(e){}
+  }
+
+  // روز تزریق: پیغام داخل برنامه + دکمه سیکل جدید کنار گزینه‌ها
+  function wrapCompleteTreatmentInApp(){
+    var base = window.completeTreatment;
+    if(typeof base !== 'function' || base.__prpV170InAppSite) return;
+    var wrapped = function(id){
+      var p = (window.patients || []).find(function(x){ return x && String(x.id) === String(id); });
+      if(!p) return base.apply(this, arguments);
+
+      // اگر از همین مودال تایید شده، برو سراغ ثبت تزریق (پایه)
+      if(window.__prpSiteGatePassedFor === String(id)){
+        window.__prpSiteGatePassedFor = '';
+        try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+        return base.apply(this, arguments);
+      }
+
+      var cons = consensus(p);
+      var current = normSite(p.site);
+      var hist = cons.site || current || '';
+      var opp = oppositeSide(hist) || oppositeSide(current) || '';
+      var injRows = [];
+      try{
+        if(typeof window.prpGetInjectionSiteHistory === 'function') injRows = window.prpGetInjectionSiteHistory(p) || [];
+      }catch(e){}
+      var histLines = injRows.filter(function(r){ return r && r.site; }).slice(-4).map(function(r){
+        return 'مرحله ' + fa(r.stage || '?') + (r.dateJ ? ' (' + fa(r.dateJ) + ')' : '') + ': ' + r.site;
+      });
+
+      var alreadyMismatch = !!(hist && current && hist !== current);
+      var body = 'ناحیه پرونده: «' + (current || '—') + '»';
+      if(hist) body += '\nسابقه غالب: «' + hist + '»' + (cons.count >= 2 ? (' (' + fa(cons.count) + ' بار)') : '');
+      if(histLines.length) body += '\n\nسوابق:\n- ' + histLines.join('\n- ');
+
+      if(alreadyMismatch){
+        body += '\n\nناحیه پرونده با سابقه فرق دارد.';
+        if(opp) body += '\nاگر عضو دیگر مدنظر است، سیکل جدید باز کنید.';
+        showInAppActions({
+          title: 'اختلاف ناحیه تزریق',
+          message: body,
+          okText: 'ادامه با «' + current + '»',
+          onOk: function(){
+            logSiteDecision(p, 'inject_with_current_despite_mismatch', hist, current, 'ادامه تزریق با ناحیه فعلی پرونده');
+            try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+            window.__prpSiteGatePassedFor = String(id);
+            try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+            return base.call(window, id);
+          },
+          cancelText: 'انصراف',
+          onCancel: function(){},
+          extraText: opp ? ('🔄 سیکل جدید «' + opp + '»') : '🔄 سیکل جدید',
+          onExtra: function(){
+            var target = opp || current || '';
+            logSiteDecision(p, 'inject_day_open_new_cycle', hist, target, 'از روز تزریق سیکل جدید باز شد');
+            try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+            openNewCycleForPatient(p, target, 'اعلام عضو دیگر در روز تزریق');
+          }
+        });
+        return;
+      }
+
+      body += '\n\nآیا بیمار امروز همین ناحیه را تأیید کرد؟';
+      showInAppActions({
+        title: 'تأیید ناحیه تزریق',
+        message: body,
+        okText: 'بله، همین ناحیه',
+        onOk: function(){
+          logSiteDecision(p, 'confirmed_same_site', hist, current, 'بیمار ناحیه پرونده را تأیید کرد');
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+          window.__prpSiteGatePassedFor = String(id);
+          try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+          return base.call(window, id);
+        },
+        cancelText: opp ? ('بیمار «' + opp + '» می‌گوید') : 'بیمار سمت دیگر می‌گوید',
+        onCancel: function(){
+          // مودال دوم داخل برنامه با دکمه سیکل جدید
+          showOtherSideActions(p, hist, opp, id, base);
+        },
+        extraText: opp ? ('🔄 سیکل جدید «' + opp + '»') : '🔄 سیکل جدید',
+        onExtra: function(){
+          var target = opp || '';
+          logSiteDecision(p, 'inject_day_open_new_cycle_direct', hist, target, 'مستقیم سیکل جدید از تأیید ناحیه');
+          try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+          openNewCycleForPatient(p, target, 'اعلام عضو دیگر در روز تزریق');
+        }
+      });
+    };
+    wrapped.__prpV170InAppSite = true;
+    try{ Object.keys(base).forEach(function(k){ try{ wrapped[k] = base[k]; }catch(e){} }); }catch(e){}
+    window.completeTreatment = wrapped;
+    try{ completeTreatment = wrapped; }catch(e){}
+  }
+
+  function showOtherSideActions(p, histSite, claimedSite, id, baseFn){
+    var claim = normSite(claimedSite) || oppositeSide(histSite) || '';
+    var guide =
+      'بیمار امروز ناحیه دیگری می‌گوید.\n\n'
+      + 'سابقه این پرونده: «' + (histSite || '—') + '»\n'
+      + 'ادعای امروز: «' + (claim || 'سمت دیگر') + '»\n\n'
+      + 'اگر همان مفصل است → حفظ سابقه و تزریق\n'
+      + 'اگر عضو/سمت دیگر است → سیکل جدید (پرونده جدا)';
+    showInAppActions({
+      title: 'بیمار سمت دیگر را می‌گوید',
+      message: guide,
+      okText: 'حفظ «' + (histSite || 'سابقه') + '» و تزریق',
+      onOk: function(){
+        if(histSite && normSite(p.site) !== histSite) p.site = histSite;
+        logSiteDecision(p, 'keep_historical_despite_claim', histSite, histSite,
+          'بیمار «' + (claim||'سمت دیگر') + '» گفت ولی با حفظ سابقه تزریق شد');
+        try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+        window.__prpSiteGatePassedFor = String(id);
+        try{ window.__prpSkipSiteMismatchOnce = true; }catch(e){}
+        try{ return baseFn.call(window, id); }catch(e){ try{ return baseFn(id); }catch(err){} }
+      },
+      cancelText: 'انصراف',
+      onCancel: function(){},
+      extraText: claim ? ('🔄 سیکل جدید «' + claim + '»') : '🔄 سیکل جدید',
+      onExtra: function(){
+        logSiteDecision(p, 'other_side_open_new_cycle', histSite, claim,
+          'بیمار سمت دیگر گفت؛ سیکل جدید باز شد');
+        try{ if(typeof saveData === 'function') saveData(); }catch(e){}
+        openNewCycleForPatient(p, claim, 'اعلام سمت دیگر در روز تزریق');
+      }
+    });
+  }
+
+  // اگر v168 هنوز window.confirm دارد، آن را بی‌اثر کن (v170 بالاتر wrap کرده)
+  function neutralizeV168BrowserConfirm(){
+    var base = window.saveEditPatient;
+    // already handled by wrapSaveEditPatientInApp which sits on top when installed after
+  }
+
+  window.prpRunV170ScenarioTests = function(){
+    var results = [];
+    function ok(name, pass){ results.push({name:name, ok:!!pass}); }
+    ensureExtraBtn();
+    ok('دکمه سیکل جدید در مودال ساخته می‌شود', !!document.getElementById('msgExtraBtn'));
+    ok('تابع پیغام داخل برنامه موجود است', typeof window.prpShowInAppActions === 'function');
+    ok('تابع باز کردن سیکل جدید موجود است', typeof window.prpOpenNewCycleForPatient === 'function');
+    ok('سمت مقابل درست است', oppositeSide('زانو راست') === 'زانو چپ');
+    window.__PRP_V170_SCENARIO_TESTS = {
+      passed: results.filter(function(r){ return r.ok; }).length,
+      total: results.length,
+      results: results,
+      at: new Date().toISOString()
+    };
+    return window.__PRP_V170_SCENARIO_TESTS;
+  };
+
+  function install(){
+    ensureExtraBtn();
+    wrapSaveEditPatientInApp();
+    wrapCompleteTreatmentInApp();
+    neutralizeV168BrowserConfirm();
+    try{ window.prpRunV170ScenarioTests(); }catch(e){ console.error('v170 tests failed', e); }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 1000);
+})();
+</script>
+
+<!-- PRP v171: نرمال‌سازی ابعاد و فاصله‌ها در کل برنامه -->
+<style id="prp-v171-ui-normalize">
+:root{
+  /* فاصله */
+  --prp-space-1:4px;
+  --prp-space-2:8px;
+  --prp-space-3:12px;
+  --prp-space-4:16px;
+  --prp-space-5:20px;
+  --prp-space-6:24px;
+
+  /* گوشه */
+  --prp-radius-sm:8px;
+  --prp-radius-md:12px;
+  --prp-radius-lg:16px;
+  --prp-radius-xl:20px;
+  --prp-radius-pill:999px;
+
+  /* ارتفاع کنترل‌ها */
+  --prp-ctrl-xs:28px;
+  --prp-ctrl-sm:32px;
+  --prp-ctrl-md:40px;
+  --prp-ctrl-lg:44px;
+  --prp-ctrl-xl:48px;
+
+  /* تایپ */
+  --prp-fs-micro:10px;
+  --prp-fs-xs:11px;
+  --prp-fs-sm:12px;
+  --prp-fs-md:13px;
+  --prp-fs-lg:14px;
+  --prp-fs-xl:15px;
+
+  /* مودال */
+  --prp-modal-pad:12px 16px;
+  --prp-modal-sm:24rem;
+  --prp-modal-lg:min(1080px, calc(100vw - 32px));
+  --prp-modal-xl:min(1400px, calc(100vw - 24px));
+
+  /* جدول */
+  --prp-table-pad-x:16px;
+  --prp-table-pad-y:12px;
+}
+
+/* ── پایه یکدست ── */
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-size:var(--prp-fs-md) !important;
+  line-height:1.5 !important;
+}
+button, input, select, textarea{
+  font-family:var(--app-font) !important;
+  line-height:1.35 !important;
+}
+button{
+  min-height:var(--prp-ctrl-sm);
+  border-radius:var(--prp-radius-md);
+}
+
+/* ── هدر ── */
+.header-tool-btn,
+.header-backup-btn{
+  width:var(--prp-ctrl-sm) !important;
+  height:var(--prp-ctrl-sm) !important;
+  min-width:var(--prp-ctrl-sm) !important;
+  min-height:var(--prp-ctrl-sm) !important;
+  border-radius:var(--prp-radius-pill) !important;
+  font-size:var(--prp-fs-xl) !important;
+  padding:0 !important;
+}
+.header-main-action{
+  min-height:var(--prp-ctrl-md) !important;
+  height:auto !important;
+  padding:8px 14px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+  gap:var(--prp-space-2) !important;
+}
+.header-pill{
+  min-height:var(--prp-ctrl-xs) !important;
+  padding:4px 10px !important;
+  border-radius:var(--prp-radius-pill) !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+
+/* ── تب‌ها ── */
+.tab-buttons{
+  min-height:var(--prp-ctrl-xl) !important;
+  padding-top:10px !important;
+  padding-bottom:10px !important;
+  font-size:var(--prp-fs-lg) !important;
+  border-radius:0 !important;
+}
+
+/* ── نوار جستجو و اکشن‌های بالا ── */
+#mainSearchRow{
+  gap:var(--prp-space-3) !important;
+  padding:var(--prp-space-3) !important;
+}
+#mainSearchRow #searchInput{
+  min-height:var(--prp-ctrl-lg) !important;
+  height:var(--prp-ctrl-lg) !important;
+  padding:10px 14px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-lg) !important;
+}
+#mainSearchRow #excelBtn,
+#mainSearchRow #printBtn,
+#mainSearchRow #blankFormBtn,
+#mainSearchRow #smsDateBtn,
+#mainSearchRow #bulkConfirmBtn,
+#mainSearchRow button.px-4,
+#mainSearchRow button.px-5{
+  min-height:var(--prp-ctrl-lg) !important;
+  height:var(--prp-ctrl-lg) !important;
+  padding:0 14px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+  width:auto !important;
+  max-width:none !important;
+}
+#sortSelect,
+#sortControls select{
+  min-height:var(--prp-ctrl-md) !important;
+  height:var(--prp-ctrl-md) !important;
+  padding:6px 10px !important;
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-xs) !important;
+}
+
+/* ── چیپ‌ها و بج‌ها ── */
+.stage-count-chip,
+.header-pill,
+.appt-panel-chip,
+.stage-plan-chip,
+.prp-v127-month-badge,
+.count-badge,
+.crisis-chip{
+  min-height:22px !important;
+  padding:3px 8px !important;
+  border-radius:var(--prp-radius-pill) !important;
+  font-size:var(--prp-fs-xs) !important;
+  line-height:1.2 !important;
+}
+.day-num-badge,
+.status-chip{
+  width:24px !important;
+  height:24px !important;
+  min-width:24px !important;
+  min-height:24px !important;
+  border-radius:var(--prp-radius-pill) !important;
+  font-size:var(--prp-fs-micro) !important;
+}
+
+/* ── دکمه‌های آیکونی جدول ── */
+.glass-icon-btn,
+.call-glass-btn,
+.confirmed-book-btn{
+  width:var(--prp-ctrl-sm) !important;
+  height:var(--prp-ctrl-sm) !important;
+  min-width:var(--prp-ctrl-sm) !important;
+  min-height:var(--prp-ctrl-sm) !important;
+  max-width:var(--prp-ctrl-sm) !important;
+  max-height:var(--prp-ctrl-sm) !important;
+  padding:0 !important;
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-xl) !important;
+}
+.confirmed-aux-btn,
+body[data-current-tab="confirmedList"] .confirmed-aux-btn,
+body[data-current-tab="callList"] .confirmed-aux-btn{
+  width:var(--prp-ctrl-xs) !important;
+  height:var(--prp-ctrl-xs) !important;
+  min-width:var(--prp-ctrl-xs) !important;
+  min-height:var(--prp-ctrl-xs) !important;
+  max-width:var(--prp-ctrl-xs) !important;
+  max-height:var(--prp-ctrl-xs) !important;
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-md) !important;
+  padding:0 !important;
+}
+
+/* دکمه‌های متنی عملیات (مثل ثبت نوبت در بایگانی) */
+.op-col button.px-3,
+.op-col button.text-xs{
+  min-height:var(--prp-ctrl-sm) !important;
+  height:auto !important;
+  padding:6px 10px !important;
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-xs) !important;
+  line-height:1.2 !important;
+}
+
+/* ── جدول ── */
+#tableContainer table thead th,
+#patientTable thead th,
+table thead th{
+  padding:10px var(--prp-table-pad-x) !important;
+  font-size:var(--prp-fs-xs) !important;
+}
+#tableContainer table tbody td,
+#patientTable tbody td,
+table tbody td{
+  padding:var(--prp-table-pad-y) var(--prp-table-pad-x) !important;
+  vertical-align:middle !important;
+}
+#tableContainer table tbody td.op-col,
+table tbody td.op-col{
+  padding:8px 10px !important;
+}
+.op-col > div{
+  gap:6px !important;
+}
+
+/* ── سایدبار / کارت روز ── */
+aside .bg-white.rounded-2xl,
+aside .rounded-2xl.border{
+  border-radius:var(--prp-radius-lg) !important;
+  padding:var(--prp-space-3) !important;
+}
+#activeDatesDisplay .capBtn,
+.capBtn{
+  min-height:56px !important;
+  border-radius:var(--prp-radius-md) !important;
+  padding:10px 12px !important;
+}
+.prp-v94-side-card,
+.prp-v127-day-card,
+.prp-v129-day-card,
+[class*="prp-v127"][class*="card"],
+[class*="prp-v129"][class*="card"]{
+  min-height:56px !important;
+  border-radius:var(--prp-radius-md) !important;
+}
+.capDate{ font-size:var(--prp-fs-lg) !important; }
+.capMeta, .capRow{ gap:var(--prp-space-2) !important; }
+
+/* ── فیلتر تاریخ تایید ── */
+#dateButtonsContainer button,
+#confirmedDateFilter button{
+  min-height:var(--prp-ctrl-md) !important;
+  min-width:84px !important;
+  padding:8px 10px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-xs) !important;
+}
+.visit-day-btn{
+  min-height:var(--prp-ctrl-md) !important;
+  padding:8px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+.visit-day-btn .vd-date{ font-size:var(--prp-fs-xs) !important; }
+.visit-day-btn .vd-day,
+.visit-day-btn .vd-badge{ font-size:var(--prp-fs-micro) !important; }
+.visit-day-grid{ gap:var(--prp-space-2) !important; }
+
+/* ── فرم‌ها و اینپوت‌ها ── */
+#addModal input,
+#addModal select,
+#addModal textarea,
+#editModal input,
+#editModal select,
+#editModal textarea,
+#settingsModal input,
+#settingsModal select,
+#settingsModal textarea,
+#appointmentBookingSection input,
+#appointmentBookingSection select,
+#appointmentBookingSection textarea,
+.setting-row input.date-input,
+.setting-row input.cap-input{
+  min-height:var(--prp-ctrl-md) !important;
+  padding:8px 12px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-md) !important;
+}
+#addModal textarea,
+#editModal textarea{
+  min-height:72px !important;
+  height:auto !important;
+}
+#addModal label,
+#editModal label,
+#settingsModal label{
+  font-size:var(--prp-fs-xs) !important;
+  margin-bottom:4px !important;
+}
+
+/* ── مودال‌ها ── */
+#msgModal > div{
+  max-width:var(--prp-modal-sm) !important;
+  width:100% !important;
+  border-radius:var(--prp-radius-xl) !important;
+  padding:var(--prp-modal-pad) !important;
+}
+#msgModal #msgTitle{
+  font-size:var(--prp-fs-xl) !important;
+  margin-bottom:var(--prp-space-3) !important;
+  padding-bottom:var(--prp-space-2) !important;
+}
+#msgModal #msgText{
+  font-size:var(--prp-fs-sm) !important;
+  margin-bottom:var(--prp-space-4) !important;
+  line-height:1.6 !important;
+  white-space:pre-wrap !important;
+}
+#msgModal #msgBtn,
+#msgModal #msgCancelBtn,
+#msgModal #msgExtraBtn{
+  min-height:var(--prp-ctrl-md) !important;
+  padding:8px 14px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+#msgModal > div > .flex.justify-end{
+  gap:var(--prp-space-2) !important;
+  flex-wrap:wrap !important;
+}
+#msgModal #confirmDateButtons button{
+  min-height:var(--prp-ctrl-md) !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+  padding:8px 10px !important;
+}
+
+#addModal > div,
+#editModal > div,
+.add-modal-card,
+.edit-modal-card{
+  max-width:var(--prp-modal-lg) !important;
+  border-radius:var(--prp-radius-xl) !important;
+}
+#addModal .p-6,
+#editModal .p-6,
+#addModal .add-modal-body,
+#editModal .edit-modal-body{
+  padding:var(--prp-space-4) !important;
+}
+
+#appointmentBookingSection > div,
+#appointmentBookingSection .appt-shell,
+#appointmentBookingSection [class*="max-w"]{
+  border-radius:var(--prp-radius-xl) !important;
+}
+#appointmentBookingSection button{
+  min-height:var(--prp-ctrl-md);
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+#appointmentBookingSection input[type="text"],
+#appointmentBookingSection input:not([type]),
+#appointmentBookingSection select{
+  min-height:var(--prp-ctrl-md) !important;
+  border-radius:var(--prp-radius-md) !important;
+}
+
+#statsModal > div{
+  border-radius:var(--prp-radius-xl) !important;
+}
+#histModal > div,
+#settingsModal > div{
+  border-radius:var(--prp-radius-xl) !important;
+}
+
+/* ── تنظیمات ردیف‌ها ── */
+.setting-row{
+  padding:var(--prp-space-2) var(--prp-space-3) !important;
+  border-radius:var(--prp-radius-md) !important;
+}
+.setting-row input.date-input,
+.setting-row input.cap-input{
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-md) !important;
+  padding:8px 10px !important;
+}
+.first-visit-btn{
+  min-height:var(--prp-ctrl-md) !important;
+  border-radius:var(--prp-radius-md) !important;
+  padding:8px 12px !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+
+/* ── نوار هشدار / undo / inventory ── */
+#undoBar,
+#invAlertBar,
+#backupWarningBar{
+  border-radius:var(--prp-radius-md) !important;
+  padding:8px 12px !important;
+  font-size:var(--prp-fs-sm) !important;
+  gap:var(--prp-space-2) !important;
+}
+#undoBar button,
+#invAlertBar button,
+#backupWarningBar button{
+  min-height:var(--prp-ctrl-sm) !important;
+  padding:6px 10px !important;
+  border-radius:var(--prp-radius-sm) !important;
+  font-size:var(--prp-fs-xs) !important;
+}
+
+/* ── توست ── */
+.prp-toast,
+[id*="toast"],
+#toastContainer > *{
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+  padding:10px 14px !important;
+}
+
+/* ── موبایل: عملیات مخفی نشود، فشرده شود ── */
+@media (max-width:640px){
+  .op-col{
+    display:table-cell !important;
+    min-width:132px !important;
+    max-width:160px !important;
+    padding:6px 6px !important;
+  }
+  .op-col > div{
+    flex-wrap:wrap !important;
+    justify-content:center !important;
+    gap:4px !important;
+  }
+  .glass-icon-btn,
+  .call-glass-btn,
+  .confirmed-book-btn{
+    width:30px !important;
+    height:30px !important;
+    min-width:30px !important;
+    min-height:30px !important;
+    font-size:14px !important;
+  }
+  .confirmed-aux-btn{
+    width:26px !important;
+    height:26px !important;
+    min-width:26px !important;
+    min-height:26px !important;
+  }
+  .tab-buttons{
+    min-height:44px !important;
+    padding-top:8px !important;
+    padding-bottom:8px !important;
+    font-size:var(--prp-fs-sm) !important;
+  }
+  #mainSearchRow #searchInput,
+  #mainSearchRow #excelBtn,
+  #mainSearchRow #printBtn,
+  #mainSearchRow #blankFormBtn,
+  #mainSearchRow #smsDateBtn,
+  #mainSearchRow #bulkConfirmBtn{
+    min-height:var(--prp-ctrl-md) !important;
+    height:var(--prp-ctrl-md) !important;
+  }
+  #tableContainer table tbody td,
+  table tbody td{
+    padding:10px 8px !important;
+  }
+  .header-main-action{
+    min-height:var(--prp-ctrl-sm) !important;
+    padding:6px 10px !important;
+    font-size:var(--prp-fs-xs) !important;
+  }
+  #msgModal{
+    align-items:flex-end !important;
+    padding:8px !important;
+  }
+  #msgModal > div{
+    max-width:100% !important;
+    border-radius:16px 16px 12px 12px !important;
+  }
+}
+
+@media (max-width:900px){
+  .header-tool-btn,
+  .header-backup-btn{
+    width:30px !important;
+    height:30px !important;
+    min-width:30px !important;
+    min-height:30px !important;
+  }
+  body[data-current-tab="confirmedList"] .op-col,
+  body[data-current-tab="callList"] .op-col{
+    min-width:200px !important;
+  }
+  #mainSearchRow{
+    padding:10px !important;
+  }
+}
+
+/* ── پنل کناری / فعالیت‌ها ── */
+aside input[type="text"],
+aside input:not([type]),
+aside select{
+  min-height:var(--prp-ctrl-md) !important;
+  height:var(--prp-ctrl-md) !important;
+  padding:8px 10px !important;
+  border-radius:var(--prp-radius-md) !important;
+  font-size:var(--prp-fs-sm) !important;
+}
+main{
+  gap:var(--prp-space-4) !important;
+  padding:var(--prp-space-4) !important;
+}
+
+/* چاپ: عملیات همچنان مخفی بماند */
+@media print{
+  .op-col{ display:none !important; }
+  #prp-v171-ui-normalize{ display:none !important; }
+}
+</style>
+
+<script id="prp-v171-ui-normalize-tune">
+(function(){
+  'use strict';
+  if(window.__PRP_V171_UI_NORMALIZE__) return;
+  window.__PRP_V171_UI_NORMALIZE__ = true;
+
+  // نرمال‌سازی سبک‌های inline روی پنل فعالیت و چند کنترل مانده
+  function tuneActivityPanel(){
+    var root = document.getElementById('activityPanel') || document.querySelector('[id*="activ"]');
+    var scope = root || document.body;
+    scope.querySelectorAll('input[type="text"], input:not([type]), select').forEach(function(el){
+      if(!el || el.id === 'searchInput') return;
+      // فقط کنترل‌های کوچک پنل کناری
+      var inAside = !!(el.closest && el.closest('aside'));
+      if(!inAside && !(root && root.contains(el))) return;
+      try{
+        el.style.minHeight = '40px';
+        el.style.height = '40px';
+        el.style.borderRadius = '12px';
+        el.style.fontSize = '12px';
+        el.style.padding = '8px 10px';
+      }catch(e){}
+    });
+  }
+
+  function tuneMainGaps(){
+    try{
+      var main = document.querySelector('main');
+      if(main){
+        main.style.gap = '16px';
+        main.style.padding = '16px';
+      }
+    }catch(e){}
+  }
+
+  function install(){
+    tuneMainGaps();
+    tuneActivityPanel();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 800);
+})();
+</script>
+
+<!-- PRP v172: نرمال UI ثبت‌نوبت/ثبت‌نام/ویرایش + پیشنهاد روزهای فعال تقویم -->
+<style id="prp-v172-appt-register-normalize">
+:root{
+  --prp-appt-gap:12px;
+  --prp-appt-pad:12px;
+  --prp-appt-radius:12px;
+  --prp-appt-ctrl:40px;
+  --prp-appt-ctrl-lg:44px;
+  --prp-appt-fs:13px;
+  --prp-appt-fs-sm:12px;
+  --prp-appt-fs-xs:11px;
+}
+
+/* ═══════════ مودال ثبت نوبت ═══════════ */
+#appointmentBookingSection{
+  direction:rtl !important;
+}
+#appointmentBookingSection > div{
+  padding:12px !important;
+}
+#appointmentBookingSection .appt-modal-box{
+  width:min(1280px, calc(100vw - 24px)) !important;
+  max-width:min(1280px, calc(100vw - 24px)) !important;
+  height:calc(100vh - 24px) !important;
+  max-height:calc(100vh - 24px) !important;
+  border-radius:16px !important;
+  background:#f5f7fb !important;
+  overflow:hidden !important;
+}
+#appointmentBookingSection .appt-modal-header{
+  min-height:56px !important;
+  max-height:56px !important;
+  padding:8px 14px !important;
+  gap:10px !important;
+  grid-template-columns:minmax(200px,1fr) auto 36px !important;
+}
+#appointmentBookingSection .appt-title-main{
+  font-size:15px !important;
+  font-weight:900 !important;
+}
+#appointmentBookingSection .appt-title-sub{
+  font-size:11px !important;
+  font-weight:700 !important;
+  color:#64748b !important;
+  white-space:normal !important;
+}
+#appointmentBookingSection .appt-close-btn{
+  width:36px !important;
+  height:36px !important;
+  min-height:36px !important;
+  border-radius:10px !important;
+}
+#appointmentBookingSection .appt-system-note summary{
+  min-height:36px !important;
+  padding:6px 12px !important;
+  border-radius:999px !important;
+  font-size:11px !important;
+}
+
+#appointmentBookingSection .appt-workspace{
+  display:grid !important;
+  grid-template-columns:minmax(260px,28%) minmax(360px,44%) minmax(260px,28%) !important;
+  gap:var(--prp-appt-gap) !important;
+  padding:var(--prp-appt-pad) !important;
+  height:calc(100% - 56px) !important;
+  overflow:hidden !important;
+}
+
+#appointmentBookingSection .appt-block,
+#appointmentBookingSection #apptSuggestBox,
+#appointmentBookingSection .appt-list-panel{
+  background:#fff !important;
+  border:1px solid #e5e7eb !important;
+  border-radius:var(--prp-appt-radius) !important;
+  box-shadow:0 4px 14px rgba(15,23,42,.04) !important;
+}
+#appointmentBookingSection .appt-block{
+  padding:12px !important;
+}
+#appointmentBookingSection .appt-block-title,
+#appointmentBookingSection .appt-list-head{
+  margin-bottom:10px !important;
+  font-size:13px !important;
+  font-weight:900 !important;
+  gap:8px !important;
+}
+#appointmentBookingSection .appt-panel-chip{
+  min-height:24px !important;
+  padding:3px 8px !important;
+  border-radius:999px !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+}
+
+#appointmentBookingSection input,
+#appointmentBookingSection select,
+#appointmentBookingSection button{
+  font-family:inherit !important;
+  border-radius:10px !important;
+}
+#appointmentBookingSection input,
+#appointmentBookingSection select{
+  min-height:var(--prp-appt-ctrl) !important;
+  height:var(--prp-appt-ctrl) !important;
+  padding:8px 12px !important;
+  font-size:var(--prp-appt-fs-sm) !important;
+  font-weight:700 !important;
+  border:1px solid #e2e8f0 !important;
+  background:#f8fafc !important;
+}
+#appointmentBookingSection button{
+  min-height:var(--prp-appt-ctrl) !important;
+  padding:8px 12px !important;
+  font-size:var(--prp-appt-fs-sm) !important;
+  font-weight:900 !important;
+}
+#appointmentBookingSection #apptSearchInput{
+  min-height:var(--prp-appt-ctrl) !important;
+  font-size:var(--prp-appt-fs) !important;
+}
+#appointmentBookingSection #apptListFilter{
+  min-height:32px !important;
+  height:32px !important;
+  font-size:11px !important;
+  padding:4px 8px !important;
+}
+
+#appointmentBookingSection .appt-main-panel{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+  overflow-y:auto !important;
+  min-height:0 !important;
+  padding-left:2px !important;
+}
+#appointmentBookingSection .appt-suggest-panel{
+  min-height:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+#appointmentBookingSection #apptSuggestBox{
+  flex-direction:column !important;
+  height:100% !important;
+  min-height:0 !important;
+  padding:12px !important;
+  overflow:hidden !important;
+}
+#appointmentBookingSection #apptSuggestBox[style*="display:none"],
+#appointmentBookingSection #apptSuggestBox[style*="display: none"]{
+  display:none !important;
+}
+#appointmentBookingSection #apptSuggestBox[style*="display: block"],
+#appointmentBookingSection #apptSuggestBox[style*="display:block"],
+#appointmentBookingSection #apptSuggestBox[style*="display: flex"],
+#appointmentBookingSection #apptSuggestBox[style*="display:flex"]{
+  display:flex !important;
+}
+#appointmentBookingSection #apptSuggestCards{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+  overflow-y:auto !important;
+  min-height:0 !important;
+  flex:1 1 auto !important;
+  padding:2px 2px 8px !important;
+  scrollbar-gutter:stable !important;
+}
+#appointmentBookingSection .appt-list-panel{
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  padding:12px !important;
+}
+#appointmentBookingSection .appt-list-body,
+#appointmentBookingSection #apptPendingList{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  scrollbar-gutter:stable !important;
+}
+#appointmentBookingSection .appt-list-title strong{
+  font-size:13px !important;
+}
+#appointmentBookingSection .appt-list-title span{
+  font-size:11px !important;
+  color:#64748b !important;
+  font-weight:700 !important;
+}
+
+/* کارت بیمار / تایید */
+#appointmentBookingSection #apptPatientName{ font-size:15px !important; font-weight:900 !important; }
+#appointmentBookingSection #apptPatientMeta{ font-size:11px !important; }
+#appointmentBookingSection #apptConfirmBox button,
+#appointmentBookingSection #apptSuccessBox button{
+  min-height:var(--prp-appt-ctrl-lg) !important;
+  font-size:13px !important;
+}
+#appointmentBookingSection #apptHolidayNote{
+  font-size:11px !important;
+  padding:8px 10px !important;
+  border-radius:10px !important;
+  margin-bottom:8px !important;
+}
+
+/* ردیف‌های پیشنهاد نوبت */
+#appointmentBookingSection .appt-suggest-row,
+#appointmentBookingSection #apptSuggestCards > button,
+#appointmentBookingSection #apptSuggestCards > div{
+  min-height:44px !important;
+  border-radius:10px !important;
+  font-size:12px !important;
+}
+#appointmentBookingSection .prp-active-day-badge{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px !important;
+  min-height:22px !important;
+  padding:2px 8px !important;
+  border-radius:999px !important;
+  background:#ecfdf5 !important;
+  color:#047857 !important;
+  border:1px solid #a7f3d0 !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+}
+
+@media (max-width:980px){
+  #appointmentBookingSection .appt-workspace{
+    grid-template-columns:1fr !important;
+    grid-template-rows:auto auto minmax(240px,1fr) !important;
+    overflow-y:auto !important;
+  }
+  #appointmentBookingSection .appt-main-panel,
+  #appointmentBookingSection .appt-suggest-panel,
+  #appointmentBookingSection .appt-list-panel{
+    grid-column:1 !important;
+    max-height:none !important;
+    position:static !important;
+  }
+  #appointmentBookingSection #apptSuggestBox{
+    height:auto !important;
+    max-height:42vh !important;
+  }
+}
+
+/* ═══════════ ثبت‌نام و ویرایش ═══════════ */
+#addModal,
+#editModal{
+  padding:12px !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#addModal .add-modal-card,
+#editModal .add-modal-card{
+  width:min(1100px, calc(100vw - 24px)) !important;
+  max-width:min(1100px, calc(100vw - 24px)) !important;
+  max-height:calc(100dvh - 24px) !important;
+  border-radius:16px !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+#addModal .add-modal-card > .bg-gradient-to-r,
+#editModal .add-modal-card > .bg-gradient-to-r{
+  padding:12px 16px !important;
+  flex:0 0 auto !important;
+}
+#addModal .add-modal-card > .bg-gradient-to-r h3,
+#editModal .add-modal-card > .bg-gradient-to-r h3{
+  font-size:15px !important;
+}
+#addModal .add-modal-body,
+#editModal .add-modal-body{
+  padding:12px !important;
+  max-height:calc(100dvh - 72px) !important;
+  overflow-y:auto !important;
+}
+#addModal .add-form-layout,
+#editModal .add-form-layout{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(300px,340px) !important;
+  gap:12px !important;
+  align-items:start !important;
+  direction:rtl !important;
+}
+#addModal .add-form-layout > :not([hidden]) ~ :not([hidden]),
+#editModal .add-form-layout > :not([hidden]) ~ :not([hidden]){
+  margin-top:0 !important;
+}
+#addModal .prp-register-main,
+#editModal .prp-register-main{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+}
+#addModal .prp-register-side,
+#editModal .prp-register-side{
+  position:sticky !important;
+  top:0 !important;
+  align-self:start !important;
+}
+#addModal .prp-schedule-shell,
+#editModal .prp-schedule-shell{
+  padding:10px !important;
+  border-radius:12px !important;
+}
+#addModal .prp-register-side .schedule-card,
+#editModal .prp-register-side .schedule-card{
+  padding:10px !important;
+  gap:8px !important;
+  border-radius:12px !important;
+}
+#addModal input,
+#addModal select,
+#addModal textarea,
+#editModal input,
+#editModal select,
+#editModal textarea{
+  min-height:40px !important;
+  padding:8px 12px !important;
+  border-radius:10px !important;
+  font-size:13px !important;
+}
+#addModal textarea,
+#editModal textarea{
+  min-height:72px !important;
+  height:auto !important;
+}
+#addModal label,
+#editModal label{
+  font-size:11px !important;
+  margin-bottom:4px !important;
+  font-weight:800 !important;
+}
+#addModal .add-hero-card,
+#editModal .add-hero-card,
+#addModal .bg-blue-50\/50,
+#editModal .bg-blue-50\/50{
+  padding:12px !important;
+  border-radius:12px !important;
+}
+#addModal .add-triple-row,
+#editModal .add-triple-row{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+#addModal .add-check-grid,
+#editModal .add-check-grid{
+  display:grid !important;
+  grid-template-columns:repeat(6, minmax(0,1fr)) !important;
+  gap:6px !important;
+  align-items:stretch !important;
+  width:100% !important;
+}
+#addModal .add-check-grid label,
+#editModal .add-check-grid label{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:4px !important;
+  min-height:36px !important;
+  margin:0 !important;
+  padding:6px 4px !important;
+  border-radius:10px !important;
+  white-space:nowrap !important;
+  min-width:0 !important;
+}
+#addModal .add-check-grid label span,
+#editModal .add-check-grid label span{
+  font-size:11px !important;
+  font-weight:800 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#addModal .add-check-grid label input,
+#editModal .add-check-grid label input{
+  min-height:14px !important;
+  width:14px !important;
+  height:14px !important;
+  flex:0 0 auto !important;
+  margin:0 !important;
+}
+@media (max-width:860px){
+  #addModal .add-check-grid,
+  #editModal .add-check-grid{
+    grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+  }
+}
+@media (max-width:520px){
+  #addModal .add-check-grid,
+  #editModal .add-check-grid{
+    grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+  }
+}
+#addModal .prp-register-side #visitDateButtons,
+#editModal .prp-register-side #editVisitDateButtons{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:8px !important;
+  max-height:min(36dvh, 300px) !important;
+  padding:6px !important;
+  overflow-y:auto !important;
+  border-radius:10px !important;
+}
+#addModal .prp-register-side .visit-day-btn,
+#editModal .prp-register-side .visit-day-btn{
+  min-height:64px !important;
+  height:auto !important;
+  padding:8px !important;
+  border-radius:10px !important;
+}
+#addModal button[type="submit"],
+#editModal button[type="submit"],
+#addModal .w-full.bg-blue-600,
+#editModal .w-full.bg-blue-600,
+#addModal button.bg-blue-600,
+#editModal button.bg-blue-600{
+  min-height:44px !important;
+  border-radius:12px !important;
+  font-size:14px !important;
+  font-weight:900 !important;
+}
+
+@media (max-width:860px){
+  #addModal .add-form-layout,
+  #editModal .add-form-layout{
+    grid-template-columns:1fr !important;
+  }
+  #addModal .prp-register-side,
+  #editModal .prp-register-side{
+    position:static !important;
+  }
+  #addModal .add-triple-row,
+  #editModal .add-triple-row{
+    grid-template-columns:1fr !important;
+  }
+}
+</style>
+
+<script id="prp-v172-appt-active-days-and-ui">
+(function(){
+  'use strict';
+  if(window.__PRP_V172_APPT_ACTIVE_DAYS__) return;
+  window.__PRP_V172_APPT_ACTIVE_DAYS__ = true;
+
+  var FALLBACK_DOWS = [6, 3];
+  var DAY_NAMES = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+  var WEEK_ORDER = [6,0,1,2,3,4,5];
+
+  function assignGlobal(name, value){
+    window[name] = value;
+    try{ (0, eval)(name + ' = window["' + name + '"];'); }catch(e){}
+  }
+  function normKey(v){
+    try{
+      var raw = (typeof jalaliStringFromMaybe === 'function') ? (jalaliStringFromMaybe(v) || v || '') : (v || '');
+      if(typeof normalizeJalaliDateKey === 'function') return normalizeJalaliDateKey(raw) || '';
+    }catch(e){}
+    return String(v || '').trim().replace(/-/g, '/');
+  }
+  function toG(key){
+    try{ return key && typeof jalaliToGregorian === 'function' ? jalaliToGregorian(key) : null; }
+    catch(e){ return null; }
+  }
+  function toJ(g){
+    try{ return normKey(gregorianToJalali(g.getFullYear(), g.getMonth()+1, g.getDate())); }
+    catch(e){ return ''; }
+  }
+  function midnight(d){
+    if(!(d instanceof Date)) d = new Date(d);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+  function dayName(dow){
+    try{ if(Array.isArray(window._WD_NAMES) && window._WD_NAMES[dow]) return window._WD_NAMES[dow]; }catch(e){}
+    return DAY_NAMES[Number(dow)] || ('روز ' + dow);
+  }
+  function addDow(list, value){
+    var dow = Number(value);
+    if(!Number.isFinite(dow) || dow < 0 || dow > 6 || dow === 5) return;
+    if(list.indexOf(dow) === -1) list.push(dow);
+  }
+  function sortDows(list){
+    return (list || []).slice().sort(function(a,b){
+      var ai = WEEK_ORDER.indexOf(Number(a));
+      var bi = WEEK_ORDER.indexOf(Number(b));
+      return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
+    });
+  }
+  function getActiveDatesArr(){
+    try{
+      if(Array.isArray(window.activeDates)) return window.activeDates;
+      if(typeof activeDates !== 'undefined' && Array.isArray(activeDates)) return activeDates;
+    }catch(e){}
+    return [];
+  }
+  function getActiveCapsArr(){
+    try{
+      if(Array.isArray(window.activeCaps)) return window.activeCaps;
+      if(typeof activeCaps !== 'undefined' && Array.isArray(activeCaps)) return activeCaps;
+    }catch(e){}
+    return [];
+  }
+  function getActiveWeekdaysArr(){
+    try{
+      if(Array.isArray(window.activeWeekdays)) return window.activeWeekdays;
+      if(typeof activeWeekdays !== 'undefined' && Array.isArray(activeWeekdays)) return activeWeekdays;
+    }catch(e){}
+    return [];
+  }
+
+  // روزهای هفته از تنظیمات + از روزهایی که در تقویم فعال شده‌اند
+  function clinicDowsFromSettingsAndCalendar(){
+    var out = [];
+    getActiveWeekdaysArr().forEach(function(row){ addDow(out, row && row.dow); });
+    // اگر دوشنبه را در تقویم فعال کرده، دوشنبه هم جزو روزهای کلینیک شود
+    getActiveDatesArr().forEach(function(raw){
+      var key = normKey(raw);
+      if(!key) return;
+      var g = toG(key);
+      if(!g || isNaN(g.getTime())) return;
+      addDow(out, g.getDay());
+    });
+    return sortDows(out);
+  }
+
+  function activeFutureRows(){
+    var rows = [], seen = Object.create(null);
+    var today = midnight(new Date()).getTime();
+    var dates = getActiveDatesArr();
+    var caps = getActiveCapsArr();
+    dates.forEach(function(raw, idx){
+      var key = normKey(raw);
+      if(!key || seen[key]) return;
+      var g = toG(key);
+      if(!g || isNaN(g.getTime()) || midnight(g).getTime() < today || g.getDay() === 5) return;
+      seen[key] = true;
+      rows.push({ key:key, gregorian:midnight(g), dow:g.getDay(), cap:Number(caps[idx] || 0) || 0 });
+    });
+    rows.sort(function(a,b){ return a.gregorian.getTime() - b.gregorian.getTime(); });
+    return rows;
+  }
+
+  function state(){
+    var weekly = clinicDowsFromSettingsAndCalendar();
+    if(!weekly.length) weekly = FALLBACK_DOWS.slice();
+    var exactRows = activeFutureRows();
+    var exactKeys = Object.create(null);
+    exactRows.forEach(function(row){ exactKeys[row.key] = true; });
+    window.PRP_APPT_ALLOWED_DOWS = weekly.slice();
+    window.__PRP_APPT_DAY_STATE = {
+      weeklyDows: weekly.slice(),
+      activeDateKeys: exactKeys,
+      activeFutureDates: exactRows.slice(),
+      allowedDows: weekly.slice()
+    };
+    return window.__PRP_APPT_DAY_STATE;
+  }
+
+  function quotaUsage(dateJ, bucket, excludeId){
+    try{
+      var q = (typeof prpGetQuotaForDate === 'function') ? prpGetQuotaForDate(dateJ) : {total:0};
+      var c = (typeof prpCountBookingsByType === 'function') ? prpCountBookingsByType(dateJ, excludeId, false) : {total:0};
+      var type = '';
+      try{ type = (typeof prpNormalizeBookingType === 'function') ? prpNormalizeBookingType(bucket || '') : (bucket || ''); }catch(e){ type = bucket || ''; }
+      var key = type === 'special' ? 'backlog' : type;
+      if(!key || !Object.prototype.hasOwnProperty.call(q, key)) key = 'total';
+      var max = Number(q[key] || 0), count = Number(c[key] || 0);
+      return { util:max > 0 ? count/max : 999, remain:Math.max(max - count, 0) };
+    }catch(e){ return { util:999, remain:0 }; }
+  }
+
+  function isBookable(key, g, bucket, excludeId, softQuota){
+    var st = state();
+    var exact = !!st.activeDateKeys[key];
+    var weekly = st.weeklyDows.indexOf(g.getDay()) !== -1;
+    if(!exact && !weekly) return 'روز فعال نیست';
+    try{
+      var holiday = (typeof getOfficialHolidayName === 'function') ? (getOfficialHolidayName(key) || '') : '';
+      if(holiday) return 'تعطیل رسمی: ' + holiday;
+    }catch(e){}
+    try{ if(typeof isDateLocked === 'function' && isDateLocked(key)) return 'روز قفل شده'; }catch(e){}
+    if(!softQuota){
+      try{
+        if(typeof prpCanBookByQuota === 'function'){
+          var can = prpCanBookByQuota(key, bucket, excludeId);
+          if(can && can.ok === false) return can.reason || 'سهمیه پر است';
+        }
+      }catch(e){}
+    }
+    return '';
+  }
+
+  assignGlobal('apptAllowedBookingDows', function(){ return state().allowedDows.slice(); });
+  assignGlobal('apptIsClinicAppointmentDow', function(dow){
+    dow = Number(dow);
+    return Number.isFinite(dow) && dow !== 5 && state().allowedDows.indexOf(dow) !== -1;
+  });
+  assignGlobal('apptValidateClinicAppointmentDate', function(dateJ){
+    var key = normKey(dateJ), g = toG(key);
+    if(!key || !g || isNaN(g.getTime())) return { ok:false, reason:'تاریخ نامعتبر است.' };
+    var st = state();
+    var exact = !!st.activeDateKeys[key];
+    var weekly = st.weeklyDows.indexOf(g.getDay()) !== -1;
+    if(!exact && !weekly){
+      return { ok:false, reason:'این تاریخ جزو روزهای فعال نوبت‌دهی نیست. روزهای فعال: ' + st.allowedDows.map(dayName).join('، ') + '.' };
+    }
+    try{
+      var holiday = (typeof getOfficialHolidayName === 'function') ? (getOfficialHolidayName(key) || '') : '';
+      if(holiday) return { ok:false, reason:holiday + ' — تعطیل رسمی است.' };
+    }catch(e){}
+    return { ok:true, key:key, gregorian:g, dow:g.getDay(), exactActiveDay:exact, weeklyActiveDay:weekly };
+  });
+
+  // پیشنهاد: اول همه روزهای فعال تقویم، بعد نزدیک‌ترین‌های هر روز هفته (حداکثر ۳ تا از هر DOW)
+  assignGlobal('apptFindNearestSatWed', function(jalaliDateStr, patientType, excludeId){
+    try{
+      var st = state();
+      var today = midnight(new Date());
+      var raw = toG(normKey(jalaliDateStr));
+      var ref = raw && !isNaN(raw.getTime()) ? midnight(raw) : today;
+      if(ref.getTime() < today.getTime()) ref = today;
+      var refMs = ref.getTime();
+      var results = [], seen = Object.create(null);
+
+      function pushCandidate(key, g, dow, fromActive, skipped){
+        if(!key || seen[key]) return;
+        var why = isBookable(key, g, patientType, excludeId, false);
+        if(why) return;
+        seen[key] = true;
+        var use = quotaUsage(key, patientType, excludeId);
+        results.push({
+          jalali:key,
+          gregorian:midnight(g),
+          type:dayName(dow),
+          typeEn:dow === 6 ? 'sat' : (dow === 3 ? 'wed' : ('day' + dow)),
+          dow:dow,
+          fromActive:!!fromActive,
+          skippedDates:Array.isArray(skipped) ? skipped.slice() : [],
+          bucketUtil:use.util,
+          bucketRemain:use.remain
+        });
+      }
+
+      // ۱) همه تاریخ‌های فعال آینده در تقویم — اولویت اول
+      st.activeFutureDates.forEach(function(row){
+        pushCandidate(row.key, row.gregorian, row.dow, true, []);
+      });
+
+      // ۲) نزدیک‌ترین‌های هر روز هفتهٔ فعال (تا ۳ نوبت آینده برای هر DOW)
+      st.weeklyDows.forEach(function(dow){
+        var first = null, skipped = [], found = 0;
+        for(var off=0; off<7; off++){
+          var d = new Date(refMs + off * 86400000);
+          if(d.getDay() === dow){ first = midnight(d); break; }
+        }
+        if(!first) return;
+        for(var w=0; w<52 && found < 2; w++){
+          var cur = new Date(first.getTime() + w * 7 * 86400000);
+          var key = toJ(cur);
+          if(seen[key]) continue;
+          var reason = isBookable(key, cur, patientType, excludeId, false);
+          if(!reason){
+            pushCandidate(key, cur, dow, !!st.activeDateKeys[key], skipped);
+            found++;
+            skipped = [];
+          } else {
+            skipped.push({ jalali:key, reason:reason });
+          }
+        }
+      });
+
+      results.sort(function(a,b){
+        // روز فعال تقویم کمی جلوتر
+        if(!!a.fromActive !== !!b.fromActive) return a.fromActive ? -1 : 1;
+        var da = Math.abs(a.gregorian.getTime() - refMs);
+        var db = Math.abs(b.gregorian.getTime() - refMs);
+        if(da !== db) return da - db;
+        if(a.bucketUtil !== b.bucketUtil) return a.bucketUtil - b.bucketUtil;
+        return b.bucketRemain - a.bucketRemain;
+      });
+      // حداکثر ۴ پیشنهاد برای ثبت نوبت
+      if(results.length > 4) results = results.slice(0, 4);
+
+      return {
+        sat: results.find(function(r){ return r.dow === 6; }) || results[0] || null,
+        wed: results.find(function(r){ return r.dow === 3; }) || results[1] || null,
+        all: results
+      };
+    }catch(e){
+      console.error('v172 appointment suggestions failed', e);
+      return { sat:null, wed:null, all:[] };
+    }
+  });
+
+  assignGlobal('apptUpdateAllowedDaysNote', function(){
+    var el = document.getElementById('apptAllowedDaysNote');
+    if(!el) return;
+    var st = state();
+    var exactN = (st.activeFutureDates || []).length;
+    el.innerHTML =
+      'روزهای فعال نوبت‌دهی: <b>' + st.allowedDows.map(dayName).join('، ') + '</b>.'
+      + (exactN ? (' از تقویم <b>' + exactN + '</b> روز فعال آینده هم مستقیماً پیشنهاد می‌شود.') : '')
+      + ' اگر دوشنبه‌ای را در تقویم فعال کرده باشید، دوشنبه در پیشنهادها می‌آید.';
+  });
+
+  // بج «روز فعال» روی کارت‌های پیشنهاد
+  function decorateSuggestCards(){
+    var box = document.getElementById('apptSuggestCards');
+    if(!box) return;
+    var st = state();
+    box.querySelectorAll('[data-jalali], button, .appt-suggest-card, div').forEach(function(el){
+      try{
+        var key = el.getAttribute('data-jalali') || '';
+        if(!key){
+          var txt = el.textContent || '';
+          var m = txt.match(/14\d{2}\/\d{2}\/\d{2}/);
+          if(m) key = normKey(m[0]);
+        }
+        if(!key || !st.activeDateKeys[key]) return;
+        if(el.querySelector && el.querySelector('.prp-active-day-badge')) return;
+        var badge = document.createElement('span');
+        badge.className = 'prp-active-day-badge';
+        badge.textContent = '✓ روز فعال تقویم';
+        if(el.firstChild) el.insertBefore(badge, el.firstChild);
+        else el.appendChild(badge);
+      }catch(e){}
+    });
+  }
+
+  var baseSelect = null;
+  function wrapSelectPatient(){
+    var fn = window.apptSelectPatient || (typeof apptSelectPatient === 'function' ? apptSelectPatient : null);
+    if(typeof fn !== 'function' || fn.__prpV172Wrapped) return;
+    var wrapped = function(){
+      var ret = fn.apply(this, arguments);
+      try{ if(typeof window.apptUpdateAllowedDaysNote === 'function') window.apptUpdateAllowedDaysNote(); }catch(e){}
+      setTimeout(decorateSuggestCards, 30);
+      setTimeout(decorateSuggestCards, 120);
+      return ret;
+    };
+    wrapped.__prpV172Wrapped = true;
+    try{ Object.keys(fn).forEach(function(k){ try{ wrapped[k] = fn[k]; }catch(e){} }); }catch(e){}
+    window.apptSelectPatient = wrapped;
+    try{ apptSelectPatient = wrapped; }catch(e){}
+    baseSelect = wrapped;
+  }
+
+  function wrapOpenAppt(){
+    var fn = window.openApptModal || (typeof openApptModal === 'function' ? openApptModal : null);
+    if(typeof fn !== 'function' || fn.__prpV172Wrapped) return;
+    var wrapped = function(){
+      var ret = fn.apply(this, arguments);
+      try{ state(); }catch(e){}
+      try{ if(typeof window.apptUpdateAllowedDaysNote === 'function') window.apptUpdateAllowedDaysNote(); }catch(e){}
+      return ret;
+    };
+    wrapped.__prpV172Wrapped = true;
+    try{ Object.keys(fn).forEach(function(k){ try{ wrapped[k] = fn[k]; }catch(e){} }); }catch(e){}
+    window.openApptModal = wrapped;
+    try{ openApptModal = wrapped; }catch(e){}
+  }
+
+  window.prpRunV172ScenarioTests = function(){
+    var results = [];
+    function ok(name, pass){ results.push({ name:name, ok:!!pass }); }
+    // شبیه‌سازی: دوشنبه در activeDates
+    var prevDates = window.activeDates, prevCaps = window.activeCaps, prevWd = window.activeWeekdays;
+    try{
+      window.activeWeekdays = [{dow:6,cap:40},{dow:3,cap:40}];
+      // یک دوشنبه آینده بساز
+      var today = new Date();
+      var mon = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      while(mon.getDay() !== 1) mon.setDate(mon.getDate() + 1);
+      if(mon.getTime() <= today.getTime()) mon.setDate(mon.getDate() + 7);
+      var monJ = toJ(mon);
+      window.activeDates = [monJ];
+      window.activeCaps = [40];
+      var st = state();
+      ok('دوشنبه از تقویم وارد روزهای کلینیک می‌شود', st.weeklyDows.indexOf(1) !== -1);
+      var sug = window.apptFindNearestSatWed(monJ, 'active', null);
+      ok('پیشنهاد شامل دوشنبه فعال است', !!(sug && sug.all && sug.all.some(function(r){ return r.dow === 1 || r.jalali === monJ; })));
+      ok('روز فعال تقویم fromActive دارد', !!(sug && sug.all && sug.all.some(function(r){ return r.fromActive && r.jalali === monJ; })));
+    }catch(e){
+      ok('سناریو بدون خطا', false);
+    }
+    try{
+      window.activeDates = prevDates;
+      window.activeCaps = prevCaps;
+      window.activeWeekdays = prevWd;
+    }catch(e){}
+    window.__PRP_V172_SCENARIO_TESTS = {
+      passed: results.filter(function(r){ return r.ok; }).length,
+      total: results.length,
+      results: results,
+      at: new Date().toISOString()
+    };
+    return window.__PRP_V172_SCENARIO_TESTS;
+  };
+
+  function install(){
+    try{ state(); }catch(e){}
+    wrapSelectPatient();
+    wrapOpenAppt();
+    try{ if(typeof window.apptUpdateAllowedDaysNote === 'function') window.apptUpdateAllowedDaysNote(); }catch(e){}
+    try{ window.prpRunV172ScenarioTests(); }catch(e){ console.error('v172 tests failed', e); }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 800);
+})();
+</script>
+<!-- PRP v173: پیشنهاد نوبت برای بیمار بایگانی بدون نوبت (جلوگیری از کرش '-') -->
+<script id="prp-v173-archive-appt-suggestions">
+(function(){
+  'use strict';
+  if (window.__PRP_V173_ARCHIVE_APPT__) return;
+  window.__PRP_V173_ARCHIVE_APPT__ = true;
+
+  function validJ(v){
+    try {
+      if (v == null || v === '' || v === '-' || v === '—' || v === '–') return '';
+      if (typeof normalizeJalaliDateKey === 'function') return normalizeJalaliDateKey(v) || '';
+      var s = String(v).trim();
+      return /^\d{4}\/\d{1,2}\/\d{1,2}$/.test(s) ? s : '';
+    } catch(e){ return ''; }
+  }
+
+  // کمربند ایمنی روی getDayName
+  try {
+    var prevGdn = window.getDayName || (typeof getDayName === 'function' ? getDayName : null);
+    if (typeof prevGdn === 'function' && !prevGdn.__prpV173Safe) {
+      var safeGdn = function(dateString){
+        try {
+          if (!validJ(dateString)) return '';
+          var out = prevGdn(validJ(dateString));
+          return out || '';
+        } catch(e){ return ''; }
+      };
+      safeGdn.__prpV173Safe = true;
+      window.getDayName = safeGdn;
+      try { getDayName = safeGdn; } catch(e) {}
+    }
+  } catch(e) {}
+
+  function wrapSelect(){
+    var base = window.apptSelectPatient || (typeof apptSelectPatient === 'function' ? apptSelectPatient : null);
+    if (typeof base !== 'function' || base.__prpV173Wrapped) return;
+    var wrapped = function(id, keepTarget){
+      try {
+        return base.apply(this, arguments);
+      } catch (err) {
+        console.error('apptSelectPatient v173 fallback', err);
+        try {
+          var p = (patients || []).find(function(x){ return String(x.id) === String(id); });
+          if (!p) throw err;
+          window._apptSelectedPatientId = id;
+          var card = document.getElementById('apptPatientCard');
+          if (card) card.style.display = '';
+          var nameEl = document.getElementById('apptPatientName');
+          if (nameEl) nameEl.textContent = p.fullName || '—';
+          var cur = document.getElementById('apptCurrentDate');
+          if (cur) cur.textContent = '—';
+          var dayEl = document.getElementById('apptCurrentDayName');
+          if (dayEl) dayEl.textContent = '';
+          var suggestBox = document.getElementById('apptSuggestBox');
+          var suggestCards = document.getElementById('apptSuggestCards');
+          if (suggestBox) suggestBox.style.display = 'flex';
+          var todayJ = (typeof getTodayJalali === 'function') ? getTodayJalali() : '';
+          var bookingType = 'new';
+          try { bookingType = (typeof prpGetPatientBookingType === 'function') ? prpGetPatientBookingType(p) : 'new'; } catch(e) {}
+          var sug = { all: [] };
+          try { sug = (typeof apptFindNearestSatWed === 'function') ? (apptFindNearestSatWed(todayJ, bookingType, p.id) || sug) : sug; } catch(e) {}
+          var all = (sug.all && sug.all.length) ? sug.all : [sug.sat, sug.wed].filter(Boolean);
+          if (suggestCards) {
+            if (!all.length) {
+              suggestCards.innerHTML = '<div style="padding:14px;color:#b45309;font-weight:900;font-size:12px;">روز پیشنهادی فعالی پیدا نشد. روزهای فعال را در تنظیمات/تقویم بررسی کنید.</div>';
+            } else {
+              suggestCards.innerHTML = all.slice(0, 4).map(function(s){
+                var j = s.jalali || '';
+                var t = s.type || '';
+                return '<button type="button" class="appt-suggest-card" data-jalali="'+j+'" onclick="apptSelectDate(\''+j+'\')" style="text-align:right;padding:12px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;font-weight:900;">'
+                  + '<div style="font-size:13px;">' + (typeof toPersianDigits==='function'?toPersianDigits(j):j) + '</div>'
+                  + '<div style="font-size:11px;color:#1d4ed8;margin-top:4px;">' + t + '</div></button>';
+              }).join('');
+            }
+          }
+        } catch(e2) {
+          console.error('v173 fallback failed', e2);
+          throw err;
+        }
+      }
+    };
+    wrapped.__prpV173Wrapped = true;
+    try { Object.keys(base).forEach(function(k){ try{ wrapped[k]=base[k]; }catch(e){} }); } catch(e) {}
+    window.apptSelectPatient = wrapped;
+    try { apptSelectPatient = wrapped; } catch(e) {}
+  }
+
+  window.prpRunV173ArchiveApptTest = function(){
+    var results = [];
+    function ok(name, pass, detail){ results.push({name:name, ok:!!pass, detail:detail||''}); }
+    try {
+      ok('getDayName روی "-" کرش نمی‌کند', (function(){ try { var x = getDayName('-'); return x === '' || typeof x === 'string'; } catch(e){ return false; } })());
+      ok('normalizeJalaliDateKey("-") خالی است', (typeof normalizeJalaliDateKey==='function') && normalizeJalaliDateKey('-') === '');
+      var fake = {
+        id: '__v173_archive_test__',
+        fullName: 'تست بایگانی v173',
+        phone: '09120000000',
+        currentStage: 2,
+        status: 'ARCHIVED',
+        archiveReason: '۰۰',
+        nextAppointment: null,
+        idealNextDate: null,
+        history: []
+      };
+      var prev = window.patients;
+      window.patients = [fake];
+      try { patients = window.patients; } catch(e) {}
+      // ensure DOM pieces exist
+      ['apptPatientCard','apptPatientName','apptPatientMeta','apptCurrentDate','apptCurrentDayName','apptCurrentDiff','apptSuggestBox','apptSuggestCards','apptHolidayNote','apptTargetBox','apptConfirmBox','apptSuccessBox'].forEach(function(id){
+        if (!document.getElementById(id)) {
+          var el = document.createElement(id === 'apptSuggestCards' || id === 'apptHolidayNote' || id === 'apptPatientMeta' || id === 'apptCurrentDiff' ? 'div' : 'div');
+          el.id = id;
+          el.style.display = 'none';
+          document.body.appendChild(el);
+        }
+      });
+      var threw = false;
+      try { apptSelectPatient(fake.id); } catch(e){ threw = true; console.error(e); }
+      ok('apptSelectPatient برای ARCHIVED بدون نوبت کرش نمی‌کند', !threw);
+      var box = document.getElementById('apptSuggestBox');
+      ok('باکس پیشنهاد نمایش داده می‌شود', !!(box && box.style.display !== 'none'));
+      var cards = document.getElementById('apptSuggestCards');
+      var hasCards = !!(cards && ((cards.children && cards.children.length) || (cards.innerHTML || '').trim()));
+      ok('کارت پیشنهاد ساخته می‌شود', hasCards);
+      window.patients = prev;
+      try { patients = prev; } catch(e) {}
+    } catch(e){
+      ok('تست بدون خطای غیرمنتظره', false, String(e && e.message || e));
+    }
+    window.__PRP_V173_ARCHIVE_APPT_TESTS = {
+      passed: results.filter(function(r){ return r.ok; }).length,
+      total: results.length,
+      results: results,
+      at: new Date().toISOString()
+    };
+    return window.__PRP_V173_ARCHIVE_APPT_TESTS;
+  };
+
+  function install(){
+    wrapSelect();
+    try { window.prpRunV173ArchiveApptTest(); } catch(e){ console.error('v173 tests failed', e); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 900);
+})();
+</script>
+
+<!-- PRP v174: سقف ۴ پیشنهاد + حذف confirm/alert مرورگر + سبک‌سازی نصب پچ‌ها -->
+<script id="prp-v174-dialogs-suggest-cap-cleanup">
+(function(){
+  'use strict';
+  if (window.__PRP_V174_DIALOGS__) return;
+  window.__PRP_V174_DIALOGS__ = true;
+
+  // ─── کمک‌تابع تایید داخل برنامه ───
+  function inAppConfirm(title, message, onYes, onNo, okText, cancelText){
+    try {
+      if (typeof window.prpShowInAppActions === 'function') {
+        window.prpShowInAppActions({
+          title: title || 'تایید',
+          message: message || '',
+          okText: okText || 'تایید',
+          cancelText: cancelText || 'لغو',
+          onOk: function(){ if (typeof onYes === 'function') onYes(); },
+          onCancel: function(){ if (typeof onNo === 'function') onNo(); }
+        });
+        return;
+      }
+    } catch(e) {}
+    try {
+      if (typeof showConfirm === 'function') {
+        showConfirm(title || 'تایید', message || '', function(){
+          if (typeof onYes === 'function') onYes();
+        }, okText || 'تایید', cancelText || 'لغو');
+        try {
+          var cancelBtn = document.getElementById('msgCancelBtn');
+          if (cancelBtn && typeof onNo === 'function') {
+            cancelBtn.onclick = function(){
+              try { closeModal('msgModal'); } catch(e) {}
+              try { onNo(); } catch(e) {}
+            };
+          }
+        } catch(e) {}
+        return;
+      }
+    } catch(e) {}
+    // آخرین راه: بدون پنجره مرورگر — رد امن
+    if (typeof onNo === 'function') onNo();
+  }
+
+  function inAppAlert(title, text){
+    try {
+      if (typeof showMsg === 'function') { showMsg(title || 'پیام', String(text || '')); return; }
+    } catch(e) {}
+    try {
+      if (typeof showToast === 'function') { showToast(String(text || title || '')); return; }
+    } catch(e) {}
+  }
+
+  // alert مرورگر → مودال داخل برنامه
+  try {
+    window.alert = function(msg){ inAppAlert('پیام', msg); };
+  } catch(e) {}
+
+  // confirm مرورگر را بی‌اثر کن (همیشه false)؛ مسیرهای مهم پایین بازنویسی شده‌اند
+  try {
+    window.confirm = function(){ return false; };
+  } catch(e) {}
+
+  // prompt مرورگر → showPrompt
+  try {
+    var nativePrompt = null;
+    window.prompt = function(message, def){
+      try {
+        if (typeof showPrompt === 'function') {
+          showPrompt(String(message || ''), function(){}, 'باشه', 'بستن');
+          try {
+            var inp = document.getElementById('msgInput');
+            if (inp) inp.value = def == null ? '' : String(def);
+          } catch(e) {}
+        } else {
+          inAppAlert('ورودی', String(message || '') + (def != null ? ('\nمقدار پیشنهادی: ' + def) : ''));
+        }
+      } catch(e) {}
+      return null; // مسیرهای sync باید قبلاً به showPrompt مهاجرت کرده باشند
+    };
+  } catch(e) {}
+
+  // ─── ثبت اکشن برای Retry بعد از تایید سهمیه/روز فوق‌العاده ───
+  window.__prpSetConfirmRetry = function(fn){
+    window.__prpConfirmRetry = (typeof fn === 'function') ? fn : null;
+  };
+  function runRetry(){
+    var fn = window.__prpConfirmRetry;
+    window.__prpConfirmRetry = null;
+    if (typeof fn === 'function') setTimeout(function(){ try { fn(); } catch(e){ console.error('v174 retry', e); } }, 0);
+  }
+
+  function wrapRetry(name){
+    var base = window[name];
+    if (typeof base !== 'function' || base.__prpV174Retry) return;
+    var wrapped = function(){
+      var self = this, args = arguments;
+      window.__prpSetConfirmRetry(function(){ wrapped.apply(self, args); });
+      return base.apply(self, args);
+    };
+    wrapped.__prpV174Retry = true;
+    try { Object.keys(base).forEach(function(k){ try{ wrapped[k]=base[k]; }catch(e){} }); } catch(e) {}
+    window[name] = wrapped;
+    try { (0, eval)(name + ' = window["' + name + '"];'); } catch(e) {}
+  }
+
+  // ─── سهمیه پر: تایید داخل برنامه + retry ───
+  window.prpConfirmOverQuotaBooking = function(dateJ, bucket, excludeId, reason, opts){
+    var key = '';
+    try {
+      key = (typeof normalizeJalaliDateKey === 'function')
+        ? (normalizeJalaliDateKey(dateJ) || '')
+        : String(dateJ || '');
+    } catch(e) { key = String(dateJ || ''); }
+    var type = bucket || 'new';
+    try { if (typeof prpNormalizeBookingType === 'function') type = prpNormalizeBookingType(bucket || 'new') || type; } catch(e) {}
+    if (!key) return true;
+    try {
+      if (typeof window.prpHasQuotaOverride === 'function' && window.prpHasQuotaOverride(key, type, excludeId)) return true;
+    } catch(e) {}
+
+    var can = null;
+    try {
+      if (typeof prpCanBookByQuota === 'function') can = prpCanBookByQuota(key, type, excludeId);
+    } catch(e) {}
+    if (can && can.hardCapacity) {
+      inAppAlert('ظرفیت کل پر است', can.reason || reason || 'این روز ظرفیت خالی ندارد.');
+      return false;
+    }
+
+    var title = (opts && opts.title) || 'سهمیه تکمیل شده است';
+    var typeLabel = type;
+    try { if (typeof prpBookingTypeLabel === 'function') typeLabel = prpBookingTypeLabel(type); } catch(e) {}
+    var faKey = key;
+    try { if (typeof toPersianDigits === 'function') faKey = toPersianDigits(key); } catch(e) {}
+    var msg = title + '\n\n'
+      + (reason || (can && can.reason) || ('سهمیه «' + typeLabel + '» تکمیل شده است.')) + '\n\n'
+      + 'تاریخ: ' + faKey + '\n'
+      + 'دسته: ' + typeLabel + '\n\n'
+      + 'با وجود پر بودن سهمیه، نوبت ثبت شود؟';
+
+    inAppConfirm(title, msg, function(){
+      try {
+        if (typeof window.prpRememberQuotaOverride === 'function') {
+          window.prpRememberQuotaOverride(key, type, excludeId);
+        }
+      } catch(e) {}
+      try { if (typeof showToast === 'function') showToast('ثبت خارج از سهمیه برای ' + faKey + ' تایید شد'); } catch(e) {}
+      runRetry();
+    }, function(){
+      try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'ثبت خارج از سهمیه فقط با تایید شما انجام می‌شود.'); } catch(e) {}
+    }, 'ثبت شود', 'لغو');
+    return false;
+  };
+
+  // ─── روز فوق‌العاده فعال: تایید داخل برنامه ───
+  if (typeof window.prpConfirmExtraActiveDate === 'function') {
+    var baseExtra = window.prpConfirmExtraActiveDate;
+    if (!baseExtra.__prpV174InApp) {
+      var approvedExtra = Object.create(null);
+      window.prpConfirmExtraActiveDate = function(dateJ, patientId){
+        var key = '';
+        try { key = (typeof normalizeJalaliDateKey === 'function') ? (normalizeJalaliDateKey(dateJ)||'') : String(dateJ||''); } catch(e) { key = String(dateJ||''); }
+        if (!key) return true;
+        // اگر اصلاً فوق‌العاده نیست، به نسخه قبلی بسپار
+        var info = null;
+        try { if (typeof window.prpExtraActiveDateInfo === 'function') info = window.prpExtraActiveDateInfo(key); } catch(e) {}
+        if (!info || !info.extra) {
+          try { return baseExtra.apply(this, arguments); } catch(e) { return true; }
+        }
+        var pid = patientId || '';
+        var akey = key + '::' + String(pid || 'global');
+        if (approvedExtra[akey] || approvedExtra[key + '::global']) return true;
+
+        var faKey = key;
+        try { if (typeof toPersianDigits === 'function') faKey = toPersianDigits(key); } catch(e) {}
+        var why = (info.holiday ? ('تعطیل رسمی: ' + info.holiday) : ('روز هفته: ' + (info.dayName || 'غیرعادی')));
+        var msg = 'این تاریخ خارج از قانون عادی نوبت‌دهی است، اما در «روزهای فعال» تعریف شده.\n\n'
+          + 'تاریخ: ' + faKey + (info.dayName ? (' — ' + info.dayName) : '') + '\n'
+          + why + '\n\nآیا با ثبت نوبت در همین تاریخ موافقید؟';
+        inAppConfirm('روز فوق‌العاده', msg, function(){
+          approvedExtra[akey] = true;
+          approvedExtra[key + '::global'] = true;
+          try { if (typeof showToast === 'function') showToast('روز فوق‌العاده تایید شد: ' + faKey); } catch(e) {}
+          runRetry();
+        }, function(){
+          try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'روز فوق‌العاده فقط با تایید شما ثبت می‌شود.'); } catch(e) {}
+        }, 'تایید روز', 'لغو');
+        return false;
+      };
+      window.prpConfirmExtraActiveDate.__prpV174InApp = true;
+    }
+  }
+
+  // ─── تاریخ گذشته پر: تایید داخل برنامه (جایگزین v162 confirm) ───
+  (function wrapPastEnsure(){
+    var base = window.ensureDateCanBeBooked;
+    if (typeof base !== 'function' || base.__prpV174PastInApp) return;
+    var approvedPast = Object.create(null);
+    function todayMs(){ var d=new Date(); return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime(); }
+    function isPast(key){
+      try {
+        var g = jalaliToGregorian(key);
+        if (!g || isNaN(g.getTime())) return false;
+        return new Date(g.getFullYear(), g.getMonth(), g.getDate()).getTime() < todayMs();
+      } catch(e) { return false; }
+    }
+    function isActive(key){
+      try { return (activeDates||[]).some(function(d){ return normalizeJalaliDateKey(d) === key; }); }
+      catch(e){ return false; }
+    }
+    var wrapped = function(dateJ, excludeId, opts){
+      var key = '';
+      try { key = normalizeJalaliDateKey(dateJ) || ''; } catch(e) {}
+      var o = opts || {};
+      var allowLocked = '';
+      try { allowLocked = normalizeJalaliDateKey(o.allowLockedDate || '') || ''; } catch(e) {}
+      var lockedNow = false;
+      try { lockedNow = isDateLocked(key) && key !== allowLocked; } catch(e) {}
+      if (!key || lockedNow || !isActive(key) || !isPast(key)) {
+        return base.apply(this, arguments);
+      }
+      var type = '';
+      try { type = prpNormalizeBookingType(o.patientType || o.bookingType || ''); } catch(e) {}
+      var can = { ok:true };
+      try { can = prpCanBookByQuota(key, type, excludeId); } catch(e) { can = { ok:true }; }
+      if (can.ok) return true;
+      var approvalKey = excludeId ? (key + '::' + String(excludeId)) : '';
+      if (approvalKey && approvedPast[approvalKey]) return true;
+      var faKey = key;
+      try { if (typeof toPersianDigits === 'function') faKey = toPersianDigits(key); } catch(e) {}
+      var msg = 'این تاریخ (' + faKey + ') گذشته و '
+        + (can.reason || 'ظرفیت/سهمیه‌اش تکمیل شده است.') + '\n\n'
+        + 'آیا با این حال می‌خواهید بیمار در همین تاریخ ثبت شود؟';
+      inAppConfirm('ثبت در تاریخ گذشته', msg, function(){
+        if (approvalKey) approvedPast[approvalKey] = true;
+        try { if (typeof showToast === 'function') showToast('ثبت در تاریخ گذشته تایید شد: ' + faKey); } catch(e) {}
+        runRetry();
+      }, function(){
+        try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'ثبت در روزهای گذشته فقط با تایید شما انجام می‌شود.'); } catch(e) {}
+      }, 'ثبت شود', 'لغو');
+      return false;
+    };
+    wrapped.__prpV174PastInApp = true;
+    window.ensureDateCanBeBooked = wrapped;
+    try { ensureDateCanBeBooked = wrapped; } catch(e) {}
+  })();
+
+  // مسیرهای اصلی رزرو برای retry بعد از تایید
+  ['apptConfirmBook','saveEditPatient','saveNewPatient','saveAndBookAppt','applyConfirm','confirmPatient'].forEach(function(n){
+    try { wrapRetry(n); } catch(e) {}
+  });
+
+  // fallbackهای ناحیه: confirm مرورگر را به in-app تبدیل کن (اگر به catch رسیدند)
+  // با window.confirm=false دیگر OK نمی‌شوند؛ v170 باید مسیر اصلی باشد.
+  // اگر fallback لازم شد، این helper را بگذار:
+  window.prpFallbackSiteConfirm = function(msg, onChange, onKeep){
+    inAppConfirm('تغییر ناحیه', msg, onChange, onKeep, 'تغییر ناحیه', 'حفظ قبلی');
+  };
+
+  // سبک‌سازی: سقف پیشنهاد را در UI هم اعمال کن (اگر پچ قدیمی کارت بیشتری ساخت)
+  function trimSuggestCards(){
+    try {
+      var box = document.getElementById('apptSuggestCards');
+      if (!box || !box.children) return;
+      while (box.children.length > 4) box.removeChild(box.lastChild);
+    } catch(e) {}
+  }
+  var baseSelect = window.apptSelectPatient;
+  if (typeof baseSelect === 'function' && !baseSelect.__prpV174Cap) {
+    var wrappedSel = function(){
+      var ret = baseSelect.apply(this, arguments);
+      setTimeout(trimSuggestCards, 40);
+      setTimeout(trimSuggestCards, 160);
+      return ret;
+    };
+    wrappedSel.__prpV174Cap = true;
+    try { Object.keys(baseSelect).forEach(function(k){ try{ wrappedSel[k]=baseSelect[k]; }catch(e){} }); } catch(e) {}
+    window.apptSelectPatient = wrappedSel;
+    try { apptSelectPatient = wrappedSel; } catch(e) {}
+  }
+
+  window.__PRP_V174_NOTES = {
+    suggestCap: 4,
+    browserConfirmDisabled: true,
+    browserAlertShimmed: true,
+    patchMerge: 'ادغام کامل v88→v170 عمداً انجام نشد تا منطق تاریخ/مرحله تزریق نشکند؛ فقط confirmها، سقف پیشنهاد و تایمرهای نصب سبک شدند.'
+  };
+})();
+</script>
 </body></html>
+
