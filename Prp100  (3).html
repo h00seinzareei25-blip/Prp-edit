@@ -3953,11 +3953,12 @@ function initDailyHistoryUI(){
 }
 
 async function clearDailyHistory(){
-    if(!confirm('حذف تاریخچه عملکرد روزانه؟')) return;
-    dailyLog = [];
-    try{ await idbSet(DAILY_LOG_KEY, dailyLog); }catch(e){}
-    try{ renderDailyHistory(document.getElementById('dailyHistoryDate') ? document.getElementById('dailyHistoryDate').value : ''); }catch(e){}
-    try{ showToast('پاک شد'); }catch(e){}
+    showConfirm('حذف تاریخچه', 'حذف تاریخچه عملکرد روزانه؟', async function(){
+        dailyLog = [];
+        try{ await idbSet(DAILY_LOG_KEY, dailyLog); }catch(e){}
+        try{ renderDailyHistory(document.getElementById('dailyHistoryDate') ? document.getElementById('dailyHistoryDate').value : ''); }catch(e){}
+        try{ showToast('پاک شد'); }catch(e){}
+    }, 'حذف', 'لغو');
 }
 
 // --- یادداشت اختیاری برای اقدامات داخل مودال نتیجه تماس (تاخیر تماس / تعویق نوبت) ---
@@ -4434,21 +4435,24 @@ const STAGES = { 1: {label:'تزریق اول', nextGap:2}, 2: {label:'تزری�
         function setWorkingHoursFromClock(){
             try{
                 var wh = getWorkingHours() || {start:'08:00', end:'18:00'};
-                var input = prompt('بازه پاسخ‌گویی را وارد کنید، مثلا: 08:00-18:00\nبرای حذف تنظیمات، خالی بگذارید و OK بزنید.', (wh.start || '08:00') + '-' + (wh.end || '18:00'));
-                if(input === null) return;
-                input = toEnglishDigits(String(input || '')).trim();
-                if(!input){
-                    localStorage.removeItem(WORKING_HOURS_KEY);
+                var def = (wh.start || '08:00') + '-' + (wh.end || '18:00');
+                showPrompt('بازه پاسخ‌گویی (مثل 08:00-18:00)\nبرای حذف، خالی بگذارید', function(input){
+                    if(input === null || input === undefined) return;
+                    input = toEnglishDigits(String(input || '')).trim();
+                    if(!input){
+                        localStorage.removeItem(WORKING_HOURS_KEY);
+                        updateLiveClock();
+                        return;
+                    }
+                    var parts = input.split('-');
+                    if(parts.length !== 2 || parseClockMinutes(parts[0].trim()) === null || parseClockMinutes(parts[1].trim()) === null){
+                        try{ showMsg('فرمت نامعتبر', 'بازه را مثل 08:00-18:00 وارد کنید.'); }catch(_e){}
+                        return;
+                    }
+                    localStorage.setItem(WORKING_HOURS_KEY, JSON.stringify({start:parts[0].trim(), end:parts[1].trim()}));
                     updateLiveClock();
-                    return;
-                }
-                var parts = input.split('-');
-                if(parts.length !== 2 || parseClockMinutes(parts[0].trim()) === null || parseClockMinutes(parts[1].trim()) === null){
-                    try{ showMsg('فرمت نامعتبر', 'بازه را مثل 08:00-18:00 وارد کنید.'); }catch(_e){ alert('فرمت نامعتبر است. مثال: 08:00-18:00'); }
-                    return;
-                }
-                localStorage.setItem(WORKING_HOURS_KEY, JSON.stringify({start:parts[0].trim(), end:parts[1].trim()}));
-                updateLiveClock();
+                }, 'ثبت', 'لغو');
+                try { var inp = document.getElementById('msgInput'); if(inp) inp.value = def; } catch(e) {}
             }catch(e){}
         }
         function triggerQuickBackup(ev){
@@ -5387,12 +5391,13 @@ window.renderSettingsInputs = function(skipSync){
         async function deletePatient(id){
             var p = patients.find(x => x.id === id);
             var name = p ? (p.fullName || '') : '';
-            if(!confirm('حذف کامل این بیمار از سیستم؟\n' + (name ? ('بیمار: ' + name + '\n') : '') + 'این عمل غیرقابل بازگشت است.')) return;
-            try{ logAction('DELETE_PATIENT', { id: id, name: name }); }catch(e){}
-            patients = patients.filter(x => x.id !== id);
-            await saveData();
-            renderTable();
-            showToast('حذف شد', 'success');
+            showConfirm('حذف بیمار', 'حذف کامل این بیمار از سیستم؟\n' + (name ? ('بیمار: ' + name + '\n') : '') + 'این عمل غیرقابل بازگشت است.', async function(){
+                try{ logAction('DELETE_PATIENT', { id: id, name: name }); }catch(e){}
+                patients = patients.filter(x => x.id !== id);
+                await saveData();
+                renderTable();
+                showToast('حذف شد', 'success');
+            }, 'حذف کامل', 'لغو');
         }
         async function saveSettings() {
             syncSettingsFromDom();
@@ -5911,7 +5916,7 @@ function clearDateFilter() { resetPager();
                 _renderSmsKdeCurrent();
             }catch(err){
                 console.error(err);
-                alert('خطا در آماده‌سازی پیامک');
+                try{ showMsg('خطا','خطا در آماده‌سازی پیامک'); }catch(e){}
             }
         }
 
@@ -12702,7 +12707,7 @@ function copySMS(phone, name) {
         }
         
 
-        function clearAllData() { if(confirm('حذف کل؟')) { patients=[]; saveData(); refreshUI(); } }
+        function clearAllData() { showConfirm('حذف کل داده‌ها', 'همه بیماران حذف شوند؟ این عمل غیرقابل بازگشت است.', function(){ patients=[]; saveData(); refreshUI(); }, 'حذف کل', 'لغو'); }
         // --- Backup / Restore ---
         const BACKUP_SCHEMA_VERSION = 5;
 
@@ -13469,7 +13474,7 @@ function handleExcelImport(e){
                 importPatientsFromRows(rows, 'CSV');
             }catch(err){
                 console.error(err);
-                alert('خطا در خواندن فایل CSV');
+                try{ showMsg('خطا','خطا در خواندن فایل CSV'); }catch(e){}
             }
         };
         r.readAsArrayBuffer(file);
@@ -13478,7 +13483,7 @@ function handleExcelImport(e){
 
     // xlsx/xls
     if(typeof XLSX === 'undefined'){
-        alert('برای خواندن مستقیم فایل‌های .xlsx/.xls در حالت آفلاین، نیاز به کتابخانه Excel است و در این نسخه موجود نیست.\nراه‌حل: از اکسل خروجی بگیرید و یکی از این فرمت‌ها را وارد کنید:\n1) Unicode Text (*.txt) یا Text (Tab delimited) (*.txt)  (پیشنهادی برای فارسی)\n2) CSV (Comma delimited) (*.csv)');
+        try{ showMsg('فرمت اکسل', 'برای خواندن مستقیم فایل‌های .xlsx/.xls در حالت آفلاین، نیاز به کتابخانه Excel است.\nراه‌حل: خروجی Unicode Text/TXT یا CSV بگیرید.'); }catch(e){}
         return;
     }
 
@@ -13493,7 +13498,7 @@ function handleExcelImport(e){
             importPatientsFromRows(rows, 'Excel');
         }catch(err){
             console.error(err);
-            alert('خطا در خواندن فایل اکسل');
+            try{ showMsg('خطا','خطا در خواندن فایل اکسل'); }catch(e){}
         }
     };
     reader.readAsArrayBuffer(file);
@@ -13712,9 +13717,25 @@ function importPatientsFromRows(rows, sourceLabel){
     });
 
     var doReplace = false;
-    if(duplicates.length > 0){
-        doReplace = confirm('تعداد ' + duplicates.length + ' پرونده تکراری برای همان بیمار و همان ناحیه پیدا شد.\nاگر تایید کنید، فقط همان پرونده‌های هم‌ناحیه بروزرسانی می‌شوند.\nپرونده‌های ناحیه متفاوت (مثلاً زانو چپ و زانو راست) همیشه جدا می‌مانند.\nاگر لغو کنید، پرونده‌های تکراری نادیده گرفته می‌شوند.');
+    if(duplicates.length > 0 && window.__prpImportDupDecision == null){
+        var dupMsg = 'تعداد ' + duplicates.length + ' پرونده تکراری برای همان بیمار و همان ناحیه پیدا شد.\nاگر تایید کنید، فقط همان پرونده‌های هم‌ناحیه بروزرسانی می‌شوند.\nپرونده‌های ناحیه متفاوت (مثلاً زانو چپ و زانو راست) همیشه جدا می‌مانند.\nاگر لغو کنید، پرونده‌های تکراری نادیده گرفته می‌شوند.';
+        showConfirm('پرونده تکراری', dupMsg, function(){
+            window.__prpImportDupDecision = 'replace';
+            try { importPatientsFromRows(rows, sourceLabel); } finally { window.__prpImportDupDecision = null; }
+        }, 'بروزرسانی هم‌ناحیه', 'نادیده گرفتن');
+        try {
+            var cancelBtn = document.getElementById('msgCancelBtn');
+            if(cancelBtn){
+                cancelBtn.onclick = function(){
+                    try { closeModal('msgModal'); } catch(e) {}
+                    window.__prpImportDupDecision = 'skip';
+                    try { importPatientsFromRows(rows, sourceLabel); } finally { window.__prpImportDupDecision = null; }
+                };
+            }
+        } catch(e) {}
+        return;
     }
+    if(window.__prpImportDupDecision === 'replace') doReplace = true;
 
     rows.forEach(function(row){
         // extract fields
@@ -14084,7 +14105,7 @@ document.addEventListener('click', function(ev){
   const mv = btn.getAttribute('data-move');
   if(Number.isNaN(idx)) return;
   if(typeof window.moveSettingRow !== 'function'){
-    alert('خطا: تابع جابجایی پیدا نشد');
+    try{ showMsg('خطا','تابع جابجایی پیدا نشد'); }catch(e){}
     return;
   }
   window.moveSettingRow(idx, mv === 'up' ? -1 : 1);
@@ -14097,7 +14118,7 @@ document.addEventListener('click', function(ev){
   const idx = parseInt(btn.getAttribute('data-idx'), 10);
   if(Number.isNaN(idx)) return;
   if(typeof window.removeSettingRow !== 'function'){
-    alert('خطا: تابع حذف ردیف پیدا نشد');
+    try{ showMsg('خطا','تابع حذف ردیف پیدا نشد'); }catch(e){}
     return;
   }
   window.removeSettingRow(idx);
@@ -14110,7 +14131,7 @@ document.addEventListener('click', function(ev){
   const idx = parseInt(btn.getAttribute('data-idx'), 10);
   if(Number.isNaN(idx)) return;
   if(typeof window.toggleSettingLock !== 'function'){
-    alert('خطا: تابع قفل تاریخ پیدا نشد');
+    try{ showMsg('خطا','تابع قفل تاریخ پیدا نشد'); }catch(e){}
     return;
   }
   window.toggleSettingLock(idx);
@@ -14228,7 +14249,13 @@ function prpCancelEditAppointment(){
         if(!p) return;
         var apptJ = p.nextAppointment ? getJalaliFromISO(p.nextAppointment) : '';
         var msg = apptJ ? ('نوبت بیمار برای ' + apptJ + ' لغو شود؟\nبیمار به لیست «در انتظار تماس» برمی‌گردد.') : 'نوبت این بیمار لغو شود؟';
-        if(!window.confirm(msg)) return;
+        if(window.__prpCancelApptConfirmed !== true){
+            showConfirm('لغو نوبت', msg, function(){
+                window.__prpCancelApptConfirmed = true;
+                try { prpCancelEditAppointment(); } finally { window.__prpCancelApptConfirmed = false; }
+            }, 'لغو نوبت', 'انصراف');
+            return;
+        }
 
         var regJ = '';
         try{
@@ -14673,7 +14700,7 @@ function _activityRowsForExport(onlyFiltered){
 function _downloadActivityLogCSVOffline(onlyFiltered){
     try{
         var rows=_activityRowsForExport(!!onlyFiltered);
-        if(!rows.length){ alert('لاگی برای خروجی وجود ندارد.'); return; }
+        if(!rows.length){ try{ showMsg('اطلاع','لاگی برای خروجی وجود ندارد.'); }catch(e){} return; }
         var headers=Object.keys(rows[0]);
         function csvEscape(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
         var lines=[headers.map(csvEscape).join(',')];
@@ -14691,7 +14718,7 @@ function _downloadActivityLogCSVOffline(onlyFiltered){
 function exportActivityToExcel(){
     try{
         var rows=_activityRowsForExport(true);
-        if(!rows.length){ alert('لاگی برای خروجی وجود ندارد.'); return; }
+        if(!rows.length){ try{ showMsg('اطلاع','لاگی برای خروجی وجود ندارد.'); }catch(e){} return; }
         if(typeof XLSX==='undefined'){ _downloadActivityLogCSVOffline(true); return; }
         const ws=XLSX.utils.json_to_sheet(rows);
         try{
@@ -14710,10 +14737,12 @@ function exportActivityToExcel(){
 }
 function clearActivityLog(){
     if(!Array.isArray(dailyLog)||dailyLog.length===0){ try{showMsg('اطلاع','لاگی برای پاک‌سازی وجود ندارد.');}catch(e){} return; }
-    if(!confirm('قبل از پاک‌سازی، یک خروجی CSV از کل لاگ دانلود می‌شود. ادامه می‌دهید؟')) return;
-    try{ _downloadActivityLogCSVOffline(false); }catch(_e){}
-    if(!confirm('خروجی لاگ شروع شد. آیا مطمئن هستید که کل فعالیت‌های اخیر پاک شود؟')) return;
-    try{ dailyLog=[]; idbSet('prp_daily_log_v1',dailyLog); renderActivityPanel(); try{showMsg('انجام شد','لاگ فعالیت‌ها پاک شد.');}catch(e){} }catch(e){}
+    showConfirm('پاک‌سازی لاگ', 'قبل از پاک‌سازی، یک خروجی CSV از کل لاگ دانلود می‌شود. ادامه می‌دهید؟', function(){
+        try{ _downloadActivityLogCSVOffline(false); }catch(_e){}
+        showConfirm('تایید نهایی', 'خروجی لاگ شروع شد. آیا مطمئن هستید که کل فعالیت‌های اخیر پاک شود؟', function(){
+            try{ dailyLog=[]; idbSet('prp_daily_log_v1',dailyLog); renderActivityPanel(); try{showMsg('انجام شد','لاگ فعالیت‌ها پاک شد.');}catch(e){} }catch(e){}
+        }, 'پاک شود', 'لغو');
+    }, 'ادامه', 'لغو');
 }
 (function patchLogAction(){
     const _orig=logAction;
@@ -15777,7 +15806,18 @@ function apptSelectPatient(id, keepTarget) {
             if (da !== db) return da - db;
             return ua - ub;
         });
+    } else {
+        // بدون ایده‌آل هم نزدیک‌ترین‌ها را اول نگه دار
+        try {
+            candidates.sort(function(a, b){
+                var ta = (a.s && a.s.gregorian) ? a.s.gregorian.getTime() : 0;
+                var tb = (b.s && b.s.gregorian) ? b.s.gregorian.getTime() : 0;
+                return ta - tb;
+            });
+        } catch(e) {}
     }
+    // حداکثر ۴ پیشنهاد کافی است (از شلوغی UI جلوگیری می‌کند)
+    try { candidates = candidates.slice(0, 4); } catch(e) {}
 
     var notes = [];
     var html = '';
@@ -18274,12 +18314,21 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v90', total:40, active:25, newPhone:10,
             'سهمیه: ' + bucketLabel(b) + '\n\n' +
             'آیا در هر صورت اضافه شود؟';
         var ok = false;
-        try { ok = window.confirm(msg); } catch(e) { ok = false; }
-        if (ok) {
-            window.prpRememberQuotaOverride(key, b, excludeId);
-            try { if (typeof showToast === 'function') showToast('⚠️ ثبت خارج از سهمیه برای ' + key + ' تایید شد'); } catch(e) {}
-            return true;
-        }
+        // v174: confirm مرورگر حذف شد — اگر پچ جدید لود نشده باشد، مودال داخلی
+        try {
+          if (typeof showConfirm === 'function') {
+            showConfirm(title, msg, function(){
+              window.prpRememberQuotaOverride(key, b, excludeId);
+              try { if (typeof showToast === 'function') showToast('⚠️ ثبت خارج از سهمیه برای ' + key + ' تایید شد'); } catch(e) {}
+              try {
+                var retry = window.__prpConfirmRetry;
+                window.__prpConfirmRetry = null;
+                if (typeof retry === 'function') setTimeout(retry, 0);
+              } catch(e) {}
+            }, 'ثبت شود', 'لغو');
+            return false;
+          }
+        } catch(e) {}
         return false;
     };
 
@@ -19697,13 +19746,15 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
     var items = getItems();
     var target = items.find(function(it){ return String(it.id) === String(id); });
     if(!target || target.locked) return;
-    if(!confirm('این سهمیه حذف شود؟')) return;
-    saveItems(items.filter(function(it){ return String(it.id) !== String(id); }));
-    renderEditor(); refreshViews();
+    showConfirm('حذف سهمیه', 'این سهمیه حذف شود؟', function(){
+      saveItems(items.filter(function(it){ return String(it.id) !== String(id); }));
+      renderEditor(); refreshViews();
+    }, 'حذف', 'لغو');
   }
   function resetItems(){
-    if(!confirm('سهمیه‌ها به حالت پیش‌فرض برگردد؟')) return;
-    saveItems(DEFAULT_ITEMS); renderEditor(); refreshViews();
+    showConfirm('بازنشانی سهمیه', 'سهمیه‌ها به حالت پیش‌فرض برگردد؟', function(){
+      saveItems(DEFAULT_ITEMS); renderEditor(); refreshViews();
+    }, 'بازنشانی', 'لغو');
   }
   function normalizeType(t){
     var s = String(t || '').trim();
@@ -19989,11 +20040,13 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
   }
   window.prpChangeArchiveLimit = function(){
     var cur = String(_autoArchiveLimit);
-    var v = window.prompt('تعداد تلاش قبل از بایگانی خودکار (۱ تا ۱۰):', cur);
-    if(v===null) return;
-    var n = parseInt(v);
-    if(!n || n<1 || n>10){ alert('عدد ۱ تا ۱۰ وارد کنید.'); return; }
-    window.setAutoArchiveLimit(n);
+    showPrompt('تعداد تلاش قبل از بایگانی خودکار (۱ تا ۱۰)', function(v){
+      if(v===null || v===undefined) return;
+      var n = parseInt(toEnglishDigits(String(v)), 10);
+      if(!n || n<1 || n>10){ showMsg('مقدار نامعتبر', 'عدد ۱ تا ۱۰ وارد کنید.'); return; }
+      window.setAutoArchiveLimit(n);
+    }, 'ثبت', 'لغو');
+    try { var inp = document.getElementById('msgInput'); if(inp) inp.value = cur; } catch(e) {}
   };
   function _updateArchiveHints(){
     _updateArchiveLimitNote();
@@ -20738,16 +20791,32 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       lockedText +
       '\nآیا با ثبت نوبت در همین تاریخ موافقی؟';
 
-    var ok = false;
-    try { ok = window.confirm(msg); } catch(e) { ok = false; }
-    if (!ok) {
-      try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'روز فوق‌العاده فقط با تایید شما ثبت می‌شود.'); }
-      catch(e) {}
-      return false;
-    }
-    rememberApproval(info.key, patientId);
-    try { if (typeof showToast === 'function') showToast('✅ روز فوق‌العاده تایید شد: ' + fa(info.key)); } catch(e) {}
-    return true;
+    // v174: بدون window.confirm — مودال داخل برنامه + ادامهٔ عمل پس از تایید
+    try {
+      if (typeof showConfirm === 'function') {
+        showConfirm('روز فوق‌العاده', msg, function(){
+          rememberApproval(info.key, patientId);
+          try { if (typeof showToast === 'function') showToast('✅ روز فوق‌العاده تایید شد: ' + fa(info.key)); } catch(e) {}
+          try {
+            var retry = window.__prpConfirmRetry;
+            window.__prpConfirmRetry = null;
+            if (typeof retry === 'function') setTimeout(retry, 0);
+          } catch(e) {}
+        }, 'تایید روز', 'لغو');
+        try {
+          var cancelBtn = document.getElementById('msgCancelBtn');
+          if (cancelBtn) {
+            cancelBtn.onclick = function(){
+              try { closeModal('msgModal'); } catch(e) {}
+              try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'روز فوق‌العاده فقط با تایید شما ثبت می‌شود.'); } catch(e) {}
+            };
+          }
+        } catch(e) {}
+        return false;
+      }
+    } catch(e) {}
+    try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'روز فوق‌العاده فقط با تایید شما ثبت می‌شود.'); } catch(e) {}
+    return false;
   }
   window.prpConfirmExtraActiveDate = confirmExtra;
 
@@ -22001,13 +22070,20 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       + 'دسته: ' + typeLabel(type) + ' (' + fa(used + '/' + max) + ')\n'
       + 'ظرفیت کل: ' + fa(c.total + '/' + q.total) + '، جای خالی کل: ' + fa(left) + '\n\n'
       + 'با وجود پر بودن سهمیه این دسته، نوبت ثبت شود؟';
-    var ok = false;
-    try { ok = window.confirm(msg); } catch(e) { ok = false; }
-    if (ok) {
-      window.prpRememberQuotaOverride(key, type, excludeId);
-      try { if (typeof showToast === 'function') showToast('ثبت خارج از سهمیه برای ' + fa(key) + ' تایید شد'); } catch(e) {}
-      return true;
-    }
+    try {
+      if (typeof showConfirm === 'function') {
+        showConfirm(title, msg, function(){
+          window.prpRememberQuotaOverride(key, type, excludeId);
+          try { if (typeof showToast === 'function') showToast('ثبت خارج از سهمیه برای ' + fa(key) + ' تایید شد'); } catch(e) {}
+          try {
+            var retry = window.__prpConfirmRetry;
+            window.__prpConfirmRetry = null;
+            if (typeof retry === 'function') setTimeout(retry, 0);
+          } catch(e) {}
+        }, 'ثبت شود', 'لغو');
+        return false;
+      }
+    } catch(e) {}
     return false;
   };
 
@@ -23231,10 +23307,13 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       var idx=(activeDates||[]).findIndex(function(d){ return nkey(d)===k; });
       if(idx===-1) return false;
       var cnt=0; try{ cnt=Number(getConfirmedCount(k))||0; }catch(e){}
-      if(cnt>0){
-        var ok=true;
-        try{ ok=confirm('این روز '+(typeof toPersianDigits==='function'?toPersianDigits(cnt):cnt)+' بیمارِ تاییدشده دارد.\nبا غیرفعال‌کردن، روز از «روزهای فعال» حذف می‌شود (اطلاعات بیماران پاک نمی‌شود).\nادامه می‌دهید؟'); }catch(e){ ok=true; }
-        if(!ok) return false;
+      if(cnt>0 && window.__prpRemoveActiveDayOk !== true){
+        var rmMsg='این روز '+(typeof toPersianDigits==='function'?toPersianDigits(cnt):cnt)+' بیمارِ تاییدشده دارد.\nبا غیرفعال‌کردن، روز از «روزهای فعال» حذف می‌شود (اطلاعات بیماران پاک نمی‌شود).\nادامه می‌دهید؟';
+        showConfirm('غیرفعال کردن روز', rmMsg, function(){
+          window.__prpRemoveActiveDayOk = true;
+          try { window.prpRemoveActiveDay(k); } finally { window.__prpRemoveActiveDayOk = false; }
+        }, 'غیرفعال شود', 'لغو');
+        return false;
       }
       activeDates.splice(idx,1); activeCaps.splice(idx,1);
       activeDates.push(''); activeCaps.push(40);
@@ -25718,7 +25797,7 @@ window.PRP_DAILY_QUOTA_MODEL = {version:'v92', total:'dynamic', activeRatio:25, 
       openModal('msgModal');
     }catch(e){
       var body=rows.map(function(x,i){var d=caseDateJ(x);return toPersianDigits(i+1)+'. '+(x.site||'سایر')+' — مرحله '+(x.currentStage||'—')+' — '+statusLabel(x)+(d?' — '+toPersianDigits(d):'');}).join('\n');
-      alert(title+'\n\n'+body);
+      try{ showMsg(title, body); }catch(e){}
     }
   };
 
@@ -28260,18 +28339,24 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
       'آیا با این حال می‌خواهید بیمار در همین تاریخ ثبت شود؟\n' +
       '(این تایید فقط برای همین بیمار/تاریخ است و تنظیمات ظرفیت روزها را تغییر نمی‌دهد.)';
 
-    var ok = false;
-    try { ok = window.confirm(msg); } catch(e) { ok = false; }
-    if (!ok) {
-      try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'ثبت در روزهای گذشته فقط با تایید شما انجام می‌شود.'); }
-      catch(e) {}
-      return false;
-    }
-
-    if (approvalKey) approvedPastDates[approvalKey] = true;
-    try { if (typeof showToast === 'function') showToast('✅ ثبت در تاریخ گذشته تایید شد: ' + (typeof toPersianDigits === 'function' ? toPersianDigits(key) : key)); }
+    try {
+      if (typeof showConfirm === 'function') {
+        showConfirm('ثبت در تاریخ گذشته', msg, function(){
+          if (approvalKey) approvedPastDates[approvalKey] = true;
+          try { if (typeof showToast === 'function') showToast('✅ ثبت در تاریخ گذشته تایید شد: ' + (typeof toPersianDigits === 'function' ? toPersianDigits(key) : key)); }
+          catch(e) {}
+          try {
+            var retry = window.__prpConfirmRetry;
+            window.__prpConfirmRetry = null;
+            if (typeof retry === 'function') setTimeout(retry, 0);
+          } catch(e) {}
+        }, 'ثبت شود', 'لغو');
+        return false;
+      }
+    } catch(e) {}
+    try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'ثبت در روزهای گذشته فقط با تایید شما انجام می‌شود.'); }
     catch(e) {}
-    return true;
+    return false;
   };
 
   try{ ensureDateCanBeBooked = window.ensureDateCanBeBooked; }catch(e){}
@@ -29952,9 +30037,11 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
         };
       }
     }catch(e){
-      if(window.confirm(msg + '\n\nOK = تغییر ناحیه / Cancel = حفظ قبلی')){
-        if(typeof onChange === 'function') onChange();
-      } else if(typeof onKeep === 'function') onKeep();
+      if(typeof window.prpFallbackSiteConfirm === 'function'){
+        window.prpFallbackSiteConfirm(msg + '\n\nتغییر ناحیه یا حفظ قبلی؟', onChange, onKeep);
+      } else {
+        if(typeof onKeep === 'function') onKeep();
+      }
     }
   }
 
@@ -30125,12 +30212,9 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
               // اگر به هر دلیل به اینجا رسیدیم بدون مودال v170، ناحیه را نگه دار و ادامه بده
             } else {
               var ok = false;
-              try{ ok = window.confirm(msg + '\n\nادامه با ناحیه جدید؟\nOK = تغییر / Cancel = حفظ ناحیه قبلی'); }
-              catch(err){ ok = true; }
-              if(!ok){
-                try{ document.getElementById('editSite').value = prevSite; }catch(err){}
-                nextSite = prevSite;
-              }
+              // v174: بدون confirm مرورگر — اگر مودال v170 نبود، ناحیه قبلی حفظ می‌شود
+              try{ document.getElementById('editSite').value = prevSite; }catch(err){}
+              nextSite = prevSite;
             }
           }
         }
@@ -30331,9 +30415,7 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
   else install();
   // wrappers بعدی ممکن است بعداً توابع را عوض کنند؛ چند بار دیگر هم نصب کن
-  setTimeout(install, 0);
-  setTimeout(install, 500);
-  setTimeout(install, 1500);
+  setTimeout(install, 800);
 })();
 </script>
 
@@ -30635,8 +30717,8 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
     }catch(e){
       // fallback
       try{
-        if(window.confirm(guide + '\n\nOK = حفظ سابقه و تزریق / Cancel = انصراف')){
-          proceedInjection(id, baseFn);
+        if(typeof window.prpFallbackSiteConfirm === 'function'){
+          window.prpFallbackSiteConfirm(guide + '\n\nحفظ سابقه و ادامه تزریق؟', function(){ proceedInjection(id, baseFn); }, function(){});
         }
       }catch(err){}
     }
@@ -30753,9 +30835,7 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
   else install();
-  setTimeout(install, 0);
-  setTimeout(install, 600);
-  setTimeout(install, 1600);
+  setTimeout(install, 900);
 })();
 </script>
 
@@ -31165,9 +31245,7 @@ window.__PRP_V139_CONFIRMED_VISIT_IMMUTABLE__ = true;
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
   else install();
-  setTimeout(install, 0);
-  setTimeout(install, 700);
-  setTimeout(install, 1800);
+  setTimeout(install, 1000);
 })();
 </script>
 
@@ -32388,7 +32466,7 @@ main{
           if(d.getDay() === dow){ first = midnight(d); break; }
         }
         if(!first) return;
-        for(var w=0; w<52 && found < 3; w++){
+        for(var w=0; w<52 && found < 2; w++){
           var cur = new Date(first.getTime() + w * 7 * 86400000);
           var key = toJ(cur);
           if(seen[key]) continue;
@@ -32412,6 +32490,8 @@ main{
         if(a.bucketUtil !== b.bucketUtil) return a.bucketUtil - b.bucketUtil;
         return b.bucketRemain - a.bucketRemain;
       });
+      // حداکثر ۴ پیشنهاد برای ثبت نوبت
+      if(results.length > 4) results = results.slice(0, 4);
 
       return {
         sat: results.find(function(r){ return r.dow === 6; }) || results[0] || null,
@@ -32538,12 +32618,9 @@ main{
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
   else install();
-  setTimeout(install, 0);
   setTimeout(install, 800);
-  setTimeout(install, 2000);
 })();
 </script>
-
 <!-- PRP v173: پیشنهاد نوبت برای بیمار بایگانی بدون نوبت (جلوگیری از کرش '-') -->
 <script id="prp-v173-archive-appt-suggestions">
 (function(){
@@ -32610,7 +32687,7 @@ main{
             if (!all.length) {
               suggestCards.innerHTML = '<div style="padding:14px;color:#b45309;font-weight:900;font-size:12px;">روز پیشنهادی فعالی پیدا نشد. روزهای فعال را در تنظیمات/تقویم بررسی کنید.</div>';
             } else {
-              suggestCards.innerHTML = all.slice(0, 8).map(function(s){
+              suggestCards.innerHTML = all.slice(0, 4).map(function(s){
                 var j = s.jalali || '';
                 var t = s.type || '';
                 return '<button type="button" class="appt-suggest-card" data-jalali="'+j+'" onclick="apptSelectDate(\''+j+'\')" style="text-align:right;padding:12px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;font-weight:900;">'
@@ -32688,10 +32765,298 @@ main{
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
   else install();
-  setTimeout(install, 0);
   setTimeout(install, 900);
-  setTimeout(install, 2200);
 })();
 </script>
 
+<!-- PRP v174: سقف ۴ پیشنهاد + حذف confirm/alert مرورگر + سبک‌سازی نصب پچ‌ها -->
+<script id="prp-v174-dialogs-suggest-cap-cleanup">
+(function(){
+  'use strict';
+  if (window.__PRP_V174_DIALOGS__) return;
+  window.__PRP_V174_DIALOGS__ = true;
+
+  // ─── کمک‌تابع تایید داخل برنامه ───
+  function inAppConfirm(title, message, onYes, onNo, okText, cancelText){
+    try {
+      if (typeof window.prpShowInAppActions === 'function') {
+        window.prpShowInAppActions({
+          title: title || 'تایید',
+          message: message || '',
+          okText: okText || 'تایید',
+          cancelText: cancelText || 'لغو',
+          onOk: function(){ if (typeof onYes === 'function') onYes(); },
+          onCancel: function(){ if (typeof onNo === 'function') onNo(); }
+        });
+        return;
+      }
+    } catch(e) {}
+    try {
+      if (typeof showConfirm === 'function') {
+        showConfirm(title || 'تایید', message || '', function(){
+          if (typeof onYes === 'function') onYes();
+        }, okText || 'تایید', cancelText || 'لغو');
+        try {
+          var cancelBtn = document.getElementById('msgCancelBtn');
+          if (cancelBtn && typeof onNo === 'function') {
+            cancelBtn.onclick = function(){
+              try { closeModal('msgModal'); } catch(e) {}
+              try { onNo(); } catch(e) {}
+            };
+          }
+        } catch(e) {}
+        return;
+      }
+    } catch(e) {}
+    // آخرین راه: بدون پنجره مرورگر — رد امن
+    if (typeof onNo === 'function') onNo();
+  }
+
+  function inAppAlert(title, text){
+    try {
+      if (typeof showMsg === 'function') { showMsg(title || 'پیام', String(text || '')); return; }
+    } catch(e) {}
+    try {
+      if (typeof showToast === 'function') { showToast(String(text || title || '')); return; }
+    } catch(e) {}
+  }
+
+  // alert مرورگر → مودال داخل برنامه
+  try {
+    window.alert = function(msg){ inAppAlert('پیام', msg); };
+  } catch(e) {}
+
+  // confirm مرورگر را بی‌اثر کن (همیشه false)؛ مسیرهای مهم پایین بازنویسی شده‌اند
+  try {
+    window.confirm = function(){ return false; };
+  } catch(e) {}
+
+  // prompt مرورگر → showPrompt
+  try {
+    var nativePrompt = null;
+    window.prompt = function(message, def){
+      try {
+        if (typeof showPrompt === 'function') {
+          showPrompt(String(message || ''), function(){}, 'باشه', 'بستن');
+          try {
+            var inp = document.getElementById('msgInput');
+            if (inp) inp.value = def == null ? '' : String(def);
+          } catch(e) {}
+        } else {
+          inAppAlert('ورودی', String(message || '') + (def != null ? ('\nمقدار پیشنهادی: ' + def) : ''));
+        }
+      } catch(e) {}
+      return null; // مسیرهای sync باید قبلاً به showPrompt مهاجرت کرده باشند
+    };
+  } catch(e) {}
+
+  // ─── ثبت اکشن برای Retry بعد از تایید سهمیه/روز فوق‌العاده ───
+  window.__prpSetConfirmRetry = function(fn){
+    window.__prpConfirmRetry = (typeof fn === 'function') ? fn : null;
+  };
+  function runRetry(){
+    var fn = window.__prpConfirmRetry;
+    window.__prpConfirmRetry = null;
+    if (typeof fn === 'function') setTimeout(function(){ try { fn(); } catch(e){ console.error('v174 retry', e); } }, 0);
+  }
+
+  function wrapRetry(name){
+    var base = window[name];
+    if (typeof base !== 'function' || base.__prpV174Retry) return;
+    var wrapped = function(){
+      var self = this, args = arguments;
+      window.__prpSetConfirmRetry(function(){ wrapped.apply(self, args); });
+      return base.apply(self, args);
+    };
+    wrapped.__prpV174Retry = true;
+    try { Object.keys(base).forEach(function(k){ try{ wrapped[k]=base[k]; }catch(e){} }); } catch(e) {}
+    window[name] = wrapped;
+    try { (0, eval)(name + ' = window["' + name + '"];'); } catch(e) {}
+  }
+
+  // ─── سهمیه پر: تایید داخل برنامه + retry ───
+  window.prpConfirmOverQuotaBooking = function(dateJ, bucket, excludeId, reason, opts){
+    var key = '';
+    try {
+      key = (typeof normalizeJalaliDateKey === 'function')
+        ? (normalizeJalaliDateKey(dateJ) || '')
+        : String(dateJ || '');
+    } catch(e) { key = String(dateJ || ''); }
+    var type = bucket || 'new';
+    try { if (typeof prpNormalizeBookingType === 'function') type = prpNormalizeBookingType(bucket || 'new') || type; } catch(e) {}
+    if (!key) return true;
+    try {
+      if (typeof window.prpHasQuotaOverride === 'function' && window.prpHasQuotaOverride(key, type, excludeId)) return true;
+    } catch(e) {}
+
+    var can = null;
+    try {
+      if (typeof prpCanBookByQuota === 'function') can = prpCanBookByQuota(key, type, excludeId);
+    } catch(e) {}
+    if (can && can.hardCapacity) {
+      inAppAlert('ظرفیت کل پر است', can.reason || reason || 'این روز ظرفیت خالی ندارد.');
+      return false;
+    }
+
+    var title = (opts && opts.title) || 'سهمیه تکمیل شده است';
+    var typeLabel = type;
+    try { if (typeof prpBookingTypeLabel === 'function') typeLabel = prpBookingTypeLabel(type); } catch(e) {}
+    var faKey = key;
+    try { if (typeof toPersianDigits === 'function') faKey = toPersianDigits(key); } catch(e) {}
+    var msg = title + '\n\n'
+      + (reason || (can && can.reason) || ('سهمیه «' + typeLabel + '» تکمیل شده است.')) + '\n\n'
+      + 'تاریخ: ' + faKey + '\n'
+      + 'دسته: ' + typeLabel + '\n\n'
+      + 'با وجود پر بودن سهمیه، نوبت ثبت شود؟';
+
+    inAppConfirm(title, msg, function(){
+      try {
+        if (typeof window.prpRememberQuotaOverride === 'function') {
+          window.prpRememberQuotaOverride(key, type, excludeId);
+        }
+      } catch(e) {}
+      try { if (typeof showToast === 'function') showToast('ثبت خارج از سهمیه برای ' + faKey + ' تایید شد'); } catch(e) {}
+      runRetry();
+    }, function(){
+      try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'ثبت خارج از سهمیه فقط با تایید شما انجام می‌شود.'); } catch(e) {}
+    }, 'ثبت شود', 'لغو');
+    return false;
+  };
+
+  // ─── روز فوق‌العاده فعال: تایید داخل برنامه ───
+  if (typeof window.prpConfirmExtraActiveDate === 'function') {
+    var baseExtra = window.prpConfirmExtraActiveDate;
+    if (!baseExtra.__prpV174InApp) {
+      var approvedExtra = Object.create(null);
+      window.prpConfirmExtraActiveDate = function(dateJ, patientId){
+        var key = '';
+        try { key = (typeof normalizeJalaliDateKey === 'function') ? (normalizeJalaliDateKey(dateJ)||'') : String(dateJ||''); } catch(e) { key = String(dateJ||''); }
+        if (!key) return true;
+        // اگر اصلاً فوق‌العاده نیست، به نسخه قبلی بسپار
+        var info = null;
+        try { if (typeof window.prpExtraActiveDateInfo === 'function') info = window.prpExtraActiveDateInfo(key); } catch(e) {}
+        if (!info || !info.extra) {
+          try { return baseExtra.apply(this, arguments); } catch(e) { return true; }
+        }
+        var pid = patientId || '';
+        var akey = key + '::' + String(pid || 'global');
+        if (approvedExtra[akey] || approvedExtra[key + '::global']) return true;
+
+        var faKey = key;
+        try { if (typeof toPersianDigits === 'function') faKey = toPersianDigits(key); } catch(e) {}
+        var why = (info.holiday ? ('تعطیل رسمی: ' + info.holiday) : ('روز هفته: ' + (info.dayName || 'غیرعادی')));
+        var msg = 'این تاریخ خارج از قانون عادی نوبت‌دهی است، اما در «روزهای فعال» تعریف شده.\n\n'
+          + 'تاریخ: ' + faKey + (info.dayName ? (' — ' + info.dayName) : '') + '\n'
+          + why + '\n\nآیا با ثبت نوبت در همین تاریخ موافقید؟';
+        inAppConfirm('روز فوق‌العاده', msg, function(){
+          approvedExtra[akey] = true;
+          approvedExtra[key + '::global'] = true;
+          try { if (typeof showToast === 'function') showToast('روز فوق‌العاده تایید شد: ' + faKey); } catch(e) {}
+          runRetry();
+        }, function(){
+          try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'روز فوق‌العاده فقط با تایید شما ثبت می‌شود.'); } catch(e) {}
+        }, 'تایید روز', 'لغو');
+        return false;
+      };
+      window.prpConfirmExtraActiveDate.__prpV174InApp = true;
+    }
+  }
+
+  // ─── تاریخ گذشته پر: تایید داخل برنامه (جایگزین v162 confirm) ───
+  (function wrapPastEnsure(){
+    var base = window.ensureDateCanBeBooked;
+    if (typeof base !== 'function' || base.__prpV174PastInApp) return;
+    var approvedPast = Object.create(null);
+    function todayMs(){ var d=new Date(); return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime(); }
+    function isPast(key){
+      try {
+        var g = jalaliToGregorian(key);
+        if (!g || isNaN(g.getTime())) return false;
+        return new Date(g.getFullYear(), g.getMonth(), g.getDate()).getTime() < todayMs();
+      } catch(e) { return false; }
+    }
+    function isActive(key){
+      try { return (activeDates||[]).some(function(d){ return normalizeJalaliDateKey(d) === key; }); }
+      catch(e){ return false; }
+    }
+    var wrapped = function(dateJ, excludeId, opts){
+      var key = '';
+      try { key = normalizeJalaliDateKey(dateJ) || ''; } catch(e) {}
+      var o = opts || {};
+      var allowLocked = '';
+      try { allowLocked = normalizeJalaliDateKey(o.allowLockedDate || '') || ''; } catch(e) {}
+      var lockedNow = false;
+      try { lockedNow = isDateLocked(key) && key !== allowLocked; } catch(e) {}
+      if (!key || lockedNow || !isActive(key) || !isPast(key)) {
+        return base.apply(this, arguments);
+      }
+      var type = '';
+      try { type = prpNormalizeBookingType(o.patientType || o.bookingType || ''); } catch(e) {}
+      var can = { ok:true };
+      try { can = prpCanBookByQuota(key, type, excludeId); } catch(e) { can = { ok:true }; }
+      if (can.ok) return true;
+      var approvalKey = excludeId ? (key + '::' + String(excludeId)) : '';
+      if (approvalKey && approvedPast[approvalKey]) return true;
+      var faKey = key;
+      try { if (typeof toPersianDigits === 'function') faKey = toPersianDigits(key); } catch(e) {}
+      var msg = 'این تاریخ (' + faKey + ') گذشته و '
+        + (can.reason || 'ظرفیت/سهمیه‌اش تکمیل شده است.') + '\n\n'
+        + 'آیا با این حال می‌خواهید بیمار در همین تاریخ ثبت شود؟';
+      inAppConfirm('ثبت در تاریخ گذشته', msg, function(){
+        if (approvalKey) approvedPast[approvalKey] = true;
+        try { if (typeof showToast === 'function') showToast('ثبت در تاریخ گذشته تایید شد: ' + faKey); } catch(e) {}
+        runRetry();
+      }, function(){
+        try { if (typeof showMsg === 'function') showMsg('ثبت انجام نشد', 'ثبت در روزهای گذشته فقط با تایید شما انجام می‌شود.'); } catch(e) {}
+      }, 'ثبت شود', 'لغو');
+      return false;
+    };
+    wrapped.__prpV174PastInApp = true;
+    window.ensureDateCanBeBooked = wrapped;
+    try { ensureDateCanBeBooked = wrapped; } catch(e) {}
+  })();
+
+  // مسیرهای اصلی رزرو برای retry بعد از تایید
+  ['apptConfirmBook','saveEditPatient','saveNewPatient','saveAndBookAppt','applyConfirm','confirmPatient'].forEach(function(n){
+    try { wrapRetry(n); } catch(e) {}
+  });
+
+  // fallbackهای ناحیه: confirm مرورگر را به in-app تبدیل کن (اگر به catch رسیدند)
+  // با window.confirm=false دیگر OK نمی‌شوند؛ v170 باید مسیر اصلی باشد.
+  // اگر fallback لازم شد، این helper را بگذار:
+  window.prpFallbackSiteConfirm = function(msg, onChange, onKeep){
+    inAppConfirm('تغییر ناحیه', msg, onChange, onKeep, 'تغییر ناحیه', 'حفظ قبلی');
+  };
+
+  // سبک‌سازی: سقف پیشنهاد را در UI هم اعمال کن (اگر پچ قدیمی کارت بیشتری ساخت)
+  function trimSuggestCards(){
+    try {
+      var box = document.getElementById('apptSuggestCards');
+      if (!box || !box.children) return;
+      while (box.children.length > 4) box.removeChild(box.lastChild);
+    } catch(e) {}
+  }
+  var baseSelect = window.apptSelectPatient;
+  if (typeof baseSelect === 'function' && !baseSelect.__prpV174Cap) {
+    var wrappedSel = function(){
+      var ret = baseSelect.apply(this, arguments);
+      setTimeout(trimSuggestCards, 40);
+      setTimeout(trimSuggestCards, 160);
+      return ret;
+    };
+    wrappedSel.__prpV174Cap = true;
+    try { Object.keys(baseSelect).forEach(function(k){ try{ wrappedSel[k]=baseSelect[k]; }catch(e){} }); } catch(e) {}
+    window.apptSelectPatient = wrappedSel;
+    try { apptSelectPatient = wrappedSel; } catch(e) {}
+  }
+
+  window.__PRP_V174_NOTES = {
+    suggestCap: 4,
+    browserConfirmDisabled: true,
+    browserAlertShimmed: true,
+    patchMerge: 'ادغام کامل v88→v170 عمداً انجام نشد تا منطق تاریخ/مرحله تزریق نشکند؛ فقط confirmها، سقف پیشنهاد و تایمرهای نصب سبک شدند.'
+  };
+})();
+</script>
 </body></html>
+
